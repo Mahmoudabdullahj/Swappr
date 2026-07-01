@@ -813,12 +813,17 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 @media (max-width: 768px) {
   header.topbar {
     grid-template-columns: auto 1fr auto;
-    padding: 0 16px;
+    padding: 0 12px;
     height: 56px;
   }
   .topbar-nav { display: none; }
   .mobile-search-btn { display: flex; }
   .search-bar { display: none; }
+  /* hide "List Item" text and the whole pill button — bottom nav has the + already */
+  .btn-primary { display: none; }
+  /* compact session indicator — hide name, keep dot + logout */
+  .session-name { display: none; }
+  .session-indicator { padding: 5px 8px; gap: 5px; }
 
   main.content { padding: 16px; padding-bottom: 24px; gap: 32px; }
   .section-title { font-size: 18px; }
@@ -856,18 +861,18 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   display: none;
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  height: 64px;
+  height: 72px;
   background: var(--bg-surface);
   border-top: 1px solid var(--border);
   z-index: 85;
   align-items: center;
   justify-content: space-around;
-  padding: 0 4px;
+  padding: 8px 4px 0;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 @media (max-width: 768px) {
   .bottom-nav { display: flex; }
-  main.content { padding-bottom: 80px; }
+  main.content { padding-bottom: 88px; }
 }
 
 .bottom-nav-item {
