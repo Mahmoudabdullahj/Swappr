@@ -1551,6 +1551,8 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   line-height: 1.05;
   margin-bottom: 24px;
 }
+.landing-h1-line1 { white-space: nowrap; }
+
 .landing-sub {
   font-size: 18px;
   color: var(--text-secondary);
@@ -1825,6 +1827,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 @media (max-width: 480px) {
   .landing-h1 { letter-spacing: -1.5px; }
+  .landing-h1-line1 { white-space: normal; }
   .landing-hero-actions { flex-direction: column; width: 100%; }
   .landing-cta-primary { width: 100%; text-align: center; }
 }

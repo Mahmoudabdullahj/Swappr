@@ -41,7 +41,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
       <section className="landing-hero">
         <div className="landing-pill">Now live in Amman</div>
         <h1 className="landing-h1">
-          <span style={{ whiteSpace: 'nowrap' }}>Trade what you have.</span><br />
+          <span className="landing-h1-line1">Trade what you have.</span><br />
           Get what you need.
         </h1>
         <p className="landing-sub">
