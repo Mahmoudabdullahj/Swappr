@@ -134,6 +134,7 @@ export default function Page() {
   const [chatInput, setChatInput]             = useState('');
   const [chatSending, setChatSending]         = useState(false);
   const [convoLoading, setConvoLoading]       = useState(false);
+  const [chatError, setChatError]             = useState<string | null>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const convoRefreshKey = useRef(0);
 
@@ -265,18 +266,20 @@ export default function Page() {
     const convo = targetConvo ?? activeConvo;
     if (!content.trim() || chatSending) return;
     setChatSending(true);
+    setChatError(null);
     try {
       if (convo) {
-        // Send to existing conversation
         const res = await fetch(`/api/conversations/${convo.id}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content }),
         });
-        if (!res.ok) throw new Error();
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || `Error ${res.status}`);
+        }
         fetchConversations();
       } else if (chatTarget) {
-        // Create new conversation with first message
         const res = await fetch('/api/conversations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -289,9 +292,11 @@ export default function Page() {
             message:        content,
           }),
         });
-        if (!res.ok) throw new Error();
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || `Error ${res.status}`);
+        }
         const { conversationId } = await res.json();
-        // Load the new conversation
         const convosRes = await fetch('/api/conversations');
         const convos: Conversation[] = await convosRes.json();
         setConversations(Array.isArray(convos) ? convos : []);
@@ -300,8 +305,8 @@ export default function Page() {
         setChatTarget(null);
       }
       setChatInput('');
-    } catch {
-      // silent — user will see message didn't appear
+    } catch (err) {
+      setChatError(err instanceof Error ? err.message : 'Failed to send. Try again.');
     } finally {
       setChatSending(false);
     }
@@ -984,6 +989,11 @@ export default function Page() {
                   <div ref={chatBottomRef} />
                 </div>
 
+                {chatError && (
+                  <p style={{ color: '#e8473f', fontSize: 12, textAlign: 'center', padding: '6px 16px', background: 'rgba(232,71,63,0.06)', borderTop: '1px solid rgba(232,71,63,0.15)' }}>
+                    {chatError}
+                  </p>
+                )}
                 <form
                   className="chat-input-area"
                   onSubmit={(e) => { e.preventDefault(); sendMessage(chatInput); }}
