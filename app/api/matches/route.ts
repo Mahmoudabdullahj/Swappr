@@ -6,35 +6,68 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  const { data, error } = await supabase
-    .from('matches')
-    .select('*')
-    .or(`item_a_owner_id.eq.${user.id},item_b_owner_id.eq.${user.id}`)
-    .order('created_at', { ascending: false });
+  // Get the current user's items that have wants defined
+  const { data: myItems, error: myErr } = await supabase
+    .from('items')
+    .select('id, title, category, img, want_title, want_category, want_anything')
+    .eq('user_id', user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (myErr) return NextResponse.json({ error: myErr.message }, { status: 500 });
+  if (!myItems || myItems.length === 0) return NextResponse.json([]);
 
-  const matches = (data ?? []).map((row: Record<string, unknown>) => {
-    const isA = row.item_a_owner_id === user.id;
-    return {
-      id:        row.id,
-      matchedAt: new Date(row.created_at as string).getTime(),
-      myItem: {
-        id:       isA ? row.item_a_id       : row.item_b_id,
-        title:    isA ? row.item_a_title    : row.item_b_title,
-        img:      isA ? row.item_a_img      : row.item_b_img,
-        category: isA ? row.item_a_category : row.item_b_category,
-      },
-      theirItem: {
-        id:       isA ? row.item_b_id       : row.item_a_id,
-        title:    isA ? row.item_b_title    : row.item_a_title,
-        img:      isA ? row.item_b_img      : row.item_a_img,
-        category: isA ? row.item_b_category : row.item_a_category,
-        seller:   isA ? row.item_b_seller   : row.item_a_seller,
-        ownerId:  isA ? row.item_b_owner_id : row.item_a_owner_id,
-      },
-    };
-  });
+  const results: Array<{
+    id: string;
+    matchedAt: number;
+    myItem:    { id: string; title: string; img: string; category: string; };
+    theirItem: { id: string; title: string; img: string; category: string; seller: string; ownerId: string; };
+  }> = [];
 
-  return NextResponse.json(matches);
+  const seen = new Set<string>();
+
+  for (const myItem of myItems) {
+    const { want_title, want_category, want_anything } = myItem;
+    if (!want_title && !want_category && !want_anything) continue;
+
+    let query = supabase
+      .from('items')
+      .select('id, user_id, title, category, img, seller')
+      .neq('user_id', user.id)
+      .limit(30);
+
+    if (!want_anything) {
+      const filters: string[] = [];
+      if (want_title)    filters.push(`title.ilike.%${want_title}%`);
+      if (want_category) filters.push(`category.eq.${want_category}`);
+      if (filters.length === 0) continue;
+      query = query.or(filters.join(','));
+    }
+
+    const { data: candidates } = await query;
+
+    for (const c of candidates ?? []) {
+      const key = `${myItem.id}_${c.id}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      results.push({
+        id:        key,
+        matchedAt: Date.now(),
+        myItem: {
+          id:       myItem.id,
+          title:    myItem.title,
+          img:      myItem.img || '',
+          category: myItem.category,
+        },
+        theirItem: {
+          id:       c.id,
+          title:    c.title,
+          img:      c.img || '',
+          category: c.category,
+          seller:   c.seller,
+          ownerId:  c.user_id,
+        },
+      });
+    }
+  }
+
+  return NextResponse.json(results);
 }

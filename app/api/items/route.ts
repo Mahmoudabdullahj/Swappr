@@ -82,36 +82,5 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Detect matches: find items the new listing's owner wants
-  if (wantAnything || wantTitle || wantCategory) {
-    const { data: candidates } = await supabase
-      .from('items')
-      .select('id, user_id, title, category, img, seller')
-      .neq('user_id', userId);
-
-    const newWantTitle = (wantTitle || '').toLowerCase();
-    const newWantCat   = wantCategory || '';
-
-    const matched = (candidates ?? []).filter(other => {
-      if (wantAnything) return true;
-      const titleMatch = newWantTitle && other.title.toLowerCase().includes(newWantTitle);
-      const catMatch   = newWantCat && other.category === newWantCat;
-      return titleMatch || catMatch;
-    });
-
-    if (matched.length > 0) {
-      await supabase.from('matches').upsert(
-        matched.map(other => {
-          const [aId, aOwner, aTitle, aImg, aCat, aSeller, bId, bOwner, bTitle, bImg, bCat, bSeller] =
-            data.id < other.id
-              ? [data.id, userId, title, imgUrl, category, seller, other.id, other.user_id, other.title, other.img, other.category, other.seller]
-              : [other.id, other.user_id, other.title, other.img, other.category, other.seller, data.id, userId, title, imgUrl, category, seller];
-          return { item_a_id: aId, item_a_owner_id: aOwner, item_a_title: aTitle, item_a_img: aImg, item_a_category: aCat, item_a_seller: aSeller, item_b_id: bId, item_b_owner_id: bOwner, item_b_title: bTitle, item_b_img: bImg, item_b_category: bCat, item_b_seller: bSeller };
-        }),
-        { onConflict: 'item_a_id,item_b_id', ignoreDuplicates: true }
-      );
-    }
-  }
-
   return NextResponse.json(data, { status: 201 });
 }
