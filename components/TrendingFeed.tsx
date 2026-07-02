@@ -86,6 +86,9 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll }: Trendi
                   img={item.img}
                   seller={item.seller}
                   dist={item.dist}
+                  wantTitle={item.wantTitle}
+                  wantCategory={item.wantCategory}
+                  wantAnything={item.wantAnything}
                   onOfferTrade={() => onOfferTrade?.(item)}
                   onLike={(liked) => handleLike(item, liked)}
                 />
