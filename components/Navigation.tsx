@@ -18,11 +18,10 @@ interface NavigationProps {
 }
 
 const NAV_LINKS: { view: View; label: string; badge?: boolean }[] = [
-  { view: 'discover',  label: 'Home' },
-  { view: 'items',     label: 'My Items' },
-  { view: 'trades',    label: 'My Trades' },
-  { view: 'messages',  label: 'Messages', badge: true },
-  { view: 'matches',   label: 'Matches' },
+  { view: 'discover', label: 'Home' },
+  { view: 'items',    label: 'My Items' },
+  { view: 'trades',   label: 'My Trades' },
+  { view: 'matches',  label: 'Matches' },
 ];
 
 export default function Navigation({
@@ -161,17 +160,17 @@ export default function Navigation({
         </button>
 
         <button
-          className={`bottom-nav-item${activeView === 'messages' ? ' active' : ''}`}
-          onClick={() => onViewChange('messages')}
-          aria-current={activeView === 'messages' ? 'page' : undefined}
+          className={`bottom-nav-item${activeView === 'matches' ? ' active' : ''}`}
+          onClick={() => onViewChange('matches')}
+          aria-current={activeView === 'matches' ? 'page' : undefined}
         >
           <div style={{ position: 'relative', display: 'flex' }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22" aria-hidden="true">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              <path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
             </svg>
-            <span className="bottom-badge" aria-label="Unread messages" />
+            {matchCount > 0 && <span className="bottom-badge" aria-label={`${matchCount} matches`} />}
           </div>
-          <span>Messages</span>
+          <span>Matches</span>
         </button>
 
         <button

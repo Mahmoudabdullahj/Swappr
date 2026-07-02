@@ -352,6 +352,7 @@ export default function Page() {
         refreshKey={offerRefreshKey}
         targetItem={tradeTarget}
         onTradeSent={() => setTradesRefreshKey(k => k + 1)}
+        myItems={myItems}
       />
 
       {/* ── App shell ── */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MyItems, type MyItem } from '@/lib/my-items';
+import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeTarget } from '@/lib/my-trades';
 
 interface Props {
@@ -11,9 +11,10 @@ interface Props {
   refreshKey?: number;
   targetItem?: TradeTarget | null;
   onTradeSent?: () => void;
+  myItems?: MyItem[];
 }
 
-export default function OfferTradeModal({ open, onClose, onListItem, refreshKey, targetItem, onTradeSent }: Props) {
+export default function OfferTradeModal({ open, onClose, onListItem, refreshKey, targetItem, onTradeSent, myItems = [] }: Props) {
   const [items, setItems]     = useState<MyItem[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [sent, setSent]       = useState(false);
@@ -22,13 +23,13 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
 
   useEffect(() => {
     if (open) {
-      setItems(MyItems.get());
+      setItems(myItems);
       setSelected(null);
       setSent(false);
       setSending(false);
       setSendError(null);
     }
-  }, [open, refreshKey]);
+  }, [open, refreshKey, myItems]);
 
   async function handleSend() {
     if (!selected || sending) return;

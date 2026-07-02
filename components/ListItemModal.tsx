@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { MyItems } from '@/lib/my-items';
 import { Session } from '@/lib/session';
 
 interface ListingDraft {
@@ -67,7 +66,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
     if (!files) return;
     const slots = 5 - draft.images.length;
     if (slots <= 0) return;
-    const valid = Array.from(files).filter(f => f.type.startsWith('image/')).slice(0, slots);
+    const valid = Array.from(files).filter(f => f.type.startsWith('image/') && f.size <= 10 * 1024 * 1024).slice(0, slots);
     if (!valid.length) return;
     setDraft(d => ({ ...d, images: [...d.images, ...valid] }));
     setPreviews(p => [...p, ...valid.map(f => URL.createObjectURL(f))]);
@@ -118,7 +117,6 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
         throw new Error(body.error || 'Failed to save item');
       }
 
-      MyItems.add({ title: draft.title, category: draft.category });
       onListed?.();
       handleClose();
     } catch (err) {

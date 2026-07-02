@@ -197,7 +197,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <span className="logo-wordmark" style={{ fontSize: 15 }}>Swappr</span>
           </span>
           <p className="landing-footer-copy">
-            &copy; 2025 Swappr &mdash; Built in Amman, for Amman.
+            &copy; 2026 Swappr &mdash; Built in Amman, for Amman.
           </p>
         </footer>
       )}
