@@ -101,12 +101,15 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
     try {
       const s = Session.get();
       const fd = new FormData();
-      fd.append('title',     draft.title);
-      fd.append('category',  draft.category || 'Other');
-      fd.append('condition', draft.condition || 'good');
-      fd.append('price',     draft.price || '0');
-      fd.append('userId',    s?.userId || 'anonymous');
-      fd.append('seller',    s?.displayName || 'Anonymous');
+      fd.append('title',       draft.title);
+      fd.append('category',    draft.category || 'Other');
+      fd.append('condition',   draft.condition || 'good');
+      fd.append('price',       draft.price || '0');
+      fd.append('userId',      s?.userId || 'anonymous');
+      fd.append('seller',      s?.displayName || 'Anonymous');
+      fd.append('wantTitle',   draft.wantTitle || '');
+      fd.append('wantCategory', draft.wantCategory || '');
+      fd.append('wantAnything', draft.wantAnything ? 'true' : 'false');
       if (draft.images[0]) fd.append('image', draft.images[0]);
 
       const res = await fetch('/api/items', { method: 'POST', body: fd });

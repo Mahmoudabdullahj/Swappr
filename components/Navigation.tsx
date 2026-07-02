@@ -14,6 +14,7 @@ interface NavigationProps {
   searchQuery: string;
   onSearchChange: (q: string) => void;
   onMobileSearchToggle: () => void;
+  matchCount?: number;
 }
 
 const NAV_LINKS: { view: View; label: string; badge?: boolean }[] = [
@@ -33,6 +34,7 @@ export default function Navigation({
   searchQuery,
   onSearchChange,
   onMobileSearchToggle,
+  matchCount = 0,
 }: NavigationProps) {
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
@@ -69,6 +71,7 @@ export default function Navigation({
             >
               {label}
               {badge && <span className="nav-badge" aria-label="Unread" />}
+              {view === 'matches' && matchCount > 0 && <span className="nav-badge" aria-label={`${matchCount} matches`} />}
             </button>
           ))}
         </nav>

@@ -46,13 +46,16 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
   const formData  = await request.formData();
-  const title     = formData.get('title') as string;
-  const category  = (formData.get('category') as string) || 'Other';
-  const condition = (formData.get('condition') as string) || 'good';
-  const price     = parseInt((formData.get('price') as string) || '0');
-  const userId    = user.id;
-  const seller    = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
-  const image     = formData.get('image') as File | null;
+  const title        = formData.get('title') as string;
+  const category     = (formData.get('category') as string) || 'Other';
+  const condition    = (formData.get('condition') as string) || 'good';
+  const price        = parseInt((formData.get('price') as string) || '0');
+  const userId       = user.id;
+  const seller       = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
+  const wantTitle    = (formData.get('wantTitle') as string) || null;
+  const wantCategory = (formData.get('wantCategory') as string) || null;
+  const wantAnything = formData.get('wantAnything') === 'true';
+  const image        = formData.get('image') as File | null;
 
   let imgUrl = '';
 
@@ -73,11 +76,50 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from('items')
-    .insert({ user_id: userId, title, category, condition, price, img: imgUrl, seller })
+    .insert({ user_id: userId, title, category, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Detect matches against other users' listings
+  if (!wantAnything || wantTitle || wantCategory) {
+    const { data: candidates } = await supabase
+      .from('items')
+      .select('id, user_id, title, category, img, seller, want_title, want_category, want_anything')
+      .neq('user_id', userId);
+
+    const newWantTitle = (wantTitle || '').toLowerCase();
+    const newWantCat   = wantCategory || '';
+
+    const matched = (candidates ?? []).filter(other => {
+      const otherWantTitle = (other.want_title || '').toLowerCase();
+      const otherWantCat   = other.want_category || '';
+
+      const theyWantMine = other.want_anything ||
+        (otherWantTitle && title.toLowerCase().includes(otherWantTitle)) ||
+        (otherWantCat && category === otherWantCat);
+
+      const iWantTheirs = wantAnything ||
+        (newWantTitle && other.title.toLowerCase().includes(newWantTitle)) ||
+        (newWantCat && other.category === newWantCat);
+
+      return theyWantMine && iWantTheirs;
+    });
+
+    if (matched.length > 0) {
+      await supabase.from('matches').upsert(
+        matched.map(other => {
+          const [aId, aOwner, aTitle, aImg, aCat, aSeller, bId, bOwner, bTitle, bImg, bCat, bSeller] =
+            data.id < other.id
+              ? [data.id, userId, title, imgUrl, category, seller, other.id, other.user_id, other.title, other.img, other.category, other.seller]
+              : [other.id, other.user_id, other.title, other.img, other.category, other.seller, data.id, userId, title, imgUrl, category, seller];
+          return { item_a_id: aId, item_a_owner_id: aOwner, item_a_title: aTitle, item_a_img: aImg, item_a_category: aCat, item_a_seller: aSeller, item_b_id: bId, item_b_owner_id: bOwner, item_b_title: bTitle, item_b_img: bImg, item_b_category: bCat, item_b_seller: bSeller };
+        }),
+        { onConflict: 'item_a_id,item_b_id', ignoreDuplicates: true }
+      );
+    }
+  }
 
   return NextResponse.json(data, { status: 201 });
 }

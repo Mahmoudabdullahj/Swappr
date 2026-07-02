@@ -17,6 +17,13 @@ import ListItemModal from '@/components/ListItemModal';
 
 type View = 'discover' | 'items' | 'trades' | 'messages' | 'matches' | 'profile';
 
+interface Match {
+  id: string;
+  matchedAt: number;
+  myItem:    { id: string; title: string; img: string; category: string; };
+  theirItem: { id: string; title: string; img: string; category: string; seller: string; ownerId: string; };
+}
+
 const AVATAR_COLORS = ['#5b2ee8', '#e8473f', '#2196f3', '#4caf50', '#ff9800', '#9c27b0'];
 
 function timeAgo(ts: number): string {
@@ -73,6 +80,8 @@ export default function Page() {
   const [tradeTarget, setTradeTarget]       = useState<TradeTarget | null>(null);
   const [myTrades, setMyTrades]             = useState<TradeOffer[]>([]);
   const [tradesRefreshKey, setTradesRefreshKey] = useState(0);
+  const [myMatches, setMyMatches]           = useState<Match[]>([]);
+  const [matchesRefreshKey, setMatchesRefreshKey] = useState(0);
   const [listSkipWant, setListSkipWant]     = useState(false);
   const [discoverSubView, setDiscoverSubView] = useState<'exact-matches' | 'trending' | null>(null);
   const [myItems, setMyItems]               = useState<MyItem[]>([]);
@@ -139,6 +148,14 @@ export default function Page() {
   useEffect(() => {
     MyTrades.get().then(setMyTrades).catch(() => setMyTrades([]));
   }, [tradesRefreshKey]);
+
+  useEffect(() => {
+    if (!session) { setMyMatches([]); return; }
+    fetch('/api/matches')
+      .then(r => r.json())
+      .then(data => setMyMatches(Array.isArray(data) ? data : []))
+      .catch(() => setMyMatches([]));
+  }, [session, matchesRefreshKey]);
 
   useEffect(() => {
     if (!activeCategory) { setCategoryItems([]); return; }
@@ -307,7 +324,7 @@ export default function Page() {
       <ListItemModal
         open={showListModal}
         onClose={() => { setShowListModal(false); setListSkipWant(false); }}
-        onListed={() => setOfferRefreshKey(k => k + 1)}
+        onListed={() => { setOfferRefreshKey(k => k + 1); setMatchesRefreshKey(k => k + 1); }}
         skipWantStep={listSkipWant}
       />
 
@@ -333,6 +350,7 @@ export default function Page() {
           searchQuery={searchQuery}
           onSearchChange={handleSearch}
           onMobileSearchToggle={toggleMobileSearch}
+          matchCount={myMatches.length}
         />
 
         {/* ── SEARCH RESULTS VIEW ── */}
@@ -662,12 +680,86 @@ export default function Page() {
           </main>
         )}
 
+        {/* ── MATCHES VIEW ── */}
+        {!isSearching && activeView === 'matches' && (
+          <main className="content" id="view-matches">
+            <div className="my-items-header">
+              <div>
+                <h1 className="my-items-title">Matches</h1>
+                {myMatches.length > 0 && (
+                  <p className="my-items-count">{myMatches.length} match{myMatches.length !== 1 ? 'es' : ''} found</p>
+                )}
+              </div>
+            </div>
+
+            {myMatches.length === 0 ? (
+              <div className="empty-state" style={{ marginTop: 60 }}>
+                <div className="empty-state-icon">🤝</div>
+                <p className="empty-state-text">No matches yet.</p>
+                <p className="empty-state-sub">List an item and tell us what you want — we&apos;ll find someone listing exactly that who also wants what you have.</p>
+                <button className="btn-primary" style={{ marginTop: 20, display: 'inline-flex' }} onClick={() => setShowListModal(true)}>
+                  List an Item
+                </button>
+              </div>
+            ) : (
+              <div className="matches-list" role="list">
+                {myMatches.map((match) => (
+                  <div key={match.id} className="match-card" role="listitem">
+                    {/* My item */}
+                    <div className="match-side">
+                      {match.myItem.img
+                        ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.myItem.img} alt={match.myItem.title} className="match-img" />
+                        : <div className="match-img-placeholder">{match.myItem.title.charAt(0)}</div>
+                      }
+                      <div className="match-item-info">
+                        <p className="match-item-label">Your item</p>
+                        <p className="trade-target-title">{match.myItem.title}</p>
+                        <p className="trade-time">{match.myItem.category}</p>
+                      </div>
+                    </div>
+
+                    <div className="match-swap-icon" aria-hidden="true">⇄</div>
+
+                    {/* Their item */}
+                    <div className="match-side">
+                      {match.theirItem.img
+                        ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.theirItem.img} alt={match.theirItem.title} className="match-img" />
+                        : <div className="match-img-placeholder">{match.theirItem.title.charAt(0)}</div>
+                      }
+                      <div className="match-item-info">
+                        <p className="match-item-label">Their item</p>
+                        <p className="trade-target-title">{match.theirItem.title}</p>
+                        <p className="trade-meta">by {match.theirItem.seller}</p>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="match-actions">
+                      <p className="trade-time">{timeAgo(match.matchedAt)}</p>
+                      <button
+                        className="list-submit-btn"
+                        style={{ padding: '8px 18px', fontSize: 13 }}
+                        onClick={() => {
+                          setTradeTarget({ id: match.theirItem.id, title: match.theirItem.title, img: match.theirItem.img, category: match.theirItem.category, seller: match.theirItem.seller, user_id: match.theirItem.ownerId });
+                          setShowOfferModal(true);
+                        }}
+                      >
+                        Offer Trade
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </main>
+        )}
+
         {/* Placeholder views */}
-        {!isSearching && activeView !== 'discover' && activeView !== 'items' && activeView !== 'trades' && (
+        {!isSearching && activeView !== 'discover' && activeView !== 'items' && activeView !== 'trades' && activeView !== 'matches' && (
           <main className="content">
             <div className="empty-state">
               <div className="empty-state-icon">
-                {({ messages: '💬', matches: '🤝', profile: '👤' } as Record<string, string>)[activeView]}
+                {({ messages: '💬', profile: '👤' } as Record<string, string>)[activeView]}
               </div>
               <p className="empty-state-text" style={{ textTransform: 'capitalize' }}>
                 {activeView} — coming soon.
