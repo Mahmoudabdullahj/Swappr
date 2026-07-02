@@ -82,29 +82,21 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Detect matches against other users' listings
-  if (!wantAnything || wantTitle || wantCategory) {
+  // Detect matches: find items the new listing's owner wants
+  if (wantAnything || wantTitle || wantCategory) {
     const { data: candidates } = await supabase
       .from('items')
-      .select('id, user_id, title, category, img, seller, want_title, want_category, want_anything')
+      .select('id, user_id, title, category, img, seller')
       .neq('user_id', userId);
 
     const newWantTitle = (wantTitle || '').toLowerCase();
     const newWantCat   = wantCategory || '';
 
     const matched = (candidates ?? []).filter(other => {
-      const otherWantTitle = (other.want_title || '').toLowerCase();
-      const otherWantCat   = other.want_category || '';
-
-      const theyWantMine = other.want_anything ||
-        (otherWantTitle && title.toLowerCase().includes(otherWantTitle)) ||
-        (otherWantCat && category === otherWantCat);
-
-      const iWantTheirs = wantAnything ||
-        (newWantTitle && other.title.toLowerCase().includes(newWantTitle)) ||
-        (newWantCat && other.category === newWantCat);
-
-      return theyWantMine && iWantTheirs;
+      if (wantAnything) return true;
+      const titleMatch = newWantTitle && other.title.toLowerCase().includes(newWantTitle);
+      const catMatch   = newWantCat && other.category === newWantCat;
+      return titleMatch || catMatch;
     });
 
     if (matched.length > 0) {

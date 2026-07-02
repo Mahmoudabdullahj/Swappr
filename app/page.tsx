@@ -712,7 +712,7 @@ export default function Page() {
                         : <div className="match-img-placeholder">{match.myItem.title.charAt(0)}</div>
                       }
                       <div className="match-item-info">
-                        <p className="match-item-label">Your item</p>
+                        <p className="match-item-label">You&apos;re offering</p>
                         <p className="trade-target-title">{match.myItem.title}</p>
                         <p className="trade-time">{match.myItem.category}</p>
                       </div>
@@ -727,7 +727,7 @@ export default function Page() {
                         : <div className="match-img-placeholder">{match.theirItem.title.charAt(0)}</div>
                       }
                       <div className="match-item-info">
-                        <p className="match-item-label">Their item</p>
+                        <p className="match-item-label">You want</p>
                         <p className="trade-target-title">{match.theirItem.title}</p>
                         <p className="trade-meta">by {match.theirItem.seller}</p>
                       </div>
