@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import type { CatalogItem, UserSession } from '@/lib/types';
 import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeOffer, type TradeTarget } from '@/lib/my-trades';
@@ -22,6 +22,35 @@ interface Match {
   matchedAt: number;
   myItem:    { id: string; title: string; img: string; category: string; };
   theirItem: { id: string; title: string; img: string; category: string; seller: string; ownerId: string; };
+}
+
+interface Conversation {
+  id: string;
+  otherUserId: string;
+  otherUserName: string;
+  itemId?: string | null;
+  itemTitle?: string | null;
+  itemImg?: string | null;
+  lastMessage?: string | null;
+  lastMessageAt?: number | null;
+  createdAt: number;
+}
+
+interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderName: string;
+  content: string;
+  createdAt: number;
+}
+
+interface ChatTarget {
+  userId: string;
+  userName: string;
+  itemId?: string;
+  itemTitle?: string;
+  itemImg?: string;
 }
 
 const AVATAR_COLORS = ['#5b2ee8', '#e8473f', '#2196f3', '#4caf50', '#ff9800', '#9c27b0'];
@@ -97,6 +126,17 @@ export default function Page() {
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Messages
+  const [conversations, setConversations]     = useState<Conversation[]>([]);
+  const [activeConvo, setActiveConvo]         = useState<Conversation | null>(null);
+  const [chatTarget, setChatTarget]           = useState<ChatTarget | null>(null);
+  const [messages, setMessages]               = useState<Message[]>([]);
+  const [chatInput, setChatInput]             = useState('');
+  const [chatSending, setChatSending]         = useState(false);
+  const [convoLoading, setConvoLoading]       = useState(false);
+  const chatBottomRef = useRef<HTMLDivElement>(null);
+  const convoRefreshKey = useRef(0);
+
   useEffect(() => {
     const supabase = createClient();
 
@@ -168,6 +208,119 @@ export default function Page() {
       })
       .catch(() => setMyMatches([]));
   }, [session, matchesRefreshKey]);
+
+  const fetchConversations = useCallback(() => {
+    if (!session) { setConversations([]); return; }
+    fetch('/api/conversations')
+      .then(r => r.json())
+      .then(data => setConversations(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [session]);
+
+  useEffect(() => { fetchConversations(); }, [fetchConversations]);
+
+  // Load messages when a conversation is opened
+  useEffect(() => {
+    if (!activeConvo) { setMessages([]); return; }
+    fetch(`/api/conversations/${activeConvo.id}/messages`)
+      .then(r => r.json())
+      .then(data => setMessages(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [activeConvo]);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Real-time: subscribe to new messages in the active conversation
+  useEffect(() => {
+    if (!activeConvo || !session) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`messages:${activeConvo.id}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${activeConvo.id}` },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          setMessages(prev => {
+            if (prev.some(m => m.id === row.id)) return prev;
+            return [...prev, {
+              id:             row.id as string,
+              conversationId: row.conversation_id as string,
+              senderId:       row.sender_id as string,
+              senderName:     row.sender_name as string,
+              content:        row.content as string,
+              createdAt:      new Date(row.created_at as string).getTime(),
+            }];
+          });
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [activeConvo, session]);
+
+  async function sendMessage(content: string, targetConvo?: Conversation) {
+    const convo = targetConvo ?? activeConvo;
+    if (!content.trim() || chatSending) return;
+    setChatSending(true);
+    try {
+      if (convo) {
+        // Send to existing conversation
+        const res = await fetch(`/api/conversations/${convo.id}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content }),
+        });
+        if (!res.ok) throw new Error();
+        fetchConversations();
+      } else if (chatTarget) {
+        // Create new conversation with first message
+        const res = await fetch('/api/conversations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetUserId:   chatTarget.userId,
+            targetUserName: chatTarget.userName,
+            itemId:         chatTarget.itemId,
+            itemTitle:      chatTarget.itemTitle,
+            itemImg:        chatTarget.itemImg,
+            message:        content,
+          }),
+        });
+        if (!res.ok) throw new Error();
+        const { conversationId } = await res.json();
+        // Load the new conversation
+        const convosRes = await fetch('/api/conversations');
+        const convos: Conversation[] = await convosRes.json();
+        setConversations(Array.isArray(convos) ? convos : []);
+        const created = convos.find(c => c.id === conversationId) ?? null;
+        setActiveConvo(created);
+        setChatTarget(null);
+      }
+      setChatInput('');
+    } catch {
+      // silent — user will see message didn't appear
+    } finally {
+      setChatSending(false);
+    }
+  }
+
+  function openChat(target: ChatTarget) {
+    // Check if a conversation already exists with this user
+    const existing = conversations.find(
+      c => c.otherUserId === target.userId
+    );
+    if (existing) {
+      setActiveConvo(existing);
+      setChatTarget(null);
+    } else {
+      setActiveConvo(null);
+      setChatTarget(target);
+    }
+    setActiveView('messages');
+  }
 
   useEffect(() => {
     if (!activeCategory) { setCategoryItems([]); return; }
@@ -368,6 +521,7 @@ export default function Page() {
           onSearchChange={handleSearch}
           onMobileSearchToggle={toggleMobileSearch}
           matchCount={myMatches.length}
+          msgCount={conversations.length}
         />
 
         {/* ── SEARCH RESULTS VIEW ── */}
@@ -763,6 +917,15 @@ export default function Page() {
                       >
                         Offer Trade
                       </button>
+                      <button
+                        className="match-msg-btn"
+                        onClick={() => openChat({ userId: match.theirItem.ownerId, userName: match.theirItem.seller, itemId: match.theirItem.id, itemTitle: match.theirItem.title, itemImg: match.theirItem.img })}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13" aria-hidden="true">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                        Message
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -771,12 +934,147 @@ export default function Page() {
           </main>
         )}
 
+        {/* ── MESSAGES VIEW ── */}
+        {!isSearching && activeView === 'messages' && (
+          <main className="content" id="view-messages" style={{ padding: 0, maxWidth: '100%', gap: 0 }}>
+
+            {/* ── Chat view (conversation open) ── */}
+            {(activeConvo || chatTarget) ? (
+              <div className="chat-view">
+                <div className="chat-header">
+                  <button
+                    className="back-btn"
+                    onClick={() => { setActiveConvo(null); setChatTarget(null); setConvoLoading(false); }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M19 12H5" /><path d="m12 19-7-7 7-7" />
+                    </svg>
+                    Back
+                  </button>
+                  <div className="chat-header-info">
+                    <div className="chat-avatar" aria-hidden="true">
+                      {(activeConvo?.otherUserName ?? chatTarget?.userName ?? '?').charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="chat-other-name">{activeConvo?.otherUserName ?? chatTarget?.userName}</p>
+                      {(activeConvo?.itemTitle ?? chatTarget?.itemTitle) && (
+                        <p className="chat-item-context">re: {activeConvo?.itemTitle ?? chatTarget?.itemTitle}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
+                  {messages.length === 0 && !chatTarget && (
+                    <div className="chat-empty">Start of your conversation</div>
+                  )}
+                  {messages.length === 0 && chatTarget && (
+                    <div className="chat-empty">Say hi to {chatTarget.userName}!</div>
+                  )}
+                  {messages.map((msg) => {
+                    const isMine = msg.senderId === session?.userId;
+                    return (
+                      <div key={msg.id} className={`chat-message${isMine ? ' sent' : ' recv'}`}>
+                        {!isMine && <span className="chat-sender-name">{msg.senderName}</span>}
+                        <div className="chat-bubble">{msg.content}</div>
+                        <span className="chat-time">{timeAgo(msg.createdAt)}</span>
+                      </div>
+                    );
+                  })}
+                  <div ref={chatBottomRef} />
+                </div>
+
+                <form
+                  className="chat-input-area"
+                  onSubmit={(e) => { e.preventDefault(); sendMessage(chatInput); }}
+                >
+                  <input
+                    className="chat-input"
+                    type="text"
+                    placeholder="Type a message…"
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <button
+                    className="chat-send-btn"
+                    type="submit"
+                    disabled={!chatInput.trim() || chatSending}
+                    aria-label="Send message"
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                  </button>
+                </form>
+              </div>
+
+            ) : (
+              /* ── Conversation list ── */
+              <div style={{ padding: '40px', maxWidth: 720, margin: '0 auto', width: '100%' }}>
+                <div className="my-items-header">
+                  <div>
+                    <h1 className="my-items-title">Messages</h1>
+                    {conversations.length > 0 && (
+                      <p className="my-items-count">{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</p>
+                    )}
+                  </div>
+                </div>
+
+                {convoLoading ? (
+                  <div className="empty-state" style={{ marginTop: 60 }}>
+                    <p className="empty-state-text">Loading…</p>
+                  </div>
+                ) : conversations.length === 0 ? (
+                  <div className="empty-state" style={{ marginTop: 60 }}>
+                    <div className="empty-state-icon">💬</div>
+                    <p className="empty-state-text">No messages yet.</p>
+                    <p className="empty-state-sub">Go to a match and tap &ldquo;Message&rdquo; to start a conversation.</p>
+                    <button className="btn-primary" style={{ marginTop: 20, display: 'inline-flex' }} onClick={() => handleViewChange('matches')}>
+                      View Matches
+                    </button>
+                  </div>
+                ) : (
+                  <div className="conversations-list" role="list">
+                    {conversations.map((convo) => (
+                      <button
+                        key={convo.id}
+                        className="conversation-item"
+                        role="listitem"
+                        onClick={() => { setActiveConvo(convo); setChatTarget(null); }}
+                      >
+                        <div className="conversation-avatar" aria-hidden="true">
+                          {convo.otherUserName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="conversation-info">
+                          <div className="conversation-row">
+                            <span className="conversation-name">{convo.otherUserName}</span>
+                            {convo.lastMessageAt && (
+                              <span className="conversation-time">{timeAgo(convo.lastMessageAt)}</span>
+                            )}
+                          </div>
+                          {convo.itemTitle && (
+                            <p className="conversation-context">re: {convo.itemTitle}</p>
+                          )}
+                          {convo.lastMessage && (
+                            <p className="conversation-last">{convo.lastMessage}</p>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </main>
+        )}
+
         {/* Placeholder views */}
-        {!isSearching && activeView !== 'discover' && activeView !== 'items' && activeView !== 'trades' && activeView !== 'matches' && (
+        {!isSearching && activeView !== 'discover' && activeView !== 'items' && activeView !== 'trades' && activeView !== 'matches' && activeView !== 'messages' && (
           <main className="content">
             <div className="empty-state">
               <div className="empty-state-icon">
-                {({ messages: '💬', profile: '👤' } as Record<string, string>)[activeView]}
+                {({ profile: '👤' } as Record<string, string>)[activeView]}
               </div>
               <p className="empty-state-text" style={{ textTransform: 'capitalize' }}>
                 {activeView} — coming soon.

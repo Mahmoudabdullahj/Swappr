@@ -15,13 +15,15 @@ interface NavigationProps {
   onSearchChange: (q: string) => void;
   onMobileSearchToggle: () => void;
   matchCount?: number;
+  msgCount?: number;
 }
 
-const NAV_LINKS: { view: View; label: string; badge?: boolean }[] = [
-  { view: 'discover', label: 'Home' },
-  { view: 'items',    label: 'My Items' },
-  { view: 'trades',   label: 'My Trades' },
-  { view: 'matches',  label: 'Matches' },
+const NAV_LINKS: { view: View; label: string }[] = [
+  { view: 'discover',  label: 'Home' },
+  { view: 'items',     label: 'My Items' },
+  { view: 'trades',    label: 'My Trades' },
+  { view: 'matches',   label: 'Matches' },
+  { view: 'messages',  label: 'Messages' },
 ];
 
 export default function Navigation({
@@ -34,6 +36,7 @@ export default function Navigation({
   onSearchChange,
   onMobileSearchToggle,
   matchCount = 0,
+  msgCount = 0,
 }: NavigationProps) {
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
@@ -61,7 +64,7 @@ export default function Navigation({
 
         {/* Nav links — center */}
         <nav className="topbar-nav" aria-label="Main navigation">
-          {NAV_LINKS.map(({ view, label, badge }) => (
+          {NAV_LINKS.map(({ view, label }) => (
             <button
               key={view}
               className={`topbar-nav-link${activeView === view ? ' active' : ''}`}
@@ -69,8 +72,8 @@ export default function Navigation({
               onClick={() => onViewChange(view)}
             >
               {label}
-              {badge && <span className="nav-badge" aria-label="Unread" />}
-              {view === 'matches' && matchCount > 0 && <span className="nav-badge" aria-label={`${matchCount} matches`} />}
+              {view === 'matches'  && matchCount > 0 && <span className="nav-badge" aria-label={`${matchCount} matches`} />}
+              {view === 'messages' && msgCount   > 0 && <span className="nav-badge" aria-label={`${msgCount} messages`} />}
             </button>
           ))}
         </nav>
@@ -174,14 +177,17 @@ export default function Navigation({
         </button>
 
         <button
-          className={`bottom-nav-item${activeView === 'trades' ? ' active' : ''}`}
-          onClick={() => onViewChange('trades')}
-          aria-current={activeView === 'trades' ? 'page' : undefined}
+          className={`bottom-nav-item${activeView === 'messages' ? ' active' : ''}`}
+          onClick={() => onViewChange('messages')}
+          aria-current={activeView === 'messages' ? 'page' : undefined}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22" aria-hidden="true">
-            <path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
-          </svg>
-          <span>My Trades</span>
+          <div style={{ position: 'relative', display: 'flex' }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            {msgCount > 0 && <span className="bottom-badge" aria-label={`${msgCount} messages`} />}
+          </div>
+          <span>Messages</span>
         </button>
 
       </nav>
