@@ -13,6 +13,9 @@ interface ItemCardProps {
   seller: string;
   dist: number;
   liked?: boolean;
+  wantTitle?: string | null;
+  wantCategory?: string | null;
+  wantAnything?: boolean;
   onOfferTrade?: () => void;
   onLike?: (liked: boolean) => void;
 }
@@ -43,6 +46,9 @@ export default function ItemCard({
   seller,
   dist,
   liked: initialLiked = false,
+  wantTitle,
+  wantCategory,
+  wantAnything,
   onOfferTrade,
   onLike,
 }: ItemCardProps) {
@@ -92,6 +98,12 @@ export default function ItemCard({
       <div className="card-info">
         <h3 className="card-title">{title}</h3>
         <p className="card-category">{category}</p>
+        {(wantAnything || wantTitle || wantCategory) && (
+          <p className="card-wants">
+            <span className="card-wants-label">Wants</span>
+            {wantAnything ? 'anything' : (wantTitle || wantCategory)}
+          </p>
+        )}
 
         {/* Distance pill */}
         <div className="card-meta">

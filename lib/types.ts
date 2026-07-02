@@ -13,6 +13,9 @@ export interface CatalogItem {
   dist: number;
   wants?: string[];
   featured?: boolean;
+  wantTitle?: string | null;
+  wantCategory?: string | null;
+  wantAnything?: boolean;
 }
 
 export interface SessionView {

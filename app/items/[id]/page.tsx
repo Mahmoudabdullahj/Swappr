@@ -78,6 +78,15 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
               <p className="item-detail-price">JD {item.price}</p>
             )}
 
+            {(item.want_anything || item.want_title || item.want_category) && (
+              <div className="item-detail-wants">
+                <p className="item-detail-wants-label">Looking for in return</p>
+                <p className="item-detail-wants-value">
+                  {item.want_anything ? 'Open to anything' : (item.want_title || item.want_category)}
+                </p>
+              </div>
+            )}
+
             <button className="btn-offer item-detail-offer-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
                 strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">

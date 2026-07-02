@@ -441,6 +441,20 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   margin-bottom: 6px;
 }
 
+.card-wants {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-wants-label {
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 4px;
+}
+
 /* Price — purple, bold (image 1) */
 .card-price {
   font-family: var(--font-display);
@@ -1905,6 +1919,27 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   color: var(--text-primary);
   line-height: 1.2;
   letter-spacing: -0.3px;
+}
+
+.item-detail-wants {
+  background: rgba(91,46,232,0.06);
+  border: 1px solid rgba(91,46,232,0.15);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.item-detail-wants-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.item-detail-wants-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .item-detail-price {

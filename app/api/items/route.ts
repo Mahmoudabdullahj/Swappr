@@ -35,6 +35,9 @@ export async function GET(request: NextRequest) {
     rating:       row.rating ?? 0,
     city:         row.city ?? '',
     dist:         row.dist ?? 0,
+    wantTitle:    row.want_title ?? null,
+    wantCategory: row.want_category ?? null,
+    wantAnything: row.want_anything ?? false,
   }));
 
   return NextResponse.json(items);
