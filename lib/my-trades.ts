@@ -4,6 +4,7 @@ export interface TradeTarget {
   category: string;
   img: string;
   seller: string;
+  user_id: string;
 }
 
 export interface TradeOffer {
@@ -15,28 +16,37 @@ export interface TradeOffer {
   targetItemTitle: string;
   targetItemImg: string;
   targetItemSeller: string;
-  status: 'pending';
+  status: 'pending' | 'accepted' | 'declined';
   ts: number;
 }
 
-const KEY = 'tx_my_trades';
-
 export const MyTrades = {
-  get(): TradeOffer[] {
-    if (typeof window === 'undefined') return [];
-    try { return JSON.parse(localStorage.getItem(KEY) ?? '[]'); }
-    catch { return []; }
+  async get(): Promise<TradeOffer[]> {
+    try {
+      const res = await fetch('/api/trades');
+      if (!res.ok) return [];
+      return res.json();
+    } catch {
+      return [];
+    }
   },
 
-  add(offer: Omit<TradeOffer, 'id' | 'ts' | 'status'>): TradeOffer {
-    const entry: TradeOffer = {
-      ...offer,
-      id: `trade_${Date.now()}`,
-      status: 'pending',
-      ts: Date.now(),
-    };
-    const current = MyTrades.get();
-    localStorage.setItem(KEY, JSON.stringify([entry, ...current]));
-    return entry;
+  async add(offer: {
+    offeredItemId: string;
+    offeredItemTitle: string;
+    offeredItemCategory: string;
+    targetItemId: string;
+    targetItemTitle: string;
+    targetItemImg: string;
+    targetItemSeller: string;
+    targetItemOwnerId: string;
+  }): Promise<TradeOffer> {
+    const res = await fetch('/api/trades', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(offer),
+    });
+    if (!res.ok) throw new Error('Failed to send trade offer');
+    return res.json();
   },
 };

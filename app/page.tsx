@@ -137,7 +137,7 @@ export default function Page() {
   }, [session, offerRefreshKey]);
 
   useEffect(() => {
-    setMyTrades(MyTrades.get());
+    MyTrades.get().then(setMyTrades).catch(() => setMyTrades([]));
   }, [tradesRefreshKey]);
 
   useEffect(() => {

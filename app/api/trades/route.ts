@@ -1,0 +1,83 @@
+import { createClient } from '@/utils/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+
+  const { data, error } = await supabase
+    .from('trade_offers')
+    .select('*')
+    .eq('sender_id', user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const trades = (data ?? []).map((row: Record<string, unknown>) => ({
+    id:                   row.id,
+    offeredItemId:        row.offered_item_id,
+    offeredItemTitle:     row.offered_item_title,
+    offeredItemCategory:  row.offered_item_category,
+    targetItemId:         row.target_item_id,
+    targetItemTitle:      row.target_item_title,
+    targetItemImg:        row.target_item_img,
+    targetItemSeller:     row.target_item_seller,
+    status:               row.status,
+    ts:                   new Date(row.created_at as string).getTime(),
+  }));
+
+  return NextResponse.json(trades);
+}
+
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+
+  const body = await request.json();
+  const {
+    offeredItemId,
+    offeredItemTitle,
+    offeredItemCategory,
+    targetItemId,
+    targetItemTitle,
+    targetItemImg,
+    targetItemSeller,
+    targetItemOwnerId,
+  } = body;
+
+  const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
+
+  const { data, error } = await supabase
+    .from('trade_offers')
+    .insert({
+      sender_id:             user.id,
+      sender_name:           senderName,
+      offered_item_id:       offeredItemId,
+      offered_item_title:    offeredItemTitle,
+      offered_item_category: offeredItemCategory,
+      target_item_id:        targetItemId,
+      target_item_title:     targetItemTitle,
+      target_item_img:       targetItemImg,
+      target_item_seller:    targetItemSeller,
+      target_item_owner_id:  targetItemOwnerId,
+    })
+    .select()
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({
+    id:                   data.id,
+    offeredItemId:        data.offered_item_id,
+    offeredItemTitle:     data.offered_item_title,
+    offeredItemCategory:  data.offered_item_category,
+    targetItemId:         data.target_item_id,
+    targetItemTitle:      data.target_item_title,
+    targetItemImg:        data.target_item_img,
+    targetItemSeller:     data.target_item_seller,
+    status:               data.status,
+    ts:                   new Date(data.created_at).getTime(),
+  }, { status: 201 });
+}

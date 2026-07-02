@@ -17,32 +17,44 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
   const [items, setItems]     = useState<MyItem[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [sent, setSent]       = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setItems(MyItems.get());
       setSelected(null);
       setSent(false);
+      setSending(false);
+      setSendError(null);
     }
   }, [open, refreshKey]);
 
-  function handleSend() {
-    if (!selected) return;
+  async function handleSend() {
+    if (!selected || sending) return;
     const offeredItem = items.find(i => i.id === selected);
-    if (offeredItem && targetItem) {
-      MyTrades.add({
-        offeredItemId: offeredItem.id,
-        offeredItemTitle: offeredItem.title,
+    if (!offeredItem || !targetItem) return;
+    setSending(true);
+    setSendError(null);
+    try {
+      await MyTrades.add({
+        offeredItemId:       offeredItem.id,
+        offeredItemTitle:    offeredItem.title,
         offeredItemCategory: offeredItem.category,
-        targetItemId: targetItem.id,
-        targetItemTitle: targetItem.title,
-        targetItemImg: targetItem.img,
-        targetItemSeller: targetItem.seller,
+        targetItemId:        targetItem.id,
+        targetItemTitle:     targetItem.title,
+        targetItemImg:       targetItem.img,
+        targetItemSeller:    targetItem.seller,
+        targetItemOwnerId:   targetItem.user_id,
       });
       onTradeSent?.();
+      setSent(true);
+      setTimeout(onClose, 1800);
+    } catch {
+      setSendError('Something went wrong. Please try again.');
+    } finally {
+      setSending(false);
     }
-    setSent(true);
-    setTimeout(onClose, 1800);
   }
 
   return (
@@ -125,6 +137,9 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
               ))}
             </div>
 
+            {sendError && (
+              <p style={{ color: '#e8473f', fontSize: 13, margin: '0 0 8px', textAlign: 'center' }}>{sendError}</p>
+            )}
             <div className="offer-actions">
               <button className="offer-list-more" onClick={onListItem}>
                 + List another item
@@ -132,13 +147,15 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
               <button
                 className="list-submit-btn"
                 onClick={handleSend}
-                disabled={!selected}
-                style={{ opacity: selected ? 1 : 0.45, cursor: selected ? 'pointer' : 'not-allowed' }}
+                disabled={!selected || sending}
+                style={{ opacity: selected && !sending ? 1 : 0.45, cursor: selected && !sending ? 'pointer' : 'not-allowed' }}
               >
-                Send Offer
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
-                  <path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
-                </svg>
+                {sending ? 'Sending…' : 'Send Offer'}
+                {!sending && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                    <path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
