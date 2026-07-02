@@ -82,6 +82,8 @@ export default function Page() {
   const [tradesRefreshKey, setTradesRefreshKey] = useState(0);
   const [myMatches, setMyMatches]           = useState<Match[]>([]);
   const [matchesRefreshKey, setMatchesRefreshKey] = useState(0);
+  const [newMatch, setNewMatch]             = useState<Match | null>(null);
+  const seenMatchIds = useRef<Set<string>>(new Set());
   const [listSkipWant, setListSkipWant]     = useState(false);
   const [discoverSubView, setDiscoverSubView] = useState<'exact-matches' | 'trending' | null>(null);
   const [myItems, setMyItems]               = useState<MyItem[]>([]);
@@ -153,7 +155,17 @@ export default function Page() {
     if (!session) { setMyMatches([]); return; }
     fetch('/api/matches')
       .then(r => r.json())
-      .then(data => setMyMatches(Array.isArray(data) ? data : []))
+      .then((data: Match[]) => {
+        if (!Array.isArray(data)) return;
+        setMyMatches(data);
+        const isFirstLoad = seenMatchIds.current.size === 0;
+        const freshMatches = data.filter(m => !seenMatchIds.current.has(m.id));
+        data.forEach(m => seenMatchIds.current.add(m.id));
+        if (!isFirstLoad && freshMatches.length > 0) {
+          setNewMatch(freshMatches[0]);
+          setShowMatchModal(true);
+        }
+      })
       .catch(() => setMyMatches([]));
   }, [session, matchesRefreshKey]);
 
@@ -289,13 +301,15 @@ export default function Page() {
           <span className="modal-emoji" aria-hidden="true">🎉</span>
           <h2 className="modal-title" id="modalTitle">You&apos;ve got a match!</h2>
           <p className="modal-sub">
-            <strong>Karim A.</strong> wants your Sony headphones and has exactly what you&apos;re looking for.
+            <strong>{newMatch?.theirItem.seller}</strong> has exactly what you&apos;re looking for.
           </p>
           <div className="modal-swap-row" aria-label="Trade preview">
             <div className="modal-item">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="modal-item-img" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80" alt="Sony WH-1000XM5" />
-              <span className="modal-item-label">Sony WH-1000XM5</span>
+              {newMatch?.myItem.img
+                ? /* eslint-disable-next-line @next/next/no-img-element */ <img className="modal-item-img" src={newMatch.myItem.img} alt={newMatch.myItem.title} />
+                : <div className="modal-item-img modal-item-placeholder">{newMatch?.myItem.title.charAt(0)}</div>
+              }
+              <span className="modal-item-label">{newMatch?.myItem.title}</span>
             </div>
             <div className="modal-swap-arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -303,18 +317,20 @@ export default function Page() {
               </svg>
             </div>
             <div className="modal-item">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="modal-item-img" src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=200&q=80" alt="Fujifilm X-T30" />
-              <span className="modal-item-label">Fujifilm X-T30</span>
+              {newMatch?.theirItem.img
+                ? /* eslint-disable-next-line @next/next/no-img-element */ <img className="modal-item-img" src={newMatch.theirItem.img} alt={newMatch.theirItem.title} />
+                : <div className="modal-item-img modal-item-placeholder">{newMatch?.theirItem.title.charAt(0)}</div>
+              }
+              <span className="modal-item-label">{newMatch?.theirItem.title}</span>
             </div>
           </div>
           <div className="modal-actions">
             <button className="btn-secondary" onClick={() => setShowMatchModal(false)}>Maybe Later</button>
-            <button className="btn-modal-primary" onClick={() => setShowMatchModal(false)}>
+            <button className="btn-modal-primary" onClick={() => { setShowMatchModal(false); handleViewChange('matches'); }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                <path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
               </svg>
-              Start Chat
+              View Match
             </button>
           </div>
         </div>

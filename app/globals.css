@@ -646,6 +646,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .modal-swap-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 28px; }
 .modal-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .modal-item-img { width: 96px; height: 96px; border-radius: var(--radius-md); object-fit: cover; border: 2px solid var(--border); }
+.modal-item-placeholder { background: rgba(91,46,232,0.08); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; }
 .modal-item-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); max-width: 100px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .modal-swap-arrow svg { width: 24px; height: 24px; color: var(--text-muted); }
 .modal-actions { display: flex; gap: 10px; justify-content: center; }
