@@ -234,7 +234,8 @@ export default function Page() {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Real-time: subscribe to new messages in the active conversation
+  // Real-time: subscribe to new messages from the OTHER person only
+  // (own messages are added optimistically on send)
   useEffect(() => {
     if (!activeConvo || !session) return;
     const supabase = createClient();
@@ -245,6 +246,7 @@ export default function Page() {
         { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${activeConvo.id}` },
         (payload) => {
           const row = payload.new as Record<string, unknown>;
+          if (row.sender_id === session.userId) return; // already shown optimistically
           setMessages(prev => {
             if (prev.some(m => m.id === row.id)) return prev;
             return [...prev, {
@@ -265,19 +267,39 @@ export default function Page() {
   async function sendMessage(content: string, targetConvo?: Conversation) {
     const convo = targetConvo ?? activeConvo;
     if (!content.trim() || chatSending) return;
-    setChatSending(true);
+
+    const text = content.trim();
+    const optimisticId = `opt-${Date.now()}`;
+    const optimistic: Message = {
+      id:             optimisticId,
+      conversationId: convo?.id ?? '',
+      senderId:       session?.userId ?? '',
+      senderName:     session?.displayName ?? '',
+      content:        text,
+      createdAt:      Date.now(),
+    };
+
+    // Show immediately
+    setChatInput('');
     setChatError(null);
+    if (convo) setMessages(prev => [...prev, optimistic]);
+    setChatSending(true);
+
     try {
       if (convo) {
         const res = await fetch(`/api/conversations/${convo.id}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content }),
+          body: JSON.stringify({ content: text }),
         });
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
+          setMessages(prev => prev.filter(m => m.id !== optimisticId));
           throw new Error(body.error || `Error ${res.status}`);
         }
+        const real = await res.json();
+        // Swap optimistic message for the confirmed one
+        setMessages(prev => prev.map(m => m.id === optimisticId ? { ...real, createdAt: real.createdAt } : m));
         fetchConversations();
       } else if (chatTarget) {
         const res = await fetch('/api/conversations', {
@@ -289,7 +311,7 @@ export default function Page() {
             itemId:         chatTarget.itemId,
             itemTitle:      chatTarget.itemTitle,
             itemImg:        chatTarget.itemImg,
-            message:        content,
+            message:        text,
           }),
         });
         if (!res.ok) {
@@ -301,10 +323,13 @@ export default function Page() {
         const convos: Conversation[] = await convosRes.json();
         setConversations(Array.isArray(convos) ? convos : []);
         const created = convos.find(c => c.id === conversationId) ?? null;
+        // Load messages for the newly created conversation
+        const msgsRes = await fetch(`/api/conversations/${conversationId}/messages`);
+        const msgs: Message[] = await msgsRes.json();
+        setMessages(Array.isArray(msgs) ? msgs : []);
         setActiveConvo(created);
         setChatTarget(null);
       }
-      setChatInput('');
     } catch (err) {
       setChatError(err instanceof Error ? err.message : 'Failed to send. Try again.');
     } finally {
