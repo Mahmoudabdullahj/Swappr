@@ -18,12 +18,14 @@ const CONDITIONS = [
 ];
 
 const STEP_TITLES: Record<string, string> = {
-  category: 'List Your Item',
-  brand:    'Brand',
-  model:    'Model',
-  specs:    'Item Specs',
-  details:  'Photos & Info',
-  wants:    'What Do You Want?',
+  category:    'List Your Item',
+  brand:       'Brand',
+  model:       'Model',
+  specs:       'Item Specs',
+  details:     'Photos & Info',
+  wants_cat:   'What Do You Want?',
+  wants_brand: 'Brand',
+  wants_model: 'Model',
 };
 
 function BackArrow() {
@@ -51,6 +53,7 @@ function CheckIcon() {
 }
 
 export default function ListItemModal({ open, onClose, onListed, skipWantStep }: ListItemModalProps) {
+  /* ── item state ── */
   const [currentStep, setCurrentStep]         = useState('category');
   const [selectedCatSlug, setSelectedCatSlug] = useState('');
   const [selectedBrand, setSelectedBrand]     = useState('');
@@ -66,15 +69,21 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
   const [description, setDescription] = useState('');
   const [dragOver, setDragOver]       = useState(false);
 
-  const [wantTitle, setWantTitle]       = useState('');
-  const [wantCategory, setWantCategory] = useState('');
-  const [wantAnything, setWantAnything] = useState(false);
+  /* ── wants state ── */
+  const [wantAnything, setWantAnything]         = useState(false);
+  const [wantCatSlug, setWantCatSlug]           = useState('');
+  const [wantBrand, setWantBrand]               = useState('');
+  const [wantModel, setWantModel]               = useState('');
+  const [wantModelSearch, setWantModelSearch]   = useState('');
 
   const [errors, setErrors]         = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cat: CategoryConfig | undefined = CATALOG.find(c => c.slug === selectedCatSlug);
+
+  /* ── derived ── */
+  const cat: CategoryConfig | undefined     = CATALOG.find(c => c.slug === selectedCatSlug);
+  const wantCat: CategoryConfig | undefined = CATALOG.find(c => c.slug === wantCatSlug);
 
   const allSteps = useMemo<string[]>(() => {
     const s: string[] = ['category'];
@@ -84,54 +93,55 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
       if (cat.specs.length > 0) s.push('specs');
     }
     s.push('details');
-    if (!skipWantStep) s.push('wants');
+    if (!skipWantStep) {
+      s.push('wants_cat');
+      if (!wantAnything && wantCatSlug) {
+        if (wantCat?.brands || wantCat?.types) s.push('wants_brand');
+        if (wantCat?.brands && wantBrand)       s.push('wants_model');
+      }
+    }
     return s;
-  }, [cat, skipWantStep]);
+  }, [cat, skipWantStep, wantAnything, wantCatSlug, wantCat, wantBrand]);
 
   const stepIndex = allSteps.indexOf(currentStep);
+
+  const brandModels      = cat?.brands?.find(b => b.name === selectedBrand)?.models ?? [];
+  const filteredModels   = modelSearch
+    ? brandModels.filter(m => m.toLowerCase().includes(modelSearch.toLowerCase()))
+    : brandModels;
+
+  const wantBrandModels   = wantCat?.brands?.find(b => b.name === wantBrand)?.models ?? [];
+  const filteredWantModels = wantModelSearch
+    ? wantBrandModels.filter(m => m.toLowerCase().includes(wantModelSearch.toLowerCase()))
+    : wantBrandModels;
 
   /* ── reset ── */
   function reset() {
     setCurrentStep('category');
-    setSelectedCatSlug('');
-    setSelectedBrand('');
-    setSelectedModel('');
-    setSpecs({});
-    setModelSearch('');
-    setImages([]);
-    previews.forEach(URL.revokeObjectURL);
-    setPreviews([]);
-    setTitle('');
-    setCondition('');
-    setPrice('');
-    setDescription('');
-    setWantTitle('');
-    setWantCategory('');
-    setWantAnything(false);
-    setErrors({});
-    setSubmitting(false);
+    setSelectedCatSlug(''); setSelectedBrand(''); setSelectedModel('');
+    setSpecs({}); setModelSearch('');
+    setImages([]); previews.forEach(URL.revokeObjectURL); setPreviews([]);
+    setTitle(''); setCondition(''); setPrice(''); setDescription('');
     setDragOver(false);
+    setWantAnything(false); setWantCatSlug(''); setWantBrand('');
+    setWantModel(''); setWantModelSearch('');
+    setErrors({}); setSubmitting(false);
   }
 
   function handleClose() { onClose(); setTimeout(reset, 300); }
 
-  /* ── step navigation ── */
+  /* ── item navigation ── */
   function handleCategorySelect(slug: string) {
     const newCat = CATALOG.find(c => c.slug === slug);
-    setSelectedCatSlug(slug);
-    setSelectedBrand('');
-    setSelectedModel('');
-    setSpecs({});
-    setTitle('');
+    setSelectedCatSlug(slug); setSelectedBrand(''); setSelectedModel('');
+    setSpecs({}); setTitle('');
     if (newCat?.brands || newCat?.types) { setCurrentStep('brand'); return; }
     if (newCat && newCat.specs.length > 0) { setCurrentStep('specs'); return; }
     setCurrentStep('details');
   }
 
   function handleBrandSelect(brand: string) {
-    setSelectedBrand(brand);
-    setSelectedModel('');
-    setModelSearch('');
+    setSelectedBrand(brand); setSelectedModel(''); setModelSearch('');
     if (cat?.brands) { setCurrentStep('model'); return; }
     if (cat && cat.specs.length > 0) { setCurrentStep('specs'); return; }
     setCurrentStep('details');
@@ -144,9 +154,34 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
     setCurrentStep('details');
   }
 
+  /* ── wants navigation ── */
+  function handleWantCatSelect(slug: string) {
+    const newCat = CATALOG.find(c => c.slug === slug);
+    setWantCatSlug(slug); setWantBrand(''); setWantModel(''); setWantModelSearch('');
+    if (newCat?.brands || newCat?.types) setCurrentStep('wants_brand');
+    // else stay on wants_cat — "List Item" button appears below grid
+  }
+
+  function handleWantBrandSelect(brand: string) {
+    setWantBrand(brand); setWantModel(''); setWantModelSearch('');
+    if (wantCat?.brands) {
+      setCurrentStep('wants_model');
+    }
+    // type-based: stay on wants_brand — "List Item" button appears
+  }
+
+  function handleWantModelToggle(model: string) {
+    setWantModel(prev => prev === model ? '' : model);
+  }
+
+  /* ── go back ── */
   function goBack() {
     const prev = allSteps[stepIndex - 1];
-    if (prev) { setErrors({}); setCurrentStep(prev); }
+    if (!prev) return;
+    setErrors({});
+    if (currentStep === 'wants_brand') { setWantBrand(''); setWantModel(''); }
+    if (currentStep === 'wants_model') { setWantModel(''); }
+    setCurrentStep(prev);
   }
 
   /* ── images ── */
@@ -175,23 +210,22 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
     if (!condition)    errs.condition = 'Condition is required';
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    if (skipWantStep) { submitListing(); } else { setCurrentStep('wants'); }
+    if (skipWantStep) { submitListing(); } else { setCurrentStep('wants_cat'); }
   }
 
-  function handleWantsSubmit() {
-    const errs: Record<string, string> = {};
-    if (!wantAnything && !wantTitle.trim())
-      errs.wantTitle = 'Please describe what you want, or choose "Open to anything"';
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
-    submitListing();
-  }
-
-  async function submitListing() {
+  async function submitListing(overrideAnything?: boolean) {
     setSubmitting(true);
     setErrors({});
     try {
       const s = Session.get();
+      const finalAnything = overrideAnything ?? wantAnything;
+
+      const computedWantTitle = finalAnything ? ''
+        : wantModel  ? `${wantBrand} ${wantModel}`
+        : wantBrand  ? wantBrand
+        : wantCat?.name || '';
+      const computedWantCat = finalAnything ? '' : (wantCat?.name || '');
+
       const fd = new FormData();
       fd.append('title',        title);
       fd.append('category',     cat?.name || 'Other');
@@ -202,9 +236,9 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
       fd.append('price',        price || '0');
       fd.append('userId',       s?.userId || 'anonymous');
       fd.append('seller',       s?.displayName || 'Anonymous');
-      fd.append('wantTitle',    wantTitle || '');
-      fd.append('wantCategory', wantCategory || '');
-      fd.append('wantAnything', wantAnything ? 'true' : 'false');
+      fd.append('wantTitle',    computedWantTitle);
+      fd.append('wantCategory', computedWantCat);
+      fd.append('wantAnything', finalAnything ? 'true' : 'false');
       if (images[0]) fd.append('image', images[0]);
 
       const res = await fetch('/api/items', { method: 'POST', body: fd });
@@ -220,11 +254,18 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
     }
   }
 
-  /* ── derived ── */
-  const brandModels = cat?.brands?.find(b => b.name === selectedBrand)?.models ?? [];
-  const filteredModels = modelSearch
-    ? brandModels.filter(m => m.toLowerCase().includes(modelSearch.toLowerCase()))
-    : brandModels;
+  /* ── shared UI pieces ── */
+  const ListItemBtn = ({ disabled }: { disabled?: boolean }) => (
+    <button className="list-submit-btn" onClick={() => submitListing()} disabled={disabled ?? submitting}
+      style={{ marginTop: 8 }}>
+      {submitting ? 'Saving…' : 'List Item'}
+      {!submitting && (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+    </button>
+  );
 
   return (
     <div
@@ -253,7 +294,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
           </button>
         </div>
 
-        {/* Step dots (shown after category is picked) */}
+        {/* Step dots */}
         {selectedCatSlug && (
           <div className="list-step-dots-bar">
             {allSteps.map((s, i) => (
@@ -271,11 +312,9 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
             <p className="list-step-hint">What are you listing?</p>
             <div className="list-cat-grid">
               {CATALOG.map(c => (
-                <button
-                  key={c.slug}
+                <button key={c.slug}
                   className={`list-cat-item${selectedCatSlug === c.slug ? ' selected' : ''}`}
-                  onClick={() => handleCategorySelect(c.slug)}
-                >
+                  onClick={() => handleCategorySelect(c.slug)}>
                   <span className="list-cat-emoji">{c.emoji}</span>
                   <span className="list-cat-name">{c.name}</span>
                 </button>
@@ -287,20 +326,14 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
         {/* ── STEP: brand / type ── */}
         {currentStep === 'brand' && (
           <div className="list-modal-body">
-            <p className="list-step-hint">
-              {cat?.brands ? 'Select a brand' : 'Select a type'}
-            </p>
+            <p className="list-step-hint">{cat?.brands ? 'Select a brand' : 'Select a type'}</p>
             <div className="list-brand-grid">
               {(cat?.brands?.map(b => b.name) ?? cat?.types ?? []).map(name => (
-                <button
-                  key={name}
+                <button key={name}
                   className={`list-brand-card${selectedBrand === name ? ' selected' : ''}`}
-                  onClick={() => handleBrandSelect(name)}
-                >
+                  onClick={() => handleBrandSelect(name)}>
                   <span>{name}</span>
-                  {selectedBrand === name && (
-                    <span className="list-brand-check"><CheckIcon /></span>
-                  )}
+                  {selectedBrand === name && <span className="list-brand-check"><CheckIcon /></span>}
                 </button>
               ))}
             </div>
@@ -312,13 +345,8 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
           <div className="list-modal-body">
             <p className="list-step-hint">{selectedBrand}</p>
             {brandModels.length > 6 && (
-              <input
-                className="list-model-search"
-                placeholder="Search models…"
-                value={modelSearch}
-                onChange={e => setModelSearch(e.target.value)}
-                autoFocus
-              />
+              <input className="list-model-search" placeholder="Search models…"
+                value={modelSearch} onChange={e => setModelSearch(e.target.value)} autoFocus />
             )}
             <div className="list-model-list">
               {filteredModels.length === 0 && (
@@ -327,11 +355,9 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 </p>
               )}
               {filteredModels.map(model => (
-                <button
-                  key={model}
+                <button key={model}
                   className={`list-model-item${selectedModel === model ? ' selected' : ''}`}
-                  onClick={() => handleModelSelect(model)}
-                >
+                  onClick={() => handleModelSelect(model)}>
                   <span>{model}</span>
                   {selectedModel === model ? <CheckIcon /> : <ChevronRight />}
                 </button>
@@ -346,9 +372,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
             {(selectedBrand || selectedModel) && (
               <div className="list-selected-summary">
                 {selectedBrand && <span>{selectedBrand}</span>}
-                {selectedModel && (
-                  <><span className="list-summary-sep">›</span><span>{selectedModel}</span></>
-                )}
+                {selectedModel && <><span className="list-summary-sep">›</span><span>{selectedModel}</span></>}
               </div>
             )}
             {cat?.specs.map(field => (
@@ -358,22 +382,15 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                   {!field.required && <span className="list-label-opt"> (optional)</span>}
                 </label>
                 {field.type === 'select' ? (
-                  <select
-                    className="list-select"
-                    value={specs[field.key] || ''}
-                    onChange={e => setSpecs(s => ({ ...s, [field.key]: e.target.value }))}
-                  >
+                  <select className="list-select" value={specs[field.key] || ''}
+                    onChange={e => setSpecs(s => ({ ...s, [field.key]: e.target.value }))}>
                     <option value="">Select…</option>
                     {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 ) : (
-                  <input
-                    className="list-input"
-                    type="text"
-                    placeholder={field.placeholder || ''}
+                  <input className="list-input" type="text" placeholder={field.placeholder || ''}
                     value={specs[field.key] || ''}
-                    onChange={e => setSpecs(s => ({ ...s, [field.key]: e.target.value }))}
-                  />
+                    onChange={e => setSpecs(s => ({ ...s, [field.key]: e.target.value }))} />
                 )}
               </div>
             ))}
@@ -389,14 +406,12 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
         {/* ── STEP: details ── */}
         {currentStep === 'details' && (
           <div className="list-modal-body">
-            {/* Image upload */}
             <div
               className={`list-upload-area${dragOver ? ' drag-over' : ''}${previews.length > 0 ? ' has-images' : ''}`}
               onClick={() => previews.length === 0 && fileInputRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}
-            >
+              onDrop={(e) => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}>
               <input ref={fileInputRef} type="file" accept="image/*" multiple hidden
                 onChange={e => { addFiles(e.target.files); e.target.value = ''; }} />
               {previews.length === 0 ? (
@@ -431,17 +446,14 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
               )}
             </div>
 
-            {/* Title */}
             <div className="list-field">
               <label className="list-label" htmlFor="listTitle">Title</label>
               <input id="listTitle" className={`list-input${errors.title ? ' error' : ''}`}
-                type="text" placeholder="e.g. Apple MacBook Pro 14&quot; M4"
-                value={title}
+                type="text" placeholder="e.g. Apple MacBook Pro 14&quot; M4" value={title}
                 onChange={e => { setTitle(e.target.value); setErrors(er => ({ ...er, title: '' })); }} />
               {errors.title && <p className="list-error" role="alert">{errors.title}</p>}
             </div>
 
-            {/* Condition */}
             <div className="list-field">
               <label className="list-label">Condition</label>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -461,7 +473,6 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
               {errors.condition && <p className="list-error" role="alert">{errors.condition}</p>}
             </div>
 
-            {/* Price */}
             <div className="list-field">
               <label className="list-label" htmlFor="listPrice">
                 Estimated value <span className="list-label-opt">(JD, optional)</span>
@@ -470,15 +481,13 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 value={price} onChange={e => setPrice(e.target.value)} />
             </div>
 
-            {/* Description */}
             <div className="list-field">
               <label className="list-label" htmlFor="listDesc">
                 Description <span className="list-label-opt">(optional)</span>
               </label>
               <textarea id="listDesc" className="list-textarea"
                 placeholder="Describe the condition, age, what's included…"
-                rows={3} value={description}
-                onChange={e => setDescription(e.target.value)} />
+                rows={3} value={description} onChange={e => setDescription(e.target.value)} />
             </div>
 
             {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
@@ -496,62 +505,109 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
           </div>
         )}
 
-        {/* ── STEP: wants ── */}
-        {currentStep === 'wants' && (
+        {/* ── STEP: wants — category ── */}
+        {currentStep === 'wants_cat' && (
           <div className="list-modal-body">
             <p className="list-step2-intro">
-              Tell us what you&apos;d like in return — we&apos;ll notify you when someone with a matching item wants yours.
+              What would you like in return? We&apos;ll notify you when a match is found.
             </p>
 
+            {/* Open to anything */}
             <button type="button"
               className={`list-anything-btn${wantAnything ? ' active' : ''}`}
-              onClick={() => setWantAnything(a => !a)}
+              onClick={() => { setWantAnything(true); submitListing(true); }}
               aria-pressed={wantAnything}>
               <span className="list-anything-check" aria-hidden="true">
-                {wantAnything
-                  ? <CheckIcon />
-                  : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                }
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+                  <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+                  <path d="M12 8v4l3 3" />
+                </svg>
               </span>
               Open to anything
             </button>
 
-            <div className={`list-field${wantAnything ? ' list-field-disabled' : ''}`}>
-              <label className="list-label" htmlFor="wantTitle">What item do you want?</label>
-              <input id="wantTitle" className={`list-input${errors.wantTitle ? ' error' : ''}`}
-                type="text" placeholder="e.g. Fujifilm X-T30, iPad Pro, Acoustic Guitar…"
-                value={wantTitle} disabled={wantAnything} autoFocus
-                onChange={e => { setWantTitle(e.target.value); setErrors(er => ({ ...er, wantTitle: '' })); }} />
-              {errors.wantTitle && <p className="list-error" role="alert">{errors.wantTitle}</p>}
+            <p className="list-step-hint" style={{ marginTop: 4 }}>Or pick a category:</p>
+
+            <div className="list-cat-grid">
+              {CATALOG.map(c => (
+                <button key={c.slug}
+                  className={`list-cat-item${wantCatSlug === c.slug ? ' selected' : ''}`}
+                  onClick={() => handleWantCatSelect(c.slug)}>
+                  <span className="list-cat-emoji">{c.emoji}</span>
+                  <span className="list-cat-name">{c.name}</span>
+                </button>
+              ))}
             </div>
 
-            <div className={`list-field${wantAnything ? ' list-field-disabled' : ''}`}>
-              <label className="list-label" htmlFor="wantCategory">
-                Category <span className="list-label-opt">(optional)</span>
-              </label>
-              <select id="wantCategory" className="list-select" value={wantCategory}
-                disabled={wantAnything}
-                onChange={e => setWantCategory(e.target.value)}>
-                <option value="">Select a category…</option>
-                {CATALOG.map(c => <option key={c.slug} value={c.name}>{c.name}</option>)}
-              </select>
-            </div>
+            {/* Show List Item only for categories with no brand/type sub-step */}
+            {wantCatSlug && !wantCat?.brands && !wantCat?.types && (
+              <>
+                {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
+                <ListItemBtn />
+              </>
+            )}
+          </div>
+        )}
 
+        {/* ── STEP: wants — brand / type ── */}
+        {currentStep === 'wants_brand' && (
+          <div className="list-modal-body">
+            <div className="list-selected-summary">
+              <span>{wantCat?.emoji} {wantCat?.name}</span>
+            </div>
+            <p className="list-step-hint">
+              {wantCat?.brands ? 'Select a brand' : 'Select a type'}
+            </p>
+            <div className="list-brand-grid">
+              {(wantCat?.brands?.map(b => b.name) ?? wantCat?.types ?? []).map(name => (
+                <button key={name}
+                  className={`list-brand-card${wantBrand === name ? ' selected' : ''}`}
+                  onClick={() => handleWantBrandSelect(name)}>
+                  <span>{name}</span>
+                  {wantBrand === name && <span className="list-brand-check"><CheckIcon /></span>}
+                </button>
+              ))}
+            </div>
+            {/* For type-based categories, show List Item after selecting a type */}
+            {wantBrand && !wantCat?.brands && (
+              <>
+                {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
+                <ListItemBtn />
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ── STEP: wants — model ── */}
+        {currentStep === 'wants_model' && (
+          <div className="list-modal-body">
+            <div className="list-selected-summary">
+              <span>{wantCat?.emoji} {wantCat?.name}</span>
+              <span className="list-summary-sep">›</span>
+              <span>{wantBrand}</span>
+            </div>
+            <p className="list-step-hint">Select a model <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>(optional)</span></p>
+            {wantBrandModels.length > 6 && (
+              <input className="list-model-search" placeholder="Search models…"
+                value={wantModelSearch} onChange={e => setWantModelSearch(e.target.value)} autoFocus />
+            )}
+            <div className="list-model-list">
+              {filteredWantModels.length === 0 && (
+                <p style={{ color: 'var(--text-secondary)', fontSize: 13, textAlign: 'center', padding: '16px 0' }}>
+                  No models match your search
+                </p>
+              )}
+              {filteredWantModels.map(model => (
+                <button key={model}
+                  className={`list-model-item${wantModel === model ? ' selected' : ''}`}
+                  onClick={() => handleWantModelToggle(model)}>
+                  <span>{model}</span>
+                  {wantModel === model ? <CheckIcon /> : <ChevronRight />}
+                </button>
+              ))}
+            </div>
             {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
-
-            <div className="list-step2-actions">
-              <button className="list-back-btn" onClick={goBack} disabled={submitting}>
-                <BackArrow /> Back
-              </button>
-              <button className="list-submit-btn" onClick={handleWantsSubmit} disabled={submitting}>
-                {submitting ? 'Saving…' : 'List Item'}
-                {!submitting && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            <ListItemBtn />
           </div>
         )}
 
