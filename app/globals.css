@@ -1308,6 +1308,120 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   .list-modal-body { padding: 18px; gap: 16px; }
 }
 
+/* Back icon button in modal header */
+.list-back-icon-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: 50%; border: none;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.list-back-icon-btn:hover { background: #ebebeb; color: var(--text-primary); }
+
+/* Step dots progress bar */
+.list-step-dots-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 7px; padding: 10px 24px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.list-step-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  border: 1.5px solid #ccc;
+  background: transparent;
+  transition: all 0.2s;
+}
+.list-step-dot.active { width: 20px; border-radius: 3px; background: var(--accent); border-color: var(--accent); }
+.list-step-dot.done   { background: #22c55e; border-color: #22c55e; }
+
+/* Step hint label */
+.list-step-hint {
+  font-size: 13px; color: var(--text-secondary);
+  margin: 0; font-weight: 500;
+}
+
+/* Category selection grid */
+.list-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.list-cat-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 6px;
+  border-radius: 12px; border: 2px solid var(--border);
+  background: transparent; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.list-cat-item:hover  { border-color: var(--accent); background: var(--accent-dim); }
+.list-cat-item.selected { border-color: var(--accent); background: var(--accent-dim); }
+.list-cat-emoji { font-size: 22px; line-height: 1; }
+.list-cat-name  { font-size: 11px; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.2; }
+
+/* Brand / type grid */
+.list-brand-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.list-brand-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 12px; border: 2px solid var(--border);
+  background: transparent; cursor: pointer;
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary); text-align: left;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  gap: 8px;
+}
+.list-brand-card:hover   { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+.list-brand-card.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+.list-brand-check { display: flex; flex-shrink: 0; }
+
+/* Model list */
+.list-model-search {
+  width: 100%; padding: 10px 14px;
+  border-radius: 10px; border: 1.5px solid var(--border);
+  background: var(--bg-card, #f7f7f7);
+  font-size: 14px; font-family: var(--font-body);
+  outline: none; box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.list-model-search:focus { border-color: var(--accent); }
+.list-model-list {
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 320px; overflow-y: auto;
+}
+.list-model-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; gap: 10px;
+  border-radius: 10px; border: 1.5px solid var(--border);
+  background: transparent; cursor: pointer;
+  font-size: 14px; color: var(--text-primary); text-align: left;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.list-model-item:hover   { border-color: var(--accent); background: var(--accent-dim); }
+.list-model-item.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+
+/* Specs summary breadcrumb */
+.list-selected-summary {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 13px; font-weight: 600; color: var(--accent);
+  padding: 8px 12px; background: var(--accent-dim);
+  border-radius: 8px;
+}
+.list-summary-sep { color: var(--text-secondary); font-weight: 400; }
+
+@media (max-width: 480px) {
+  .list-cat-grid   { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .list-brand-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .list-cat-item   { padding: 12px 4px; }
+  .list-cat-emoji  { font-size: 20px; }
+  .list-cat-name   { font-size: 10px; }
+}
+
 /* ── OFFER TRADE MODAL ───────────────────────────────────── */
 .offer-overlay {
   position: fixed;

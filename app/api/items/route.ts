@@ -51,6 +51,10 @@ export async function POST(request: NextRequest) {
   const formData  = await request.formData();
   const title        = formData.get('title') as string;
   const category     = (formData.get('category') as string) || 'Other';
+  const brand        = (formData.get('brand') as string) || null;
+  const model        = (formData.get('model') as string) || null;
+  const specsRaw     = (formData.get('specs') as string) || '{}';
+  const specs        = (() => { try { return JSON.parse(specsRaw); } catch { return {}; } })();
   const condition    = (formData.get('condition') as string) || 'good';
   const price        = parseInt((formData.get('price') as string) || '0');
   const userId       = user.id;
@@ -79,7 +83,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from('items')
-    .insert({ user_id: userId, title, category, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything })
+    .insert({ user_id: userId, title, category, brand: brand || null, model: model || null, specs: Object.keys(specs).length ? specs : null, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything })
     .select()
     .single();
 
