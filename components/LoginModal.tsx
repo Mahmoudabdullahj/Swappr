@@ -139,6 +139,14 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
             {mode === 'signin' ? 'Sign up free' : 'Sign in'}
           </button>
         </p>
+        {mode === 'signup' && (
+          <p className="login-terms" style={{ marginTop: 8 }}>
+            By signing up you agree to our{' '}
+            <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Terms of Service</a>
+            {' '}and{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Privacy Policy</a>.
+          </p>
+        )}
 
       </div>
     </div>

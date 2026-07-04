@@ -199,6 +199,10 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
           <p className="landing-footer-copy">
             &copy; 2026 Swappr &mdash; Built in Amman, for Amman.
           </p>
+          <div className="landing-footer-legal">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+          </div>
         </footer>
       )}
 
