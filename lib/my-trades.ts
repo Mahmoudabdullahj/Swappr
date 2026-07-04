@@ -79,10 +79,7 @@ export const MyTrades = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(offer),
     });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `Error ${res.status}`);
-    }
+    if (!res.ok) throw new Error('Failed to send trade offer');
     return res.json();
   },
 };

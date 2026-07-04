@@ -51,12 +51,8 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
       onTradeSent?.();
       setSent(true);
       setTimeout(onClose, 1800);
-    } catch (err) {
-      console.error('[OfferTradeModal] send error:', err);
-      const msg = err instanceof Error ? err.message
-                : typeof err === 'string' ? err
-                : JSON.stringify(err) || 'Unknown error';
-      setSendError(msg);
+    } catch {
+      setSendError('Something went wrong. Please try again.');
     } finally {
       setSending(false);
     }

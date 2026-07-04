@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/server';
-import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
@@ -7,8 +6,7 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  const db = createServiceClient();
-  const { data: likes, error } = await db
+  const { data: likes, error } = await supabase
     .from('user_likes')
     .select('item_id')
     .eq('user_id', user.id)
@@ -27,8 +25,7 @@ export async function POST(request: NextRequest) {
   const { itemId } = await request.json();
   if (!itemId) return NextResponse.json({ error: 'itemId required' }, { status: 400 });
 
-  const db = createServiceClient();
-  const { error } = await db
+  const { error } = await supabase
     .from('user_likes')
     .upsert({ user_id: user.id, item_id: itemId }, { onConflict: 'user_id,item_id' });
 
@@ -45,8 +42,7 @@ export async function DELETE(request: NextRequest) {
   const itemId = new URL(request.url).searchParams.get('itemId');
   if (!itemId) return NextResponse.json({ error: 'itemId required' }, { status: 400 });
 
-  const db = createServiceClient();
-  const { error } = await db
+  const { error } = await supabase
     .from('user_likes')
     .delete()
     .eq('user_id', user.id)

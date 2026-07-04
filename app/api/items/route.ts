@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/server';
-import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -51,7 +50,6 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  const db = createServiceClient();
 
   const formData  = await request.formData();
   const title        = formData.get('title') as string;
@@ -86,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('items')
     .insert({ user_id: userId, title, category, brand: brand || null, model: model || null, specs: Object.keys(specs).length ? specs : null, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything })
     .select()
