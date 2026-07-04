@@ -106,7 +106,7 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
             )}
 
             <Link
-              href="/"
+              href={`/?offer=${item.id}`}
               className="btn-offer item-detail-offer-btn"
               aria-label={`Offer a trade for ${item.title}`}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, textDecoration: 'none' }}

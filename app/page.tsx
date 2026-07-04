@@ -259,6 +259,23 @@ export default function Page() {
       .catch(() => setMyItems([]));
   }, [session, offerRefreshKey]);
 
+  // Auto-open offer modal when landing with ?offer=<id>
+  useEffect(() => {
+    if (!session) return;
+    const offerId = new URLSearchParams(window.location.search).get('offer');
+    if (!offerId) return;
+    window.history.replaceState({}, '', '/');
+    fetch(`/api/items?ids=${offerId}`)
+      .then(r => r.json())
+      .then((items: CatalogItem[]) => {
+        const item = items[0];
+        if (!item) return;
+        setTradeTarget({ id: item.id, title: item.title, category: item.category, img: item.img, seller: item.seller, user_id: item.user_id });
+        setShowOfferModal(true);
+      })
+      .catch(() => {});
+  }, [session]);
+
   useEffect(() => {
     MyTrades.get().then(setMyTrades).catch(() => setMyTrades([]));
     MyTrades.getReceived().then(setReceivedTrades).catch(() => setReceivedTrades([]));
