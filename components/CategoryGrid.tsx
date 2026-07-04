@@ -16,14 +16,13 @@ const CATEGORIES: Category[] = [
   { slug: 'cameras',     name: 'Cameras',       emoji: '📷' },
   { slug: 'gaming',      name: 'Gaming',        emoji: '🎮' },
   { slug: 'watches',     name: 'Smartwatches',  emoji: '⌚' },
-  { slug: 'headphones',  name: 'Headphones',    emoji: '🎧' },
+  { slug: 'cars',        name: 'Cars',          emoji: '🚗' },
   { slug: 'instruments', name: 'Instruments',   emoji: '🎸' },
   { slug: 'fashion',     name: 'Fashion',       emoji: '👟' },
   { slug: 'books',       name: 'Books',         emoji: '📚' },
   { slug: 'sports',      name: 'Sports',        emoji: '⚽' },
   { slug: 'furniture',   name: 'Furniture',     emoji: '🪑' },
   { slug: 'toys',        name: 'Toys',          emoji: '🧸' },
-  { slug: 'cars',        name: 'Cars',          emoji: '🚗' },
 ];
 
 interface CategoryGridProps {
