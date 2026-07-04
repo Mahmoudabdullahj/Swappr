@@ -128,6 +128,30 @@ export default function Page() {
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Likes / wishlist
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!session) { setLikedIds(new Set()); return; }
+    fetch('/api/likes')
+      .then(r => r.json())
+      .then((ids: string[]) => setLikedIds(new Set(Array.isArray(ids) ? ids : [])))
+      .catch(() => {});
+  }, [session]);
+
+  function handleLikeToggle(itemId: string, liked: boolean) {
+    setLikedIds(prev => {
+      const next = new Set(prev);
+      liked ? next.add(itemId) : next.delete(itemId);
+      return next;
+    });
+    if (liked) {
+      fetch('/api/likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itemId }) }).catch(() => {});
+    } else {
+      fetch(`/api/likes?itemId=${encodeURIComponent(itemId)}`, { method: 'DELETE' }).catch(() => {});
+    }
+  }
+
   // Notifications
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const unreadNotifCount = notifications.filter(n => !n.read).length;
@@ -630,7 +654,7 @@ export default function Page() {
             ) : (
               <div className="item-grid" role="list">
                 {searchResults.map((item) => (
-                  <ItemCard key={item.id} {...item} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
+                  <ItemCard key={item.id} {...item} liked={likedIds.has(item.id)} onLike={(l) => handleLikeToggle(item.id, l)} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
                 ))}
               </div>
             )}
@@ -683,6 +707,8 @@ export default function Page() {
                     img={item.img}
                     seller={item.seller}
                     dist={item.dist}
+                    liked={likedIds.has(item.id)}
+                    onLike={(l) => handleLikeToggle(item.id, l)}
                     onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }}
                   />
                 ))
@@ -731,7 +757,7 @@ export default function Page() {
               </div>
               <div className="item-grid" role="list">
                 {allFeedItems.map((item) => (
-                  <ItemCard key={item.id} {...item} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
+                  <ItemCard key={item.id} {...item} liked={likedIds.has(item.id)} onLike={(l) => handleLikeToggle(item.id, l)} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
                 ))}
               </div>
             </main>
@@ -793,6 +819,8 @@ export default function Page() {
                     session={session}
                     onOfferTrade={(item) => { setTradeTarget(item); setShowOfferModal(true); }}
                     onSeeAll={() => setDiscoverSubView('trending')}
+                    likedIds={likedIds}
+                    onLikeToggle={handleLikeToggle}
                   />
                 )}
 

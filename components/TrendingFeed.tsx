@@ -2,16 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { CatalogItem, UserSession } from '@/lib/types';
-import { Session } from '@/lib/session';
 import ItemCard from './ItemCard';
 
 interface TrendingFeedProps {
   session: UserSession | null;
   onOfferTrade?: (item: CatalogItem) => void;
   onSeeAll?: () => void;
+  likedIds?: Set<string>;
+  onLikeToggle?: (itemId: string, liked: boolean) => void;
 }
 
-export default function TrendingFeed({ session, onOfferTrade, onSeeAll }: TrendingFeedProps) {
+export default function TrendingFeed({ session, onOfferTrade, onSeeAll, likedIds, onLikeToggle }: TrendingFeedProps) {
   const [items, setItems]     = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast]     = useState<string | null>(null);
@@ -34,19 +35,9 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll }: Trendi
     toastTimer.current = setTimeout(() => setToast(null), 2400);
   }
 
-  function handleClick(item: CatalogItem) {
-    const s = Session.get();
-    if (!s) return;
-    Session.addView(s, { itemId: item.id, category: item.category, title: item.title, price: item.price });
-    showToast(`Viewed: "${item.title}"`);
-  }
-
   function handleLike(item: CatalogItem, liked: boolean) {
-    if (!liked) return;
-    const s = Session.get();
-    if (!s) return;
-    Session.addView(s, { itemId: item.id, category: item.category, title: item.title, price: item.price });
-    showToast(`Liked: "${item.title}"`);
+    onLikeToggle?.(item.id, liked);
+    showToast(liked ? `Saved: "${item.title}"` : `Removed: "${item.title}"`);
   }
 
   const heading  = 'Trending Near You';
@@ -76,23 +67,23 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll }: Trendi
             </div>
           ) : (
             items.map((item) => (
-              <div key={item.id} onClick={() => handleClick(item)}>
-                <ItemCard
-                  id={item.id}
-                  title={item.title}
-                  category={item.category}
-                  condition={item.condition}
-                  price={item.price}
-                  img={item.img}
-                  seller={item.seller}
-                  dist={item.dist}
-                  wantTitle={item.wantTitle}
-                  wantCategory={item.wantCategory}
-                  wantAnything={item.wantAnything}
-                  onOfferTrade={() => onOfferTrade?.(item)}
-                  onLike={(liked) => handleLike(item, liked)}
-                />
-              </div>
+              <ItemCard
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                category={item.category}
+                condition={item.condition}
+                price={item.price}
+                img={item.img}
+                seller={item.seller}
+                dist={item.dist}
+                wantTitle={item.wantTitle}
+                wantCategory={item.wantCategory}
+                wantAnything={item.wantAnything}
+                liked={likedIds?.has(item.id) ?? false}
+                onOfferTrade={() => onOfferTrade?.(item)}
+                onLike={(liked) => handleLike(item, liked)}
+              />
             ))
           )}
         </div>
