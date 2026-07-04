@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ItemCardProps {
   id: string;
@@ -54,6 +54,7 @@ export default function ItemCard({
 }: ItemCardProps) {
   const router = useRouter();
   const [liked, setLiked] = useState(initialLiked);
+  useEffect(() => { setLiked(initialLiked); }, [initialLiked]);
   const condKey = condition.toLowerCase();
   const condLabel = CONDITION_LABEL[condKey] ?? condition;
   const condClass = CONDITION_CLASS[condKey] ?? 'condition-good';

@@ -484,9 +484,12 @@ export default function Page() {
       .catch(() => setAllFeedItems([]));
   }, [discoverSubView]);
 
-  async function handleDeleteItem(id: string) {
-    await fetch(`/api/items/${id}`, { method: 'DELETE' });
-    setMyItems(prev => prev.filter(i => i.id !== id));
+  async function handleDeleteItem(id: string, title: string) {
+    if (!confirm(`Remove "${title}" from your listings?`)) return;
+    const prev = myItems;
+    setMyItems(items => items.filter(i => i.id !== id));
+    const res = await fetch(`/api/items/${id}`, { method: 'DELETE' });
+    if (!res.ok) setMyItems(prev);
   }
 
   function handleLogin(newSession: UserSession) {
@@ -575,6 +578,7 @@ export default function Page() {
         className={`modal-overlay${showMatchModal ? ' open' : ''}`}
         role="dialog"
         aria-modal="true"
+        aria-hidden={!showMatchModal}
         aria-labelledby="modalTitle"
         onClick={(e) => { if (e.target === e.currentTarget) setShowMatchModal(false); }}
       >
@@ -669,7 +673,7 @@ export default function Page() {
           onMobileSearchToggle={toggleMobileSearch}
           tradesCount={receivedTrades.filter(t => t.status === 'pending').length}
           matchCount={myMatches.length}
-          msgCount={conversations.length}
+          msgCount={0}
           notifCount={unreadNotifCount}
           notifications={notifications}
           onNotifOpen={markNotificationsRead}
@@ -847,7 +851,7 @@ export default function Page() {
                 )}
 
                 {/* Category grid */}
-                <CategoryGrid onSelect={(slug) => setActiveCategory(slug)} />
+                <CategoryGrid activeSlug={activeCategory} onSelect={(slug) => setActiveCategory(slug)} />
 
 
                 {/* Trending / Recommended feed (post-login) */}
@@ -943,7 +947,7 @@ export default function Page() {
                         <span className="my-item-status" aria-label="Listing status">Active</span>
                         <button
                           className="my-item-delete"
-                          onClick={() => handleDeleteItem(item.id)}
+                          onClick={() => handleDeleteItem(item.id, item.title)}
                           aria-label={`Remove ${item.title}`}
                           title="Remove listing"
                         >

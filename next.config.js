@@ -15,8 +15,8 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://rsms.me",
+      "font-src 'self' https://fonts.gstatic.com https://rsms.me",
       `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com https://i.pravatar.cc`,
       `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}`,
       "frame-ancestors 'none'",

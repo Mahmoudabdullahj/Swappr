@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
+import type { Metadata } from 'next';
 
 const CONDITION_LABEL: Record<string, string> = {
   'new': 'New', 'brand-new': 'New', 'like-new': 'Like New',
@@ -12,9 +13,19 @@ const CONDITION_CLASS: Record<string, string> = {
   'like-new': 'condition-likenew', 'good': 'condition-good', 'fair': 'condition-fair',
 };
 
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const db = createServiceClient();
+  const { data: item } = await db.from('items').select('title, category, seller').eq('id', params.id).single();
+  if (!item) return { title: 'Item not found' };
+  return {
+    title: `${item.title} — ${item.category}`,
+    description: `${item.title} listed by ${item.seller} on Swappr. No money — just fair trades.`,
+  };
+}
+
 export default async function ItemPage({ params }: { params: { id: string } }) {
-  const supabase = await createClient();
-  const { data: item } = await supabase.from('items').select('*').eq('id', params.id).single();
+  const db = createServiceClient();
+  const { data: item } = await db.from('items').select('*').eq('id', params.id).single();
 
   if (!item) notFound();
 
@@ -87,14 +98,19 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
               </div>
             )}
 
-            <button className="btn-offer item-detail-offer-btn">
+            <Link
+              href="/"
+              className="btn-offer item-detail-offer-btn"
+              aria-label={`Offer a trade for ${item.title}`}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, textDecoration: 'none' }}
+            >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
                 strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
                 <path d="M7 16V4m0 0L3 8m4-4l4 4" />
                 <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
               </svg>
               Offer Trade
-            </button>
+            </Link>
           </div>
         </div>
       </div>

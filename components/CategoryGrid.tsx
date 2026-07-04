@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Cpu,
   Laptop,
@@ -39,15 +38,13 @@ const CATEGORIES: Category[] = [
 ];
 
 interface CategoryGridProps {
-  onSelect?: (slug: string) => void;
+  activeSlug?: string | null;
+  onSelect?: (slug: string | null) => void;
 }
 
-export default function CategoryGrid({ onSelect }: CategoryGridProps) {
-  const [active, setActive] = useState<string | null>(null);
-
+export default function CategoryGrid({ activeSlug, onSelect }: CategoryGridProps) {
   function handleSelect(slug: string) {
-    setActive((prev) => (prev === slug ? null : slug));
-    onSelect?.(slug);
+    onSelect?.(activeSlug === slug ? null : slug);
   }
 
   return (
@@ -62,9 +59,9 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
         {CATEGORIES.map(({ slug, name, Icon }) => (
           <button
             key={slug}
-            className={`category-card${active === slug ? ' active' : ''}`}
+            className={`category-card${activeSlug === slug ? ' active' : ''}`}
             role="listitem"
-            aria-pressed={active === slug}
+            aria-pressed={activeSlug === slug}
             aria-label={name}
             onClick={() => handleSelect(slug)}
           >
