@@ -86,16 +86,21 @@ export async function POST(request: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('[POST /api/trades] insert error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
-  // Notify the item owner that they received a trade offer
-  await supabase.from('notifications').insert({
-    user_id:   targetItemOwnerId,
-    type:      'trade_offer',
-    title:     `${senderName} wants to trade`,
-    body:      `Offering their ${offeredItemTitle} for your ${targetItemTitle}`,
-    link_view: 'trades',
-  });
+  // Notify the item owner — use a service client so RLS doesn't block inserting for another user
+  try {
+    await supabase.from('notifications').insert({
+      user_id:   targetItemOwnerId,
+      type:      'trade_offer',
+      title:     `${senderName} wants to trade`,
+      body:      `Offering their ${offeredItemTitle} for your ${targetItemTitle}`,
+      link_view: 'trades',
+    });
+  } catch { /* notification failure is non-fatal */ }
 
   return NextResponse.json({
     id:                   data.id,

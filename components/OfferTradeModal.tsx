@@ -51,8 +51,8 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
       onTradeSent?.();
       setSent(true);
       setTimeout(onClose, 1800);
-    } catch {
-      setSendError('Something went wrong. Please try again.');
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setSending(false);
     }
