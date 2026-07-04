@@ -3,6 +3,7 @@ export interface MyItem {
   title: string;
   category: string;
   ts: number;
+  status: 'active' | 'traded';
 }
 
 const KEY = 'tx_my_items';
@@ -21,6 +22,7 @@ export const MyItems = {
       title: draft.title,
       category: draft.category || 'Other',
       ts: Date.now(),
+      status: 'active',
     };
     localStorage.setItem(KEY, JSON.stringify([item, ...MyItems.get()]));
     return item;

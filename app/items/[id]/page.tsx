@@ -89,6 +89,13 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
               <p className="item-detail-price">JD {item.price}</p>
             )}
 
+            {item.description && (
+              <div className="item-detail-desc">
+                <p className="item-detail-wants-label">Description</p>
+                <p className="item-detail-desc-text">{item.description}</p>
+              </div>
+            )}
+
             {(item.want_anything || item.want_title || item.want_category) && (
               <div className="item-detail-wants">
                 <p className="item-detail-wants-label">Looking for in return</p>

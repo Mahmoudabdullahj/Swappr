@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
     wantTitle:    row.want_title ?? null,
     wantCategory: row.want_category ?? null,
     wantAnything: row.want_anything ?? false,
+    description:  row.description ?? null,
   }));
 
   return NextResponse.json(items);
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
   const wantTitle    = (formData.get('wantTitle') as string) || null;
   const wantCategory = (formData.get('wantCategory') as string) || null;
   const wantAnything = formData.get('wantAnything') === 'true';
+  const description  = (formData.get('description') as string) || null;
   const image        = formData.get('image') as File | null;
 
   let imgUrl = '';
@@ -86,7 +88,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from('items')
-    .insert({ user_id: userId, title, category, brand: brand || null, model: model || null, specs: Object.keys(specs).length ? specs : null, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything })
+    .insert({ user_id: userId, title, category, brand: brand || null, model: model || null, specs: Object.keys(specs).length ? specs : null, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything, description: description || null })
     .select()
     .single();
 

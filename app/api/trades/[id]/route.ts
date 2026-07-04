@@ -11,8 +11,37 @@ export async function PATCH(
 
   const { id } = await params;
   const { status } = await request.json();
-  if (!['accepted', 'declined'].includes(status)) {
+  if (!['accepted', 'declined', 'completed'].includes(status)) {
     return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+  }
+
+  if (status === 'completed') {
+    // Either party can mark an accepted trade as completed
+    const { data: offer, error: fetchError } = await supabase
+      .from('trade_offers')
+      .select('*')
+      .eq('id', id)
+      .or(`sender_id.eq.${user.id},target_item_owner_id.eq.${user.id}`)
+      .single();
+
+    if (fetchError || !offer) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (offer.status !== 'accepted') return NextResponse.json({ error: 'Only accepted trades can be marked complete' }, { status: 409 });
+
+    const { error } = await supabase.from('trade_offers').update({ status: 'completed' }).eq('id', id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Notify both parties
+    const actorName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Someone';
+    const otherUserId = offer.sender_id === user.id ? offer.target_item_owner_id : offer.sender_id;
+    await supabase.from('notifications').insert({
+      user_id:   otherUserId,
+      type:      'trade_offer',
+      title:     `${actorName} marked your trade as completed!`,
+      body:      `Trade: ${offer.offered_item_title} for ${offer.target_item_title}`,
+      link_view: 'trades',
+    });
+
+    return NextResponse.json({ ok: true });
   }
 
   // Fetch offer to verify the current user is the recipient

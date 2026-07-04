@@ -107,6 +107,13 @@ export default function Page() {
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [showListModal, setShowListModal]   = useState(false);
   const [showOfferModal, setShowOfferModal] = useState(false);
+  const [showSettings, setShowSettings]     = useState(false);
+  const [settingsName, setSettingsName]     = useState('');
+  const [settingsSaving, setSettingsSaving] = useState(false);
+  const [settingsMsg, setSettingsMsg]       = useState('');
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason]       = useState('');
+  const [reportSending, setReportSending]     = useState(false);
   const [offerRefreshKey, setOfferRefreshKey] = useState(0);
   const [tradeTarget, setTradeTarget]       = useState<TradeTarget | null>(null);
   const [myTrades, setMyTrades]             = useState<TradeOffer[]>([]);
@@ -490,6 +497,71 @@ export default function Page() {
     setMyItems(items => items.filter(i => i.id !== id));
     const res = await fetch(`/api/items/${id}`, { method: 'DELETE' });
     if (!res.ok) setMyItems(prev);
+  }
+
+  async function handleMarkItemStatus(id: string, status: 'active' | 'traded') {
+    const prev = myItems;
+    setMyItems(items => items.map(i => i.id === id ? { ...i, status } : i));
+    const res = await fetch(`/api/items/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok) setMyItems(prev);
+  }
+
+  async function handleMarkTradeComplete(id: string) {
+    setMyTrades(prev => prev.map(t => t.id === id ? { ...t, status: 'completed' } : t));
+    try {
+      await MyTrades.complete(id);
+    } catch {
+      setTradesRefreshKey(k => k + 1);
+    }
+  }
+
+  async function handleReport(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reportReason.trim()) return;
+    const otherUserId = activeConvo?.otherUserId ?? chatTarget?.userId;
+    const itemId = activeConvo?.itemId ?? chatTarget?.itemId;
+    if (!otherUserId) return;
+    setReportSending(true);
+    try {
+      await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportedUserId: otherUserId, reason: reportReason, itemId }),
+      });
+    } finally {
+      setReportSending(false);
+      setShowReportModal(false);
+      setReportReason('');
+    }
+  }
+
+  async function handleSaveSettings(e: React.FormEvent) {
+    e.preventDefault();
+    if (!settingsName.trim()) return;
+    setSettingsSaving(true);
+    setSettingsMsg('');
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName: settingsName }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      if (session) {
+        const updated = { ...session, displayName: settingsName.trim() };
+        Session.save(updated);
+        setSession(updated);
+      }
+      setSettingsMsg('Saved!');
+    } catch {
+      setSettingsMsg('Failed to save. Try again.');
+    } finally {
+      setSettingsSaving(false);
+    }
   }
 
   function handleLogin(newSession: UserSession) {
@@ -944,7 +1016,21 @@ export default function Page() {
                             {timeAgo(item.ts)}
                           </p>
                         </div>
-                        <span className="my-item-status" aria-label="Listing status">Active</span>
+                        <span className={`my-item-status${item.status === 'traded' ? ' traded' : ''}`} aria-label="Listing status">
+                          {item.status === 'traded' ? 'Traded' : 'Active'}
+                        </span>
+                        {item.status === 'active' && (
+                          <button
+                            className="my-item-traded-btn"
+                            onClick={() => handleMarkItemStatus(item.id, 'traded')}
+                            aria-label={`Mark ${item.title} as traded`}
+                            title="Mark as Traded"
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          </button>
+                        )}
                         <button
                           className="my-item-delete"
                           onClick={() => handleDeleteItem(item.id, item.title)}
@@ -1026,9 +1112,19 @@ export default function Page() {
                         </p>
                         <p className="trade-time">{timeAgo(trade.ts)}</p>
                       </div>
-                      <span className={`trade-status-badge${trade.status !== 'pending' ? ` ${trade.status}` : ''}`}>
-                        {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : 'Pending'}
-                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                        <span className={`trade-status-badge${trade.status !== 'pending' ? ` ${trade.status}` : ''}`}>
+                          {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : trade.status === 'completed' ? 'Completed' : 'Pending'}
+                        </span>
+                        {trade.status === 'accepted' && (
+                          <button
+                            className="trade-complete-btn"
+                            onClick={() => handleMarkTradeComplete(trade.id)}
+                          >
+                            Mark Complete
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1076,7 +1172,7 @@ export default function Page() {
                         )}
                       </div>
                       <span className={`trade-status-badge${trade.status !== 'pending' ? ` ${trade.status}` : ''}`}>
-                        {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : 'Pending'}
+                        {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : trade.status === 'completed' ? 'Completed' : 'Pending'}
                       </span>
                     </div>
                   ))}
@@ -1197,7 +1293,45 @@ export default function Page() {
                       )}
                     </div>
                   </div>
+                  <button
+                    className="chat-report-btn"
+                    aria-label="Report user"
+                    title="Report user"
+                    onClick={() => { setReportReason(''); setShowReportModal(true); }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                      <line x1="4" y1="22" x2="4" y2="15" />
+                    </svg>
+                  </button>
                 </div>
+
+                {/* Report modal */}
+                {showReportModal && (
+                  <div className="report-modal-overlay" onClick={() => setShowReportModal(false)}>
+                    <div className="report-modal" onClick={e => e.stopPropagation()}>
+                      <h3 className="report-modal-title">Report User</h3>
+                      <form onSubmit={handleReport}>
+                        <label className="settings-label" htmlFor="report-reason">Reason</label>
+                        <textarea
+                          id="report-reason"
+                          className="report-reason-input"
+                          value={reportReason}
+                          onChange={e => setReportReason(e.target.value)}
+                          placeholder="Describe the issue…"
+                          rows={3}
+                          required
+                        />
+                        <div className="report-modal-actions">
+                          <button type="button" className="report-cancel-btn" onClick={() => setShowReportModal(false)}>Cancel</button>
+                          <button type="submit" className="report-submit-btn" disabled={reportSending || !reportReason.trim()}>
+                            {reportSending ? 'Sending…' : 'Submit Report'}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
 
                 <div className="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
                   {messages.length === 0 && !chatTarget && (
@@ -1326,7 +1460,41 @@ export default function Page() {
                   </p>
                 )}
               </div>
+              <button
+                className="profile-settings-btn"
+                aria-label="Settings"
+                onClick={() => { setSettingsName(session?.displayName || ''); setSettingsMsg(''); setShowSettings(s => !s); }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+              </button>
             </div>
+
+            {/* Settings panel */}
+            {showSettings && (
+              <div className="settings-panel">
+                <h2 className="settings-title">Settings</h2>
+                <form onSubmit={handleSaveSettings} className="settings-form">
+                  <label className="settings-label" htmlFor="settings-name">Display Name</label>
+                  <input
+                    id="settings-name"
+                    className="settings-input"
+                    value={settingsName}
+                    onChange={e => setSettingsName(e.target.value)}
+                    maxLength={40}
+                    placeholder="Your display name"
+                  />
+                  {settingsMsg && (
+                    <p className={`settings-msg${settingsMsg === 'Saved!' ? ' ok' : ' err'}`}>{settingsMsg}</p>
+                  )}
+                  <button type="submit" className="settings-save-btn" disabled={settingsSaving}>
+                    {settingsSaving ? 'Saving…' : 'Save Changes'}
+                  </button>
+                </form>
+              </div>
+            )}
 
             {/* Stats */}
             <div className="profile-stats">

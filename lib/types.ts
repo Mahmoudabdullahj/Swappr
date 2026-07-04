@@ -16,6 +16,7 @@ export interface CatalogItem {
   wantTitle?: string | null;
   wantCategory?: string | null;
   wantAnything?: boolean;
+  description?: string | null;
 }
 
 export interface SessionView {

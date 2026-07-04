@@ -33,7 +33,7 @@ export async function GET() {
 
     let query = db
       .from('items')
-      .select('id, user_id, title, category, img, seller')
+      .select('id, user_id, title, category, img, seller, want_title, want_category, want_anything')
       .neq('user_id', user.id)
       .limit(30);
 
@@ -48,6 +48,12 @@ export async function GET() {
     const { data: candidates } = await query;
 
     for (const c of candidates ?? []) {
+      // Bidirectional: their item must also want my item
+      const theyWantMine = c.want_anything
+        || (c.want_title && myItem.title.toLowerCase().includes(c.want_title.toLowerCase()))
+        || (c.want_category && c.want_category === myItem.category);
+      if (!theyWantMine) continue;
+
       const key = `${myItem.id}_${c.id}`;
       if (seen.has(key)) continue;
       seen.add(key);

@@ -239,6 +239,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
       fd.append('wantTitle',    computedWantTitle);
       fd.append('wantCategory', computedWantCat);
       fd.append('wantAnything', finalAnything ? 'true' : 'false');
+      fd.append('description', description);
       if (images[0]) fd.append('image', images[0]);
 
       const res = await fetch('/api/items', { method: 'POST', body: fd });

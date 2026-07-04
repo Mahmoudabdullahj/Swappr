@@ -9,7 +9,7 @@ export async function GET() {
 
   const { data } = await supabase
     .from('items')
-    .select('id, title, category, created_at')
+    .select('id, title, category, created_at, status')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
@@ -18,6 +18,7 @@ export async function GET() {
     title:    row.title,
     category: row.category,
     ts:       new Date(row.created_at).getTime(),
+    status:   (row.status as string) || 'active',
   }));
 
   return NextResponse.json(items);

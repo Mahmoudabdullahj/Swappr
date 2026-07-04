@@ -17,7 +17,7 @@ export interface ReceivedTradeOffer {
   targetItemId: string;
   targetItemTitle: string;
   targetItemImg: string;
-  status: 'pending' | 'accepted' | 'declined';
+  status: 'pending' | 'accepted' | 'declined' | 'completed';
   ts: number;
 }
 
@@ -30,7 +30,7 @@ export interface TradeOffer {
   targetItemTitle: string;
   targetItemImg: string;
   targetItemSeller: string;
-  status: 'pending' | 'accepted' | 'declined';
+  status: 'pending' | 'accepted' | 'declined' | 'completed';
   ts: number;
 }
 
@@ -62,6 +62,15 @@ export const MyTrades = {
       body: JSON.stringify({ status }),
     });
     if (!res.ok) throw new Error('Failed to respond to trade offer');
+  },
+
+  async complete(id: string): Promise<void> {
+    const res = await fetch(`/api/trades/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'completed' }),
+    });
+    if (!res.ok) throw new Error('Failed to mark trade as completed');
   },
 
   async add(offer: {
