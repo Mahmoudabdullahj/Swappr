@@ -9,7 +9,7 @@ interface TrendingFeedProps {
   onOfferTrade?: (item: CatalogItem) => void;
   onSeeAll?: () => void;
   likedIds?: Set<string>;
-  onLikeToggle?: (itemId: string, liked: boolean) => void;
+  onLikeToggle?: (item: CatalogItem, liked: boolean) => void;
 }
 
 export default function TrendingFeed({ session, onOfferTrade, onSeeAll, likedIds, onLikeToggle }: TrendingFeedProps) {
@@ -36,7 +36,7 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll, likedIds
   }
 
   function handleLike(item: CatalogItem, liked: boolean) {
-    onLikeToggle?.(item.id, liked);
+    onLikeToggle?.(item, liked);
     showToast(liked ? `Saved: "${item.title}"` : `Removed: "${item.title}"`);
   }
 

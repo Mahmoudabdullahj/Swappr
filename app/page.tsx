@@ -150,17 +150,18 @@ export default function Page() {
       .catch(() => setSavedLoading(false));
   }, [activeView, session]);
 
-  function handleLikeToggle(itemId: string, liked: boolean) {
+  function handleLikeToggle(item: CatalogItem, liked: boolean) {
     setLikedIds(prev => {
       const next = new Set(prev);
-      liked ? next.add(itemId) : next.delete(itemId);
+      liked ? next.add(item.id) : next.delete(item.id);
       return next;
     });
-    if (!liked) setSavedItems(prev => prev.filter(i => i.id !== itemId));
     if (liked) {
-      fetch('/api/likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itemId }) }).catch(() => {});
+      setSavedItems(prev => prev.some(i => i.id === item.id) ? prev : [item, ...prev]);
+      fetch('/api/likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itemId: item.id }) }).catch(() => {});
     } else {
-      fetch(`/api/likes?itemId=${encodeURIComponent(itemId)}`, { method: 'DELETE' }).catch(() => {});
+      setSavedItems(prev => prev.filter(i => i.id !== item.id));
+      fetch(`/api/likes?itemId=${encodeURIComponent(item.id)}`, { method: 'DELETE' }).catch(() => {});
     }
   }
 
@@ -672,7 +673,7 @@ export default function Page() {
             ) : (
               <div className="item-grid" role="list">
                 {searchResults.map((item) => (
-                  <ItemCard key={item.id} {...item} liked={likedIds.has(item.id)} onLike={(l) => handleLikeToggle(item.id, l)} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
+                  <ItemCard key={item.id} {...item} liked={likedIds.has(item.id)} onLike={(l) => handleLikeToggle(item, l)} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
                 ))}
               </div>
             )}
@@ -726,7 +727,7 @@ export default function Page() {
                     seller={item.seller}
                     dist={item.dist}
                     liked={likedIds.has(item.id)}
-                    onLike={(l) => handleLikeToggle(item.id, l)}
+                    onLike={(l) => handleLikeToggle(item, l)}
                     onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }}
                   />
                 ))
@@ -775,7 +776,7 @@ export default function Page() {
               </div>
               <div className="item-grid" role="list">
                 {allFeedItems.map((item) => (
-                  <ItemCard key={item.id} {...item} liked={likedIds.has(item.id)} onLike={(l) => handleLikeToggle(item.id, l)} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
+                  <ItemCard key={item.id} {...item} liked={likedIds.has(item.id)} onLike={(l) => handleLikeToggle(item, l)} onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }} />
                 ))}
               </div>
             </main>
@@ -1351,7 +1352,7 @@ export default function Page() {
                     key={item.id}
                     {...item}
                     liked={true}
-                    onLike={(l) => handleLikeToggle(item.id, l)}
+                    onLike={(l) => handleLikeToggle(item, l)}
                     onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }}
                   />
                 ))}
