@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -6,9 +7,10 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
+  const db = createServiceClient();
   const received = new URL(request.url).searchParams.get('received') === 'true';
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('trade_offers')
     .select('*')
     .eq(received ? 'target_item_owner_id' : 'sender_id', user.id)
@@ -55,6 +57,8 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
+  const db = createServiceClient();
+
   const body = await request.json();
   const {
     offeredItemId,
@@ -69,7 +73,7 @@ export async function POST(request: NextRequest) {
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('trade_offers')
     .insert({
       sender_id:             user.id,
@@ -91,16 +95,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Notify the item owner — use a service client so RLS doesn't block inserting for another user
-  try {
-    await supabase.from('notifications').insert({
-      user_id:   targetItemOwnerId,
-      type:      'trade_offer',
-      title:     `${senderName} wants to trade`,
-      body:      `Offering their ${offeredItemTitle} for your ${targetItemTitle}`,
-      link_view: 'trades',
-    });
-  } catch { /* notification failure is non-fatal */ }
+  // Notify the item owner
+  await db.from('notifications').insert({
+    user_id:   targetItemOwnerId,
+    type:      'trade_offer',
+    title:     `${senderName} wants to trade`,
+    body:      `Offering their ${offeredItemTitle} for your ${targetItemTitle}`,
+    link_view: 'trades',
+  });
 
   return NextResponse.json({
     id:                   data.id,
