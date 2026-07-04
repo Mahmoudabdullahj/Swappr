@@ -193,9 +193,16 @@ export default function Navigation({
 
           {/* Session indicator */}
           {session && (
-            <div className="session-indicator" aria-label={`Logged in as ${session.displayName}`}>
-              <span className="session-dot" aria-hidden="true" />
-              <span className="session-name">{session.displayName}</span>
+            <div className="session-indicator">
+              <button
+                className="session-profile-btn"
+                onClick={() => onViewChange('profile')}
+                aria-label={`View profile for ${session.displayName}`}
+                title="View profile"
+              >
+                <span className="session-dot" aria-hidden="true" />
+                <span className="session-name">{session.displayName}</span>
+              </button>
               <button className="session-logout" onClick={onLogout} aria-label="Log out" title="Log out">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -206,7 +213,7 @@ export default function Navigation({
             </div>
           )}
 
-          {/* List Item CTA — black pill */}
+          {/* List Item CTA */}
           <button className="btn-primary" onClick={(e) => { e.stopPropagation(); onListItem(); }} aria-label="List a new item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <line x1="12" y1="5" x2="12" y2="19" />

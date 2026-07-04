@@ -40,6 +40,7 @@ export interface UserSession {
   userId: string;
   displayName: string;
   loginAt: string;
+  memberSince?: string;
   views: SessionView[];
   searches: Array<{ query: string; ts: number }>;
   profile: {

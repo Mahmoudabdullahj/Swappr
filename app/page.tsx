@@ -130,6 +130,8 @@ export default function Page() {
 
   // Likes / wishlist
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [savedItems, setSavedItems] = useState<CatalogItem[]>([]);
+  const [savedLoading, setSavedLoading] = useState(false);
 
   useEffect(() => {
     if (!session) { setLikedIds(new Set()); return; }
@@ -139,12 +141,22 @@ export default function Page() {
       .catch(() => {});
   }, [session]);
 
+  useEffect(() => {
+    if (activeView !== 'profile' || !session) return;
+    setSavedLoading(true);
+    fetch('/api/likes?full=true')
+      .then(r => r.json())
+      .then(data => { setSavedItems(Array.isArray(data) ? data : []); setSavedLoading(false); })
+      .catch(() => setSavedLoading(false));
+  }, [activeView, session]);
+
   function handleLikeToggle(itemId: string, liked: boolean) {
     setLikedIds(prev => {
       const next = new Set(prev);
       liked ? next.add(itemId) : next.delete(itemId);
       return next;
     });
+    if (!liked) setSavedItems(prev => prev.filter(i => i.id !== itemId));
     if (liked) {
       fetch('/api/likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itemId }) }).catch(() => {});
     } else {
@@ -174,13 +186,16 @@ export default function Page() {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       if (s?.user) {
         const stored = Session.get();
-        const us: UserSession = stored?.userId === s.user.id ? stored : {
-          userId: s.user.id,
-          displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
-          loginAt: new Date().toISOString(),
-          views: [], searches: [],
-          profile: { topCategories: [], topKeywords: [], medianPrice: null },
-        };
+        const us: UserSession = stored?.userId === s.user.id
+          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at }
+          : {
+              userId: s.user.id,
+              displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
+              loginAt: new Date().toISOString(),
+              memberSince: s.user.created_at,
+              views: [], searches: [],
+              profile: { topCategories: [], topKeywords: [], medianPrice: null },
+            };
         Session.save(us);
         setSession(us);
         setExistingSession(us);
@@ -191,13 +206,16 @@ export default function Page() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
       if (s?.user) {
         const stored = Session.get();
-        const us: UserSession = stored?.userId === s.user.id ? stored : {
-          userId: s.user.id,
-          displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
-          loginAt: new Date().toISOString(),
-          views: [], searches: [],
-          profile: { topCategories: [], topKeywords: [], medianPrice: null },
-        };
+        const us: UserSession = stored?.userId === s.user.id
+          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at }
+          : {
+              userId: s.user.id,
+              displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
+              loginAt: new Date().toISOString(),
+              memberSince: s.user.created_at,
+              views: [], searches: [],
+              profile: { topCategories: [], topKeywords: [], medianPrice: null },
+            };
         Session.save(us);
         setSession(us);
         setLoggedIn(true);
@@ -1268,17 +1286,77 @@ export default function Page() {
           </main>
         )}
 
-        {/* Placeholder views */}
-        {!isSearching && activeView !== 'discover' && activeView !== 'items' && activeView !== 'trades' && activeView !== 'matches' && activeView !== 'messages' && (
-          <main className="content">
-            <div className="empty-state">
-              <div className="empty-state-icon">
-                {({ profile: '👤' } as Record<string, string>)[activeView]}
+        {/* ── PROFILE VIEW ── */}
+        {!isSearching && activeView === 'profile' && (
+          <main className="content" id="view-profile">
+
+            {/* Profile card */}
+            <div className="profile-card">
+              <div className="profile-avatar" aria-hidden="true">
+                {session?.displayName.charAt(0).toUpperCase()}
               </div>
-              <p className="empty-state-text" style={{ textTransform: 'capitalize' }}>
-                {activeView} — coming soon.
-              </p>
+              <div className="profile-info">
+                <h1 className="profile-name">{session?.displayName}</h1>
+                {session?.memberSince && (
+                  <p className="profile-since">
+                    Member since {new Date(session.memberSince).toLocaleDateString('en-JO', { month: 'long', year: 'numeric' })}
+                  </p>
+                )}
+              </div>
             </div>
+
+            {/* Stats */}
+            <div className="profile-stats">
+              <div className="profile-stat">
+                <span className="profile-stat-value">{myItems.length}</span>
+                <span className="profile-stat-label">Listings</span>
+              </div>
+              <div className="profile-stat">
+                <span className="profile-stat-value">{myTrades.length}</span>
+                <span className="profile-stat-label">Trades Sent</span>
+              </div>
+              <div className="profile-stat">
+                <span className="profile-stat-value">{likedIds.size}</span>
+                <span className="profile-stat-label">Saved</span>
+              </div>
+            </div>
+
+            {/* Saved items */}
+            <div className="profile-section-header">
+              <h2 className="profile-section-title">Saved Items</h2>
+              {savedItems.length > 0 && (
+                <span className="section-count">{savedItems.length} item{savedItems.length !== 1 ? 's' : ''}</span>
+              )}
+            </div>
+
+            {savedLoading ? (
+              <div className="item-grid" role="list">
+                <div className="item-card-skeleton" aria-hidden="true" />
+                <div className="item-card-skeleton" aria-hidden="true" />
+                <div className="item-card-skeleton" aria-hidden="true" />
+              </div>
+            ) : savedItems.length === 0 ? (
+              <div className="empty-state" style={{ marginTop: 32 }}>
+                <div className="empty-state-icon">🤍</div>
+                <p className="empty-state-text">No saved items yet.</p>
+                <p className="empty-state-sub">Tap the heart on any item to save it here.</p>
+                <button className="btn-primary" style={{ marginTop: 20, display: 'inline-flex' }} onClick={() => handleViewChange('discover')}>
+                  Browse Items
+                </button>
+              </div>
+            ) : (
+              <div className="item-grid" role="list">
+                {savedItems.map(item => (
+                  <ItemCard
+                    key={item.id}
+                    {...item}
+                    liked={true}
+                    onLike={(l) => handleLikeToggle(item.id, l)}
+                    onOfferTrade={() => { setTradeTarget(item); setShowOfferModal(true); }}
+                  />
+                ))}
+              </div>
+            )}
           </main>
         )}
 

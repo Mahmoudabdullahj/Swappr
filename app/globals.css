@@ -219,12 +219,25 @@ header.topbar.nav-hidden {
 .session-indicator {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 12px;
+  gap: 4px;
+  padding: 4px 4px 4px 12px;
   background: var(--bg-base);
   border: 1px solid var(--border);
   border-radius: 999px;
 }
+.session-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  border-radius: 999px;
+}
+.session-profile-btn:hover .session-name { color: var(--accent); }
 .session-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
@@ -2035,6 +2048,82 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   transition: color 0.15s;
 }
 .legal-footer-links a:hover { color: var(--fg); }
+
+/* ── Profile view ── */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 32px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+.profile-info { flex: 1; }
+.profile-name {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+.profile-since {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+.profile-stats {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+}
+.profile-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 8px;
+  border: 1px solid var(--border);
+  border-right: none;
+  background: var(--surface);
+}
+.profile-stat:first-child { border-radius: 10px 0 0 10px; }
+.profile-stat:last-child  { border-radius: 0 10px 10px 0; border-right: 1px solid var(--border); }
+.profile-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--fg);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.profile-stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.profile-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.profile-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
 
 @media (max-width: 600px) {
   .legal-header { padding: 16px 20px; }
