@@ -68,6 +68,15 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // Notify the item owner that they received a trade offer
+  await supabase.from('notifications').insert({
+    user_id:   targetItemOwnerId,
+    type:      'trade_offer',
+    title:     `${senderName} wants to trade`,
+    body:      `Offering their ${offeredItemTitle} for your ${targetItemTitle}`,
+    link_view: 'trades',
+  });
+
   return NextResponse.json({
     id:                   data.id,
     offeredItemId:        data.offered_item_id,

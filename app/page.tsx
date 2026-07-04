@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { CatalogItem, UserSession } from '@/lib/types';
+import type { CatalogItem, UserSession, AppNotification } from '@/lib/types';
 import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeOffer, type TradeTarget } from '@/lib/my-trades';
 import { Session } from '@/lib/session';
@@ -126,6 +126,10 @@ export default function Page() {
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Notifications
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const unreadNotifCount = notifications.filter(n => !n.read).length;
+
   // Messages
   const [conversations, setConversations]     = useState<Conversation[]>([]);
   const [activeConvo, setActiveConvo]         = useState<Conversation | null>(null);
@@ -209,6 +213,45 @@ export default function Page() {
       })
       .catch(() => setMyMatches([]));
   }, [session, matchesRefreshKey]);
+
+  useEffect(() => {
+    if (!session) { setNotifications([]); return; }
+    fetch('/api/notifications')
+      .then(r => r.json())
+      .then(data => setNotifications(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [session]);
+
+  useEffect(() => {
+    if (!session) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`notifications:${session.userId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${session.userId}` },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          setNotifications(prev => [{
+            id:        row.id as string,
+            type:      row.type as 'trade_offer' | 'new_message',
+            title:     row.title as string,
+            body:      (row.body as string) ?? null,
+            linkView:  (row.link_view as string) ?? null,
+            read:      false,
+            createdAt: new Date(row.created_at as string).getTime(),
+          }, ...prev]);
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [session]);
+
+  function markNotificationsRead() {
+    if (unreadNotifCount === 0) return;
+    fetch('/api/notifications', { method: 'PATCH' }).catch(() => {});
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  }
 
   const fetchConversations = useCallback(() => {
     if (!session) { setConversations([]); return; }
@@ -552,6 +595,10 @@ export default function Page() {
           onMobileSearchToggle={toggleMobileSearch}
           matchCount={myMatches.length}
           msgCount={conversations.length}
+          notifCount={unreadNotifCount}
+          notifications={notifications}
+          onNotifOpen={markNotificationsRead}
+          onNotifNavigate={(view) => handleViewChange(view as View)}
         />
 
         {/* ── SEARCH RESULTS VIEW ── */}

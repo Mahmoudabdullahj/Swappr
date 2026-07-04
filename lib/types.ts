@@ -26,6 +26,16 @@ export interface SessionView {
   ts: number;
 }
 
+export interface AppNotification {
+  id: string;
+  type: 'trade_offer' | 'new_message';
+  title: string;
+  body: string | null;
+  linkView: string | null;
+  read: boolean;
+  createdAt: number;
+}
+
 export interface UserSession {
   userId: string;
   displayName: string;

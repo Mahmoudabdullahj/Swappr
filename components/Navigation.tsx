@@ -1,7 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { UserSession } from '@/lib/types';
+import type { UserSession, AppNotification } from '@/lib/types';
+
+function notifTimeAgo(ts: number): string {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
 
 type View = 'discover' | 'items' | 'trades' | 'messages' | 'matches' | 'profile';
 
@@ -16,6 +26,10 @@ interface NavigationProps {
   onMobileSearchToggle: () => void;
   matchCount?: number;
   msgCount?: number;
+  notifCount?: number;
+  notifications?: AppNotification[];
+  onNotifOpen?: () => void;
+  onNotifNavigate?: (view: string) => void;
 }
 
 const NAV_LINKS: { view: View; label: string }[] = [
@@ -37,9 +51,26 @@ export default function Navigation({
   onMobileSearchToggle,
   matchCount = 0,
   msgCount = 0,
+  notifCount = 0,
+  notifications = [],
+  onNotifOpen,
+  onNotifNavigate,
 }: NavigationProps) {
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!notifOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [notifOpen]);
 
   useEffect(() => {
     function onScroll() {
@@ -101,6 +132,61 @@ export default function Navigation({
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
           </button>
+
+          {/* Notification bell */}
+          {session && (
+            <div className="notif-wrapper" ref={notifRef}>
+              <button
+                className="btn-icon notif-bell"
+                aria-label={notifCount > 0 ? `${notifCount} unread notifications` : 'Notifications'}
+                onClick={() => {
+                  const opening = !notifOpen;
+                  setNotifOpen(opening);
+                  if (opening) onNotifOpen?.();
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                {notifCount > 0 && (
+                  <span className="notif-badge" aria-hidden="true">
+                    {notifCount > 9 ? '9+' : notifCount}
+                  </span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <div className="notif-dropdown" role="menu" aria-label="Notifications">
+                  <div className="notif-dropdown-header">Notifications</div>
+                  {notifications.length === 0 ? (
+                    <div className="notif-empty">All caught up!</div>
+                  ) : (
+                    notifications.slice(0, 10).map(n => (
+                      <button
+                        key={n.id}
+                        className={`notif-item${n.read ? '' : ' unread'}`}
+                        role="menuitem"
+                        onClick={() => {
+                          if (n.linkView) onNotifNavigate?.(n.linkView);
+                          setNotifOpen(false);
+                        }}
+                      >
+                        <span className="notif-icon" aria-hidden="true">
+                          {n.type === 'trade_offer' ? '🔄' : '💬'}
+                        </span>
+                        <div className="notif-text">
+                          <p className="notif-title">{n.title}</p>
+                          {n.body && <p className="notif-body">{n.body}</p>}
+                          <p className="notif-time">{notifTimeAgo(n.createdAt)}</p>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Session indicator */}
           {session && (
