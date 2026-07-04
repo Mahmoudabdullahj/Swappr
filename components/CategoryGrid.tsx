@@ -23,6 +23,7 @@ const CATEGORIES: Category[] = [
   { slug: 'sports',      name: 'Sports',        emoji: '⚽' },
   { slug: 'furniture',   name: 'Furniture',     emoji: '🪑' },
   { slug: 'toys',        name: 'Toys',          emoji: '🧸' },
+  { slug: 'cars',        name: 'Cars',          emoji: '🚗' },
 ];
 
 interface CategoryGridProps {
