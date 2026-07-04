@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { createServiceClient } from '@/utils/supabase/service';
+import { createClient } from '@/utils/supabase/server';
 import type { Metadata } from 'next';
 
 const CONDITION_LABEL: Record<string, string> = {
@@ -14,8 +14,8 @@ const CONDITION_CLASS: Record<string, string> = {
 };
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const db = createServiceClient();
-  const { data: item } = await db.from('items').select('title, category, seller').eq('id', params.id).single();
+  const supabase = await createClient();
+  const { data: item } = await supabase.from('items').select('title, category, seller').eq('id', params.id).single();
   if (!item) return { title: 'Item not found' };
   return {
     title: `${item.title} — ${item.category}`,
@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 export default async function ItemPage({ params }: { params: { id: string } }) {
-  const db = createServiceClient();
-  const { data: item } = await db.from('items').select('*').eq('id', params.id).single();
+  const supabase = await createClient();
+  const { data: item } = await supabase.from('items').select('*').eq('id', params.id).single();
 
   if (!item) notFound();
 

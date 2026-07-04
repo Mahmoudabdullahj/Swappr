@@ -1,14 +1,16 @@
-import { createServiceClient } from '@/utils/supabase/service';
+import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
-  const db = createServiceClient();
+export const dynamic = 'force-dynamic';
 
-  const { count: listings } = await db
+export async function GET() {
+  const supabase = await createClient();
+
+  const { count: listings } = await supabase
     .from('items')
     .select('*', { count: 'exact', head: true });
 
-  const { data: userRows } = await db
+  const { data: userRows } = await supabase
     .from('items')
     .select('user_id');
 
