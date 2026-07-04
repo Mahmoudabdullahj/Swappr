@@ -8,11 +8,11 @@ export async function GET(request: NextRequest) {
   const search   = searchParams.get('search');
   const limit    = parseInt(searchParams.get('limit') || '20');
 
-  const db = createServiceClient();
+  const supabase = await createClient();
 
   const ids = searchParams.get('ids')?.split(',').filter(Boolean) ?? [];
 
-  let query = db
+  let query = supabase
     .from('items')
     .select('*')
     .order('created_at', { ascending: false })
