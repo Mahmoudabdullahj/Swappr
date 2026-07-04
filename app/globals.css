@@ -2124,6 +2124,23 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   font-weight: 700;
   margin: 0;
 }
+.profile-legal-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 0 16px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.profile-legal-footer a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.profile-legal-footer a:hover {
+  color: var(--foreground);
+}
 
 @media (max-width: 600px) {
   .legal-header { padding: 16px 20px; }

@@ -1374,6 +1374,12 @@ export default function Page() {
                 ))}
               </div>
             )}
+
+            <footer className="profile-legal-footer">
+              <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+              <span aria-hidden="true">·</span>
+              <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+            </footer>
           </main>
         )}
 
