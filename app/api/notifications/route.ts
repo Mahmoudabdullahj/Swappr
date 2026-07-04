@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -6,7 +7,8 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  const { data, error } = await supabase
+  const db = createServiceClient();
+  const { data, error } = await db
     .from('notifications')
     .select('*')
     .eq('user_id', user.id)
@@ -33,7 +35,8 @@ export async function PATCH() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  await supabase
+  const db = createServiceClient();
+  await db
     .from('notifications')
     .update({ read: true })
     .eq('user_id', user.id)

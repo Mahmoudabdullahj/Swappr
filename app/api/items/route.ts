@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -7,11 +8,11 @@ export async function GET(request: NextRequest) {
   const search   = searchParams.get('search');
   const limit    = parseInt(searchParams.get('limit') || '20');
 
-  const supabase = await createClient();
+  const db = createServiceClient();
 
   const ids = searchParams.get('ids')?.split(',').filter(Boolean) ?? [];
 
-  let query = supabase
+  let query = db
     .from('items')
     .select('*')
     .order('created_at', { ascending: false })
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  const db = createServiceClient();
 
   const formData  = await request.formData();
   const title        = formData.get('title') as string;
@@ -84,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('items')
     .insert({ user_id: userId, title, category, brand: brand || null, model: model || null, specs: Object.keys(specs).length ? specs : null, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything })
     .select()

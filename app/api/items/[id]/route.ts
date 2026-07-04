@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -7,7 +8,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
 
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  const { error } = await supabase
+  const db = createServiceClient();
+  const { error } = await db
     .from('items')
     .delete()
     .eq('id', params.id)

@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -6,8 +7,10 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
+  const db = createServiceClient();
+
   // Get the current user's items that have wants defined
-  const { data: myItems, error: myErr } = await supabase
+  const { data: myItems, error: myErr } = await db
     .from('items')
     .select('id, title, category, img, want_title, want_category, want_anything')
     .eq('user_id', user.id);
@@ -28,7 +31,7 @@ export async function GET() {
     const { want_title, want_category, want_anything } = myItem;
     if (!want_title && !want_category && !want_anything) continue;
 
-    let query = supabase
+    let query = db
       .from('items')
       .select('id, user_id, title, category, img, seller')
       .neq('user_id', user.id)

@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(
@@ -15,8 +16,9 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
   }
 
-  // Fetch offer to verify the current user is the recipient
-  const { data: offer, error: fetchError } = await supabase
+  const db = createServiceClient();
+
+  const { data: offer, error: fetchError } = await db
     .from('trade_offers')
     .select('*')
     .eq('id', id)
@@ -26,16 +28,15 @@ export async function PATCH(
   if (fetchError || !offer) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   if (offer.status !== 'pending') return NextResponse.json({ error: 'Already responded' }, { status: 409 });
 
-  const { error } = await supabase
+  const { error } = await db
     .from('trade_offers')
     .update({ status })
     .eq('id', id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Notify the sender
   const responderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Someone';
-  await supabase.from('notifications').insert({
+  await db.from('notifications').insert({
     user_id:   offer.sender_id,
     type:      'trade_offer',
     title:     status === 'accepted'

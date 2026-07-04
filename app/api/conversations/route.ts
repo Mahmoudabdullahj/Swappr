@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
@@ -6,7 +7,8 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  const { data, error } = await supabase
+  const db = createServiceClient();
+  const { data, error } = await db
     .from('conversations')
     .select('*')
     .or(`user_a_id.eq.${user.id},user_b_id.eq.${user.id}`)
@@ -46,9 +48,9 @@ export async function POST(request: NextRequest) {
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
   const msgText = message.trim();
+  const db = createServiceClient();
 
-  // Check if conversation already exists between these two users
-  const { data: existing } = await supabase
+  const { data: existing } = await db
     .from('conversations')
     .select('id')
     .or(
@@ -61,13 +63,12 @@ export async function POST(request: NextRequest) {
 
   if (existing?.id) {
     convoId = existing.id as string;
-    // Update last_message
-    await supabase
+    await db
       .from('conversations')
       .update({ last_message: msgText, last_message_at: new Date().toISOString() })
       .eq('id', convoId);
   } else {
-    const { data: newConvo, error: createErr } = await supabase
+    const { data: newConvo, error: createErr } = await db
       .from('conversations')
       .insert({
         user_a_id:    user.id,
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
     convoId = newConvo.id as string;
   }
 
-  const { error: msgErr } = await supabase
+  const { error: msgErr } = await db
     .from('messages')
     .insert({
       conversation_id: convoId,

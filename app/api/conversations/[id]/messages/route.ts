@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -10,8 +11,9 @@ export async function GET(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  // Verify the user is a participant
-  const { data: convo } = await supabase
+  const db = createServiceClient();
+
+  const { data: convo } = await db
     .from('conversations')
     .select('id')
     .eq('id', id)
@@ -20,7 +22,7 @@ export async function GET(
 
   if (!convo) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('messages')
     .select('*')
     .eq('conversation_id', id)
@@ -49,8 +51,9 @@ export async function POST(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-  // Verify participant
-  const { data: convo } = await supabase
+  const db = createServiceClient();
+
+  const { data: convo } = await db
     .from('conversations')
     .select('id')
     .eq('id', id)
@@ -65,7 +68,7 @@ export async function POST(
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('messages')
     .insert({ conversation_id: id, sender_id: user.id, sender_name: senderName, content })
     .select()
@@ -73,7 +76,7 @@ export async function POST(
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  await supabase
+  await db
     .from('conversations')
     .update({ last_message: content, last_message_at: new Date().toISOString() })
     .eq('id', id);

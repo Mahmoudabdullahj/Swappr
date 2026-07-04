@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -6,9 +7,10 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
+  const db = createServiceClient();
   const received = new URL(request.url).searchParams.get('received') === 'true';
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('trade_offers')
     .select('*')
     .eq(received ? 'target_item_owner_id' : 'sender_id', user.id)
@@ -52,8 +54,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (!user) {
+    console.error('[POST /api/trades] auth failed:', authError?.message);
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
 
   const body = await request.json();
   const {
@@ -69,7 +74,9 @@ export async function POST(request: NextRequest) {
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
 
-  const { data, error } = await supabase
+  const db = createServiceClient();
+
+  const { data, error } = await db
     .from('trade_offers')
     .insert({
       sender_id:             user.id,
@@ -86,10 +93,12 @@ export async function POST(request: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('[POST /api/trades] insert error:', error.code, error.message, error.details);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
-  // Notify the item owner that they received a trade offer
-  await supabase.from('notifications').insert({
+  await db.from('notifications').insert({
     user_id:   targetItemOwnerId,
     type:      'trade_offer',
     title:     `${senderName} wants to trade`,
