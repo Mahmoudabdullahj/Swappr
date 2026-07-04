@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { CatalogItem, UserSession, AppNotification } from '@/lib/types';
 import type { MyItem } from '@/lib/my-items';
-import { MyTrades, type TradeOffer, type TradeTarget } from '@/lib/my-trades';
+import { MyTrades, type TradeOffer, type ReceivedTradeOffer, type TradeTarget } from '@/lib/my-trades';
 import { Session } from '@/lib/session';
 import { createClient } from '@/utils/supabase/client';
 import LandingPage from '@/components/LandingPage';
@@ -108,6 +108,8 @@ export default function Page() {
   const [offerRefreshKey, setOfferRefreshKey] = useState(0);
   const [tradeTarget, setTradeTarget]       = useState<TradeTarget | null>(null);
   const [myTrades, setMyTrades]             = useState<TradeOffer[]>([]);
+  const [receivedTrades, setReceivedTrades] = useState<ReceivedTradeOffer[]>([]);
+  const [tradesTab, setTradesTab]           = useState<'sent' | 'received'>('sent');
   const [tradesRefreshKey, setTradesRefreshKey] = useState(0);
   const [myMatches, setMyMatches]           = useState<Match[]>([]);
   const [matchesRefreshKey, setMatchesRefreshKey] = useState(0);
@@ -194,7 +196,18 @@ export default function Page() {
 
   useEffect(() => {
     MyTrades.get().then(setMyTrades).catch(() => setMyTrades([]));
+    MyTrades.getReceived().then(setReceivedTrades).catch(() => setReceivedTrades([]));
   }, [tradesRefreshKey]);
+
+  async function handleTradeResponse(id: string, status: 'accepted' | 'declined') {
+    setReceivedTrades(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+    try {
+      await MyTrades.respond(id, status);
+    } catch {
+      // Revert optimistic update on failure
+      setTradesRefreshKey(k => k + 1);
+    }
+  }
 
   useEffect(() => {
     if (!session) { setMyMatches([]); return; }
@@ -593,6 +606,7 @@ export default function Page() {
           searchQuery={searchQuery}
           onSearchChange={handleSearch}
           onMobileSearchToggle={toggleMobileSearch}
+          tradesCount={receivedTrades.filter(t => t.status === 'pending').length}
           matchCount={myMatches.length}
           msgCount={conversations.length}
           notifCount={unreadNotifCount}
@@ -890,40 +904,115 @@ export default function Page() {
             <div className="my-items-header">
               <div>
                 <h1 className="my-items-title">My Trades</h1>
-                {myTrades.length > 0 && (
-                  <p className="my-items-count">{myTrades.length} offer{myTrades.length !== 1 ? 's' : ''} sent</p>
-                )}
               </div>
             </div>
 
-            {myTrades.length === 0 ? (
-              <div className="empty-state" style={{ marginTop: 60 }}>
-                <div className="empty-state-icon">🔄</div>
-                <p className="empty-state-text">You haven&apos;t sent any trade offers yet.</p>
-                <p className="empty-state-sub">Browse items and click &ldquo;Offer Trade&rdquo; to get started.</p>
-                <button className="btn-primary" style={{ marginTop: 20, display: 'inline-flex' }} onClick={() => handleViewChange('discover')}>
-                  Browse Items
-                </button>
-              </div>
-            ) : (
-              <div className="trades-list" role="list">
-                {myTrades.map((trade) => (
-                  <div key={trade.id} className="trade-card" role="listitem">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className="trade-target-img" src={trade.targetItemImg} alt={trade.targetItemTitle} />
-                    <div className="trade-info">
-                      <p className="trade-target-title">{trade.targetItemTitle}</p>
-                      <p className="trade-meta">
-                        <span>by {trade.targetItemSeller}</span>
-                        <span className="my-item-dot" aria-hidden="true">·</span>
-                        <span>you offered <strong>{trade.offeredItemTitle}</strong></span>
-                      </p>
-                      <p className="trade-time">{timeAgo(trade.ts)}</p>
+            {/* Sent / Received tabs */}
+            <div className="trades-tabs" role="tablist">
+              <button
+                className={`trades-tab${tradesTab === 'sent' ? ' active' : ''}`}
+                role="tab"
+                aria-selected={tradesTab === 'sent'}
+                onClick={() => setTradesTab('sent')}
+              >
+                Sent
+                {myTrades.length > 0 && <span className="filter-chip-count">{myTrades.length}</span>}
+              </button>
+              <button
+                className={`trades-tab${tradesTab === 'received' ? ' active' : ''}`}
+                role="tab"
+                aria-selected={tradesTab === 'received'}
+                onClick={() => setTradesTab('received')}
+              >
+                Received
+                {receivedTrades.filter(t => t.status === 'pending').length > 0 && (
+                  <span className="filter-chip-count pending">{receivedTrades.filter(t => t.status === 'pending').length}</span>
+                )}
+              </button>
+            </div>
+
+            {/* Sent tab */}
+            {tradesTab === 'sent' && (
+              myTrades.length === 0 ? (
+                <div className="empty-state" style={{ marginTop: 60 }}>
+                  <div className="empty-state-icon">🔄</div>
+                  <p className="empty-state-text">You haven&apos;t sent any trade offers yet.</p>
+                  <p className="empty-state-sub">Browse items and click &ldquo;Offer Trade&rdquo; to get started.</p>
+                  <button className="btn-primary" style={{ marginTop: 20, display: 'inline-flex' }} onClick={() => handleViewChange('discover')}>
+                    Browse Items
+                  </button>
+                </div>
+              ) : (
+                <div className="trades-list" role="list">
+                  {myTrades.map((trade) => (
+                    <div key={trade.id} className="trade-card" role="listitem">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img className="trade-target-img" src={trade.targetItemImg} alt={trade.targetItemTitle} />
+                      <div className="trade-info">
+                        <p className="trade-target-title">{trade.targetItemTitle}</p>
+                        <p className="trade-meta">
+                          <span>by {trade.targetItemSeller}</span>
+                          <span className="my-item-dot" aria-hidden="true">·</span>
+                          <span>you offered <strong>{trade.offeredItemTitle}</strong></span>
+                        </p>
+                        <p className="trade-time">{timeAgo(trade.ts)}</p>
+                      </div>
+                      <span className={`trade-status-badge${trade.status !== 'pending' ? ` ${trade.status}` : ''}`}>
+                        {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : 'Pending'}
+                      </span>
                     </div>
-                    <span className="trade-status-badge">Pending</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )
+            )}
+
+            {/* Received tab */}
+            {tradesTab === 'received' && (
+              receivedTrades.length === 0 ? (
+                <div className="empty-state" style={{ marginTop: 60 }}>
+                  <div className="empty-state-icon">📬</div>
+                  <p className="empty-state-text">No incoming trade offers yet.</p>
+                  <p className="empty-state-sub">When someone offers to trade with you, it will appear here.</p>
+                </div>
+              ) : (
+                <div className="trades-list" role="list">
+                  {receivedTrades.map((trade) => (
+                    <div key={trade.id} className="trade-card received-trade-card" role="listitem">
+                      <div className="received-trade-avatar" aria-hidden="true">
+                        {trade.senderName.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="trade-info">
+                        <p className="trade-target-title">{trade.senderName}</p>
+                        <p className="trade-meta">
+                          <span>offering <strong>{trade.offeredItemTitle}</strong></span>
+                          <span className="my-item-dot" aria-hidden="true">·</span>
+                          <span>for your <strong>{trade.targetItemTitle}</strong></span>
+                        </p>
+                        <p className="trade-time">{timeAgo(trade.ts)}</p>
+                        {trade.status === 'pending' && (
+                          <div className="trade-respond-btns">
+                            <button
+                              className="trade-accept-btn"
+                              onClick={() => handleTradeResponse(trade.id, 'accepted')}
+                            >
+                              Accept
+                            </button>
+                            <button
+                              className="trade-decline-btn"
+                              onClick={() => handleTradeResponse(trade.id, 'declined')}
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <span className={`trade-status-badge${trade.status !== 'pending' ? ` ${trade.status}` : ''}`}>
+                        {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : 'Pending'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )
             )}
           </main>
         )}

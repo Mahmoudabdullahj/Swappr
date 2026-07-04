@@ -2422,6 +2422,92 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
+.trade-status-badge.accepted {
+  background: rgba(34,197,94,0.12);
+  color: #16a34a;
+}
+.trade-status-badge.declined {
+  background: rgba(232,71,63,0.1);
+  color: #e8473f;
+}
+
+/* Trades tabs */
+.trades-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.trades-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.trades-tab:hover { color: var(--fg); }
+.trades-tab.active {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+.filter-chip-count.pending {
+  background: #e8473f;
+  color: #fff;
+}
+
+/* Received trade card */
+.received-trade-card { align-items: flex-start; }
+.received-trade-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.trade-respond-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.trade-accept-btn {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  background: #16a34a;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.trade-accept-btn:hover { opacity: 0.85; }
+.trade-decline-btn {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.trade-decline-btn:hover { background: var(--surface-raised); color: var(--fg); }
 
 @media (max-width: 640px) {
   .trade-card { padding: 12px; gap: 10px; }

@@ -7,6 +7,20 @@ export interface TradeTarget {
   user_id: string;
 }
 
+export interface ReceivedTradeOffer {
+  id: string;
+  senderId: string;
+  senderName: string;
+  offeredItemId: string;
+  offeredItemTitle: string;
+  offeredItemCategory: string;
+  targetItemId: string;
+  targetItemTitle: string;
+  targetItemImg: string;
+  status: 'pending' | 'accepted' | 'declined';
+  ts: number;
+}
+
 export interface TradeOffer {
   id: string;
   offeredItemId: string;
@@ -29,6 +43,25 @@ export const MyTrades = {
     } catch {
       return [];
     }
+  },
+
+  async getReceived(): Promise<ReceivedTradeOffer[]> {
+    try {
+      const res = await fetch('/api/trades?received=true');
+      if (!res.ok) return [];
+      return res.json();
+    } catch {
+      return [];
+    }
+  },
+
+  async respond(id: string, status: 'accepted' | 'declined'): Promise<void> {
+    const res = await fetch(`/api/trades/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok) throw new Error('Failed to respond to trade offer');
   },
 
   async add(offer: {

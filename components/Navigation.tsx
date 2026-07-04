@@ -26,6 +26,7 @@ interface NavigationProps {
   onMobileSearchToggle: () => void;
   matchCount?: number;
   msgCount?: number;
+  tradesCount?: number;
   notifCount?: number;
   notifications?: AppNotification[];
   onNotifOpen?: () => void;
@@ -51,6 +52,7 @@ export default function Navigation({
   onMobileSearchToggle,
   matchCount = 0,
   msgCount = 0,
+  tradesCount = 0,
   notifCount = 0,
   notifications = [],
   onNotifOpen,
@@ -103,8 +105,9 @@ export default function Navigation({
               onClick={() => onViewChange(view)}
             >
               {label}
-              {view === 'matches'  && matchCount > 0 && <span className="nav-badge" aria-label={`${matchCount} matches`} />}
-              {view === 'messages' && msgCount   > 0 && <span className="nav-badge" aria-label={`${msgCount} messages`} />}
+              {view === 'trades'   && tradesCount > 0 && <span className="nav-badge" aria-label={`${tradesCount} pending offers`} />}
+              {view === 'matches'  && matchCount  > 0 && <span className="nav-badge" aria-label={`${matchCount} matches`} />}
+              {view === 'messages' && msgCount    > 0 && <span className="nav-badge" aria-label={`${msgCount} messages`} />}
             </button>
           ))}
         </nav>
