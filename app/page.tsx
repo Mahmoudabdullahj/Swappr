@@ -142,13 +142,14 @@ export default function Page() {
   }, [session]);
 
   useEffect(() => {
-    if (activeView !== 'profile' || !session) return;
+    if (!session || likedIds.size === 0) { setSavedItems([]); return; }
+    const ids = Array.from(likedIds).join(',');
     setSavedLoading(true);
-    fetch('/api/likes?full=true')
+    fetch(`/api/items?ids=${encodeURIComponent(ids)}`)
       .then(r => r.json())
       .then(data => { setSavedItems(Array.isArray(data) ? data : []); setSavedLoading(false); })
       .catch(() => setSavedLoading(false));
-  }, [activeView, session]);
+  }, [likedIds, session]);
 
   function handleLikeToggle(item: CatalogItem, liked: boolean) {
     setLikedIds(prev => {

@@ -9,14 +9,17 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
+  const ids = searchParams.get('ids')?.split(',').filter(Boolean) ?? [];
+
   let query = supabase
     .from('items')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(limit);
+    .limit(ids.length > 0 ? 100 : limit);
 
-  if (category) query = query.eq('category', category);
-  if (search)   query = query.ilike('title', `%${search}%`);
+  if (ids.length > 0) query = query.in('id', ids);
+  if (category)       query = query.eq('category', category);
+  if (search)         query = query.ilike('title', `%${search}%`);
 
   const { data, error } = await query;
 
