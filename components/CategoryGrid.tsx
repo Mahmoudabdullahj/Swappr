@@ -1,28 +1,41 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  Cpu,
+  Laptop,
+  Camera,
+  Gamepad2,
+  Watch,
+  Car,
+  Guitar,
+  Shirt,
+  BookOpen,
+  Dumbbell,
+  Sofa,
+  Puzzle,
+  type LucideIcon,
+} from 'lucide-react';
 
 interface Category {
   slug: string;
   name: string;
-  emoji: string;
-  /** Drop your own image into /public/images/categories/ and set this path */
-  imgSrc?: string;
+  Icon: LucideIcon;
 }
 
 const CATEGORIES: Category[] = [
-  { slug: 'electronics', name: 'Electronics',  emoji: '📱' },
-  { slug: 'laptops',     name: 'Laptops',       emoji: '💻' },
-  { slug: 'cameras',     name: 'Cameras',       emoji: '📷' },
-  { slug: 'gaming',      name: 'Gaming',        emoji: '🎮' },
-  { slug: 'watches',     name: 'Smartwatches',  emoji: '⌚' },
-  { slug: 'cars',        name: 'Cars',          emoji: '🚗' },
-  { slug: 'instruments', name: 'Instruments',   emoji: '🎸' },
-  { slug: 'fashion',     name: 'Fashion',       emoji: '👟' },
-  { slug: 'books',       name: 'Books',         emoji: '📚' },
-  { slug: 'sports',      name: 'Sports',        emoji: '⚽' },
-  { slug: 'furniture',   name: 'Furniture',     emoji: '🪑' },
-  { slug: 'toys',        name: 'Toys',          emoji: '🧸' },
+  { slug: 'electronics', name: 'Electronics',  Icon: Cpu       },
+  { slug: 'laptops',     name: 'Laptops',       Icon: Laptop    },
+  { slug: 'cameras',     name: 'Cameras',       Icon: Camera    },
+  { slug: 'gaming',      name: 'Gaming',        Icon: Gamepad2  },
+  { slug: 'watches',     name: 'Smartwatches',  Icon: Watch     },
+  { slug: 'cars',        name: 'Cars',          Icon: Car       },
+  { slug: 'instruments', name: 'Instruments',   Icon: Guitar    },
+  { slug: 'fashion',     name: 'Fashion',       Icon: Shirt     },
+  { slug: 'books',       name: 'Books',         Icon: BookOpen  },
+  { slug: 'sports',      name: 'Sports',        Icon: Dumbbell  },
+  { slug: 'furniture',   name: 'Furniture',     Icon: Sofa      },
+  { slug: 'toys',        name: 'Toys',          Icon: Puzzle    },
 ];
 
 interface CategoryGridProps {
@@ -46,30 +59,19 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
       </header>
 
       <div className="category-grid" role="list">
-        {CATEGORIES.map((cat) => (
+        {CATEGORIES.map(({ slug, name, Icon }) => (
           <button
-            key={cat.slug}
-            className={`category-card${active === cat.slug ? ' active' : ''}`}
+            key={slug}
+            className={`category-card${active === slug ? ' active' : ''}`}
             role="listitem"
-            aria-pressed={active === cat.slug}
-            aria-label={cat.name}
-            onClick={() => handleSelect(cat.slug)}
+            aria-pressed={active === slug}
+            aria-label={name}
+            onClick={() => handleSelect(slug)}
           >
-            {cat.imgSrc ? (
-              /* Replace emoji with a real image once assets are in /public/images/categories/ */
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={cat.imgSrc}
-                alt={cat.name}
-                className="category-icon"
-                width={52}
-                height={52}
-                style={{ objectFit: 'contain' }}
-              />
-            ) : (
-              <span className="category-icon" aria-hidden="true">{cat.emoji}</span>
-            )}
-            <span className="category-name">{cat.name}</span>
+            <span className="category-icon" aria-hidden="true">
+              <Icon size={28} strokeWidth={1.5} />
+            </span>
+            <span className="category-name">{name}</span>
           </button>
         ))}
       </div>

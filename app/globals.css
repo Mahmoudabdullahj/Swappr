@@ -334,9 +334,17 @@ main.content {
   background: var(--accent-dim);
 }
 .category-icon {
-  font-size: 40px;
-  line-height: 1;
-  /* placeholder area — replace with <img> pointing to /images/categories/ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+.category-card:hover .category-icon,
+.category-card.active .category-icon {
+  color: var(--accent);
 }
 .category-name {
   font-size: 13px;
@@ -858,7 +866,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   .section-title { font-size: 18px; }
 
   .category-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .category-icon { font-size: 30px; }
+  .category-icon { width: 36px; height: 36px; }
   .category-name { font-size: 11px; }
   .category-card { padding: 14px 8px; gap: 8px; }
 
