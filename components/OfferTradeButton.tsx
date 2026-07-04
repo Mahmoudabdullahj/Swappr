@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import type { MyItem } from '@/lib/my-items';
 import OfferTradeModal from './OfferTradeModal';
 import ListItemModal from './ListItemModal';
 
@@ -19,6 +20,14 @@ export default function OfferTradeButton({ item }: Props) {
   const [showOffer, setShowOffer]   = useState(false);
   const [showList, setShowList]     = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [myItems, setMyItems]       = useState<MyItem[]>([]);
+
+  useEffect(() => {
+    fetch('/api/items/mine')
+      .then(r => r.json())
+      .then(data => setMyItems(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [refreshKey]);
 
   return (
     <>
@@ -42,6 +51,7 @@ export default function OfferTradeButton({ item }: Props) {
         onListItem={() => { setShowOffer(false); setShowList(true); }}
         refreshKey={refreshKey}
         targetItem={{ id: item.id, title: item.title, category: item.category, img: item.img, seller: item.seller, user_id: item.user_id }}
+        myItems={myItems}
       />
 
       <ListItemModal
