@@ -128,33 +128,45 @@ export default function Page() {
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Likes / wishlist
-  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  // Likes / wishlist — seed from localStorage for instant restore on refresh
+  const [likedIds, setLikedIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem('swappr_liked_ids');
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
   const [savedItems, setSavedItems] = useState<CatalogItem[]>([]);
   const [savedLoading, setSavedLoading] = useState(false);
 
+  // Sync with DB when session loads — authoritative source of truth
   useEffect(() => {
-    if (!session) { setLikedIds(new Set()); return; }
+    if (!session) return;
     fetch('/api/likes')
       .then(r => r.json())
-      .then((ids: string[]) => setLikedIds(new Set(Array.isArray(ids) ? ids : [])))
+      .then((ids: string[]) => {
+        if (!Array.isArray(ids)) return;
+        setLikedIds(new Set(ids));
+        localStorage.setItem('swappr_liked_ids', JSON.stringify(ids));
+      })
       .catch(() => {});
   }, [session]);
 
+  // Load full item objects whenever liked IDs change (no auth needed)
   useEffect(() => {
-    if (!session || likedIds.size === 0) { setSavedItems([]); return; }
+    if (likedIds.size === 0) { setSavedItems([]); return; }
     const ids = Array.from(likedIds).join(',');
     setSavedLoading(true);
     fetch(`/api/items?ids=${encodeURIComponent(ids)}`)
       .then(r => r.json())
       .then(data => { setSavedItems(Array.isArray(data) ? data : []); setSavedLoading(false); })
       .catch(() => setSavedLoading(false));
-  }, [likedIds, session]);
+  }, [likedIds]);
 
   function handleLikeToggle(item: CatalogItem, liked: boolean) {
     setLikedIds(prev => {
       const next = new Set(prev);
       liked ? next.add(item.id) : next.delete(item.id);
+      localStorage.setItem('swappr_liked_ids', JSON.stringify([...next]));
       return next;
     });
     if (liked) {
@@ -486,9 +498,12 @@ export default function Page() {
     const supabase = createClient();
     await supabase.auth.signOut();
     Session.destroy();
+    localStorage.removeItem('swappr_liked_ids');
     setSession(null);
     setLoggedIn(false);
     setExistingSession(null);
+    setLikedIds(new Set());
+    setSavedItems([]);
     setBannerVisible(true);
   }
 
