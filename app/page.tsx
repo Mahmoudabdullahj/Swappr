@@ -1236,7 +1236,7 @@ export default function Page() {
                     <div className="match-side">
                       {match.myItem.img
                         ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.myItem.img} alt={match.myItem.title} className="match-img" />
-                        : <div className="match-img-placeholder">{match.myItem.title.charAt(0)}</div>
+                        : (() => { const Icon = CATEGORY_ICONS[match.myItem.category] ?? CATEGORY_ICONS['Other']; return <div className="match-img-placeholder"><Icon size={24} strokeWidth={1.5} /></div>; })()
                       }
                       <div className="match-item-info">
                         <p className="match-item-label">You&apos;re offering</p>
@@ -1251,7 +1251,7 @@ export default function Page() {
                     <div className="match-side">
                       {match.theirItem.img
                         ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.theirItem.img} alt={match.theirItem.title} className="match-img" />
-                        : <div className="match-img-placeholder">{match.theirItem.title.charAt(0)}</div>
+                        : (() => { const Icon = CATEGORY_ICONS[match.theirItem.category] ?? CATEGORY_ICONS['Other']; return <div className="match-img-placeholder"><Icon size={24} strokeWidth={1.5} /></div>; })()
                       }
                       <div className="match-item-info">
                         <p className="match-item-label">You want</p>
