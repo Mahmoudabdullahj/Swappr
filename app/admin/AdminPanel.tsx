@@ -52,7 +52,7 @@ export default function AdminPanel() {
   };
 
   return (
-    <div style={{ maxWidth: 860, margin: '0 auto', padding: '28px 16px 88px' }}>
+    <div style={{ maxWidth: 860, margin: '0 auto', padding: '28px 16px 120px' }}>
       <div className="my-items-header" style={{ marginBottom: 20 }}>
         <div>
           <h1 className="my-items-title">Admin Panel</h1>
