@@ -23,7 +23,7 @@ export default function TermsPage() {
         <p>These Terms of Service (&ldquo;Terms&rdquo;) govern your use of Swaparr. By creating an account or using the platform, you agree to these Terms. If you do not agree, please do not use Swaparr.</p>
 
         <h2>1. What Swaparr Is</h2>
-        <p>Swaparr is a platform that lets people in Amman, Jordan list items they own and arrange direct, in-person trades with other users. <strong>No money changes hands through Swaparr</strong> — all transactions are barter only. We are a marketplace, not a party to any trade.</p>
+        <p>Swaparr is a platform that lets people in Amman, Jordan list items they own and arrange direct, in-person trades with other users. <strong>No money changes hands through Swaparr.</strong> All transactions are barter only. We are a marketplace, not a party to any trade.</p>
 
         <h2>2. Eligibility</h2>
         <p>You must be at least 13 years old to use Swaparr. By registering, you confirm that you meet this requirement.</p>
@@ -89,7 +89,7 @@ export default function TermsPage() {
       </main>
 
       <footer className="legal-footer">
-        <p>&copy; 2026 Swaparr &mdash; Built in Amman, for Amman.</p>
+        <p>&copy; 2026 Swaparr. Built in Amman, for Amman.</p>
         <div className="legal-footer-links">
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms of Service</Link>

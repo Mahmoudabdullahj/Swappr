@@ -44,15 +44,15 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
           Get what you need.
         </h1>
         <p className="landing-sub">
-          Swaparr is a local barter marketplace. No money changes hands —
-          just fair, direct trades between people near you.
+          Swaparr is a local barter marketplace. No money changes hands,
+          just fair direct trades between people near you.
         </p>
 
         {/* CTAs — only shown when not yet logged in */}
         {!loggedIn && (
           <div className="landing-hero-actions">
             <button className="landing-cta-primary" onClick={onGetStarted}>
-              Start trading — it&apos;s free
+              Start trading, it&apos;s free
             </button>
             <a className="landing-cta-ghost" href="#how-it-works">
               See how it works ↓
@@ -99,7 +99,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
               <h3 className="landing-step-title">Get matched</h3>
               <p className="landing-step-body">
                 Our algorithm finds people who want what you have and have
-                what you want — both sides win, or we don&apos;t surface the match.
+                what you want. Both sides win, or we don&apos;t surface the match.
               </p>
             </div>
             <div className="landing-step-arrow">→</div>
@@ -128,7 +128,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
               <h3 className="landing-feature-title">No cash required</h3>
               <p className="landing-feature-body">
                 Everything runs on trade value, not money. You don&apos;t need a
-                wallet — just something worth offering.
+                wallet, just something worth offering.
               </p>
             </div>
             <div className="landing-feature">
@@ -155,15 +155,15 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <div className="landing-feature">
               <h3 className="landing-feature-title">Zero fees, ever</h3>
               <p className="landing-feature-body">
-                We don&apos;t take a cut of your trade. Swaparr is free to use —
+                We don&apos;t take a cut of your trade. Swaparr is free to use,
                 today and permanently.
               </p>
             </div>
             <div className="landing-feature">
               <h3 className="landing-feature-title">Any category</h3>
               <p className="landing-feature-body">
-                Electronics, cameras, instruments, fashion, books, furniture —
-                if it has value, it can be traded.
+                Electronics, cameras, instruments, fashion, books, furniture.
+                If it has value, it can be traded.
               </p>
             </div>
           </div>
@@ -196,7 +196,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <span className="logo-wordmark" style={{ fontSize: 15 }}>Swaparr</span>
           </span>
           <p className="landing-footer-copy">
-            &copy; 2026 Swaparr &mdash; Built in Amman, for Amman.
+            &copy; 2026 Swaparr. Built in Amman, for Amman.
           </p>
           <div className="landing-footer-legal">
             <a href="/privacy">Privacy Policy</a>

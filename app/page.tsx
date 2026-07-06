@@ -1223,7 +1223,7 @@ export default function Page() {
               <div className="empty-state" style={{ marginTop: 60 }}>
                 <div className="empty-state-icon">🤝</div>
                 <p className="empty-state-text">No matches yet.</p>
-                <p className="empty-state-sub">List an item and tell us what you want — we&apos;ll find someone listing exactly that who also wants what you have.</p>
+                <p className="empty-state-sub">List an item and tell us what you want. We&apos;ll find someone listing exactly that who also wants what you have.</p>
                 <button className="btn-primary" style={{ marginTop: 20, display: 'inline-flex' }} onClick={() => setShowListModal(true)}>
                   List an Item
                 </button>

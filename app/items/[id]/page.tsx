@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const { data: item } = await supabase.from('items').select('title, category, seller').eq('id', params.id).single();
   if (!item) return { title: 'Item not found' };
   return {
-    title: `${item.title} — ${item.category}`,
-    description: `${item.title} listed by ${item.seller} on Swaparr. No money — just fair trades.`,
+    title: `${item.title} | ${item.category}`,
+    description: `${item.title} listed by ${item.seller} on Swaparr. No money, just fair trades.`,
   };
 }
 
