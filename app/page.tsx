@@ -833,7 +833,6 @@ export default function Page() {
                     title={item.title}
                     category={item.category}
                     condition={item.condition}
-                    price={item.price}
                     img={item.img}
                     seller={item.seller}
                     dist={item.dist}

@@ -86,9 +86,6 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            {item.price > 0 && (
-              <p className="item-detail-price">JD {item.price}</p>
-            )}
 
             {item.description && (
               <div className="item-detail-desc">

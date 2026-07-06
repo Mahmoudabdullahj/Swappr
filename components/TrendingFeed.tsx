@@ -73,7 +73,6 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll, likedIds
                 title={item.title}
                 category={item.category}
                 condition={item.condition}
-                price={item.price}
                 img={item.img}
                 seller={item.seller}
                 dist={item.dist}

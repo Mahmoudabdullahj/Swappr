@@ -8,7 +8,6 @@ interface ItemCardProps {
   title: string;
   category: string;
   condition: string;
-  price: number;
   img: string;
   seller: string;
   dist: number;

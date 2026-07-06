@@ -65,7 +65,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
   const [previews, setPreviews]       = useState<string[]>([]);
   const [title, setTitle]             = useState('');
   const [condition, setCondition]     = useState('');
-  const [price, setPrice]             = useState('');
+
   const [description, setDescription] = useState('');
   const [dragOver, setDragOver]       = useState(false);
 
@@ -121,7 +121,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
     setSelectedCatSlug(''); setSelectedBrand(''); setSelectedModel('');
     setSpecs({}); setModelSearch('');
     setImages([]); previews.forEach(URL.revokeObjectURL); setPreviews([]);
-    setTitle(''); setCondition(''); setPrice(''); setDescription('');
+    setTitle(''); setCondition(''); setDescription('');
     setDragOver(false);
     setWantAnything(false); setWantCatSlug(''); setWantBrand('');
     setWantModel(''); setWantModelSearch('');
@@ -233,7 +233,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
       fd.append('model',        selectedModel || '');
       fd.append('specs',        JSON.stringify(specs));
       fd.append('condition',    condition || 'good');
-      fd.append('price',        price || '0');
+      fd.append('price',        '0');
       fd.append('userId',       s?.userId || 'anonymous');
       fd.append('seller',       s?.displayName || 'Anonymous');
       fd.append('wantTitle',    computedWantTitle);
@@ -474,13 +474,6 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
               {errors.condition && <p className="list-error" role="alert">{errors.condition}</p>}
             </div>
 
-            <div className="list-field">
-              <label className="list-label" htmlFor="listPrice">
-                Estimated value <span className="list-label-opt">(JD, optional)</span>
-              </label>
-              <input id="listPrice" className="list-input" type="number" min="0" placeholder="e.g. 150"
-                value={price} onChange={e => setPrice(e.target.value)} />
-            </div>
 
             <div className="list-field">
               <label className="list-label" htmlFor="listDesc">
