@@ -5,6 +5,7 @@ export interface SpecField {
   options?: string[];
   required?: boolean;
   placeholder?: string;
+  brands?: string[]; // if set, only show this field when selectedBrand is in this list
 }
 
 export interface BrandEntry {
@@ -102,9 +103,9 @@ export const CATALOG: CategoryConfig[] = [
       { name: 'Gaming Accessories', models: ['Gaming Headset', 'Gaming Mouse', 'Gaming Keyboard', 'Gaming Monitor', 'Gaming Chair', 'Racing Wheel', 'VR Headset', 'Other'] },
     ],
     specs: [
-      { key: 'storage', label: 'Storage', type: 'select', options: ['N/A', '250GB', '500GB', '1TB', '2TB'] },
+      { key: 'storage', label: 'Storage', type: 'select', options: ['N/A', '250GB', '500GB', '1TB', '2TB'], brands: ['Sony (PlayStation)', 'Microsoft (Xbox)', 'Nintendo'] },
       { key: 'color', label: 'Color', type: 'select', options: ['Black', 'White', 'Red', 'Blue', 'Purple', 'Gold', 'Other'] },
-      { key: 'bundle', label: "What's Included", type: 'select', options: ['Console Only', 'Console + 1 Controller', 'Console + 2 Controllers', 'Console + Game(s)', 'Full Bundle'] },
+      { key: 'bundle', label: "What's Included", type: 'select', options: ['Console Only', 'Console + 1 Controller', 'Console + 2 Controllers', 'Console + Game(s)', 'Full Bundle'], brands: ['Sony (PlayStation)', 'Microsoft (Xbox)', 'Nintendo'] },
     ],
   },
   {

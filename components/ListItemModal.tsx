@@ -376,7 +376,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 {selectedModel && <><span className="list-summary-sep">›</span><span>{selectedModel}</span></>}
               </div>
             )}
-            {cat?.specs.map(field => (
+            {cat?.specs.filter(field => !field.brands || field.brands.includes(selectedBrand)).map(field => (
               <div key={field.key} className="list-field">
                 <label className="list-label">
                   {field.label}
