@@ -28,7 +28,7 @@ export const CATALOG: CategoryConfig[] = [
     name: 'Phones',
     emoji: '📱',
     brands: [
-      { name: 'Apple', models: ['iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16', 'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14', 'iPhone 13 Pro Max', 'iPhone 13 Pro', 'iPhone 13', 'iPhone 12 Pro Max', 'iPhone 12', 'iPhone 11', 'iPhone SE (3rd gen)'] },
+      { name: 'Apple', models: ['iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17 Air', 'iPhone 17', 'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16', 'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14', 'iPhone 13 Pro Max', 'iPhone 13 Pro', 'iPhone 13', 'iPhone 12 Pro Max', 'iPhone 12', 'iPhone 11', 'iPhone SE (3rd gen)'] },
       { name: 'Samsung', models: ['Galaxy S25 Ultra', 'Galaxy S25+', 'Galaxy S25', 'Galaxy S24 Ultra', 'Galaxy S24+', 'Galaxy S24', 'Galaxy S23 Ultra', 'Galaxy S23', 'Galaxy A55', 'Galaxy A35', 'Galaxy A25', 'Galaxy A15', 'Galaxy Z Fold 6', 'Galaxy Z Flip 6'] },
       { name: 'Huawei', models: ['Pura 70 Pro+', 'Pura 70 Pro', 'Mate 60 Pro', 'Nova 12 Pro', 'Nova 11 Pro', 'P60 Pro'] },
       { name: 'Xiaomi', models: ['Xiaomi 14 Ultra', 'Xiaomi 14 Pro', 'Xiaomi 14', 'Redmi Note 13 Pro+', 'Redmi Note 13 Pro', 'Redmi Note 13', 'Poco X6 Pro', 'Poco F6', 'Poco M6 Pro'] },
