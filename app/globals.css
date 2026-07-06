@@ -2519,9 +2519,9 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   object-fit: cover;
   background: var(--color-surface-raised);
 }
-.my-item-avatar--emoji {
+.my-item-avatar--icon {
   background: var(--color-surface-raised);
-  font-weight: 400;
+  color: var(--color-text-secondary);
 }
 
 .my-item-info {

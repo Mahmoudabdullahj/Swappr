@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { CatalogItem, UserSession, AppNotification } from '@/lib/types';
-import { CATALOG } from '@/lib/item-catalog';
+import { CATEGORY_ICONS } from '@/lib/category-icons';
 import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeOffer, type ReceivedTradeOffer, type TradeTarget } from '@/lib/my-trades';
 import { Session } from '@/lib/session';
@@ -1025,14 +1025,14 @@ export default function Page() {
                             alt=""
                             aria-hidden="true"
                           />
-                        ) : (
-                          <div
-                            className="my-item-avatar my-item-avatar--emoji"
-                            aria-hidden="true"
-                          >
-                            {CATALOG.find(c => c.name === item.category)?.emoji ?? '📦'}
-                          </div>
-                        )}
+                        ) : (() => {
+                          const Icon = CATEGORY_ICONS[item.category] ?? CATEGORY_ICONS['Other'];
+                          return (
+                            <div className="my-item-avatar my-item-avatar--icon" aria-hidden="true">
+                              <Icon size={22} strokeWidth={1.5} />
+                            </div>
+                          );
+                        })()}
                         <div className="my-item-info">
                           <p className="my-item-title">{item.title}</p>
                           <p className="my-item-meta">

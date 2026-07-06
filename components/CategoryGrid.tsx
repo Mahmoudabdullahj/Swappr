@@ -1,20 +1,6 @@
 'use client';
 
-import {
-  Cpu,
-  Laptop,
-  Camera,
-  Gamepad2,
-  Watch,
-  Car,
-  Guitar,
-  Shirt,
-  BookOpen,
-  Dumbbell,
-  Sofa,
-  Puzzle,
-  type LucideIcon,
-} from 'lucide-react';
+import { CATEGORY_ICONS, type LucideIcon } from '@/lib/category-icons';
 
 interface Category {
   slug: string;
@@ -23,18 +9,18 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { slug: 'electronics', name: 'Electronics',  Icon: Cpu       },
-  { slug: 'laptops',     name: 'Laptops',       Icon: Laptop    },
-  { slug: 'cameras',     name: 'Cameras',       Icon: Camera    },
-  { slug: 'gaming',      name: 'Gaming',        Icon: Gamepad2  },
-  { slug: 'watches',     name: 'Smartwatches',  Icon: Watch     },
-  { slug: 'cars',        name: 'Cars',          Icon: Car       },
-  { slug: 'instruments', name: 'Instruments',   Icon: Guitar    },
-  { slug: 'fashion',     name: 'Fashion',       Icon: Shirt     },
-  { slug: 'books',       name: 'Books',         Icon: BookOpen  },
-  { slug: 'sports',      name: 'Sports',        Icon: Dumbbell  },
-  { slug: 'furniture',   name: 'Furniture',     Icon: Sofa      },
-  { slug: 'toys',        name: 'Toys',          Icon: Puzzle    },
+  { slug: 'electronics', name: 'Electronics',  Icon: CATEGORY_ICONS['Electronics']  },
+  { slug: 'laptops',     name: 'Laptops',       Icon: CATEGORY_ICONS['Laptops']      },
+  { slug: 'cameras',     name: 'Cameras',       Icon: CATEGORY_ICONS['Cameras']      },
+  { slug: 'gaming',      name: 'Gaming',        Icon: CATEGORY_ICONS['Gaming']       },
+  { slug: 'watches',     name: 'Smartwatches',  Icon: CATEGORY_ICONS['Smartwatches'] },
+  { slug: 'cars',        name: 'Cars',          Icon: CATEGORY_ICONS['Cars']         },
+  { slug: 'instruments', name: 'Instruments',   Icon: CATEGORY_ICONS['Instruments']  },
+  { slug: 'fashion',     name: 'Fashion',       Icon: CATEGORY_ICONS['Fashion']      },
+  { slug: 'books',       name: 'Books',         Icon: CATEGORY_ICONS['Books']        },
+  { slug: 'sports',      name: 'Sports',        Icon: CATEGORY_ICONS['Sports']       },
+  { slug: 'furniture',   name: 'Furniture',     Icon: CATEGORY_ICONS['Furniture']    },
+  { slug: 'toys',        name: 'Toys',          Icon: CATEGORY_ICONS['Toys']         },
 ];
 
 interface CategoryGridProps {
