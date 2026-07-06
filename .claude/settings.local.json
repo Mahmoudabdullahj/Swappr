@@ -3,7 +3,19 @@
     "allow": [
       "Bash(xargs ls *)",
       "Bash(npx tsc *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(npx next *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill *)",
+      "PowerShell(Stop-Process *)",
+      "Bash(node -e ' *)",
+      "Bash(git checkout *)"
     ]
   }
 }

@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'The rules and guidelines for using Swappr.',
+  description: 'The rules and guidelines for using Swaparr.',
 };
 
 export default function TermsPage() {
@@ -12,7 +12,7 @@ export default function TermsPage() {
       <header className="legal-header">
         <Link href="/" className="legal-logo">
           <span className="logo-mark" style={{ width: 28, height: 28, fontSize: 11 }}>SW</span>
-          <span className="logo-wordmark" style={{ fontSize: 16 }}>Swappr</span>
+          <span className="logo-wordmark" style={{ fontSize: 16 }}>Swaparr</span>
         </Link>
       </header>
 
@@ -20,13 +20,13 @@ export default function TermsPage() {
         <h1>Terms of Service</h1>
         <p className="legal-date">Last updated: July 2026</p>
 
-        <p>These Terms of Service (&ldquo;Terms&rdquo;) govern your use of Swappr. By creating an account or using the platform, you agree to these Terms. If you do not agree, please do not use Swappr.</p>
+        <p>These Terms of Service (&ldquo;Terms&rdquo;) govern your use of Swaparr. By creating an account or using the platform, you agree to these Terms. If you do not agree, please do not use Swaparr.</p>
 
-        <h2>1. What Swappr Is</h2>
-        <p>Swappr is a platform that lets people in Amman, Jordan list items they own and arrange direct, in-person trades with other users. <strong>No money changes hands through Swappr</strong> — all transactions are barter only. We are a marketplace, not a party to any trade.</p>
+        <h2>1. What Swaparr Is</h2>
+        <p>Swaparr is a platform that lets people in Amman, Jordan list items they own and arrange direct, in-person trades with other users. <strong>No money changes hands through Swaparr</strong> — all transactions are barter only. We are a marketplace, not a party to any trade.</p>
 
         <h2>2. Eligibility</h2>
-        <p>You must be at least 13 years old to use Swappr. By registering, you confirm that you meet this requirement.</p>
+        <p>You must be at least 13 years old to use Swaparr. By registering, you confirm that you meet this requirement.</p>
 
         <h2>3. Your Account</h2>
         <ul>
@@ -51,7 +51,7 @@ export default function TermsPage() {
         </ul>
 
         <h2>5. Trades &amp; Meetings</h2>
-        <p>Swappr facilitates the introduction between traders but is not responsible for what happens during or after a trade. We strongly recommend:</p>
+        <p>Swaparr facilitates the introduction between traders but is not responsible for what happens during or after a trade. We strongly recommend:</p>
         <ul>
           <li>Meeting in a public place in daylight.</li>
           <li>Inspecting items before completing a swap.</li>
@@ -67,29 +67,29 @@ export default function TermsPage() {
         </ul>
 
         <h2>7. Content Ownership</h2>
-        <p>You retain ownership of photos and descriptions you post. By posting them, you grant Swappr a non-exclusive, royalty-free licence to display them on the platform. You may delete your listings at any time.</p>
+        <p>You retain ownership of photos and descriptions you post. By posting them, you grant Swaparr a non-exclusive, royalty-free licence to display them on the platform. You may delete your listings at any time.</p>
 
         <h2>8. Enforcement</h2>
         <p>We reserve the right to remove any listing or suspend any account that violates these Terms, at our sole discretion, without prior notice.</p>
 
         <h2>9. Disclaimer of Warranties</h2>
-        <p>Swappr is provided &ldquo;as is&rdquo; without warranties of any kind. We do not guarantee the quality, safety, or legality of any item listed, or that any trade will be completed successfully.</p>
+        <p>Swaparr is provided &ldquo;as is&rdquo; without warranties of any kind. We do not guarantee the quality, safety, or legality of any item listed, or that any trade will be completed successfully.</p>
 
         <h2>10. Limitation of Liability</h2>
-        <p>To the maximum extent permitted by Jordanian law, Swappr and its team are not liable for any damages arising from your use of the platform, including disputes between users or losses from trades.</p>
+        <p>To the maximum extent permitted by Jordanian law, Swaparr and its team are not liable for any damages arising from your use of the platform, including disputes between users or losses from trades.</p>
 
         <h2>11. Governing Law</h2>
         <p>These Terms are governed by the laws of the Hashemite Kingdom of Jordan. Any disputes shall be subject to the exclusive jurisdiction of the courts of Amman.</p>
 
         <h2>12. Changes to These Terms</h2>
-        <p>We may update these Terms from time to time. Continued use of Swappr after changes are posted constitutes your acceptance of the new Terms.</p>
+        <p>We may update these Terms from time to time. Continued use of Swaparr after changes are posted constitutes your acceptance of the new Terms.</p>
 
         <h2>13. Contact</h2>
         <p>Questions about these Terms? Email us at <a href="mailto:hello@swappr.jo">hello@swappr.jo</a>.</p>
       </main>
 
       <footer className="legal-footer">
-        <p>&copy; 2026 Swappr &mdash; Built in Amman, for Amman.</p>
+        <p>&copy; 2026 Swaparr &mdash; Built in Amman, for Amman.</p>
         <div className="legal-footer-links">
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms of Service</Link>

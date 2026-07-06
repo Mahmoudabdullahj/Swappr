@@ -31,7 +31,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
         <header className="landing-nav">
           <div className="landing-nav-logo">
             <span className="logo-mark">SW</span>
-            <span className="logo-wordmark">Swappr</span>
+            <span className="logo-wordmark">Swaparr</span>
           </div>
           <button className="landing-signin-btn" onClick={onGetStarted}>Sign in</button>
         </header>
@@ -45,7 +45,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
           Get what you need.
         </h1>
         <p className="landing-sub">
-          Swappr is a local barter marketplace. No money changes hands —
+          Swaparr is a local barter marketplace. No money changes hands —
           just fair, direct trades between people near you.
         </p>
 
@@ -119,10 +119,10 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
       {/* ── Injected content (e.g. exact matches + trending) ── */}
       {children}
 
-      {/* ── Why Swappr ── */}
+      {/* ── Why Swaparr ── */}
       <section className="landing-section landing-section-alt">
         <div className="landing-section-inner">
-          <p className="landing-overline">Why Swappr</p>
+          <p className="landing-overline">Why Swaparr</p>
           <h2 className="landing-h2">Built different from the start</h2>
           <div className="landing-features">
             <div className="landing-feature">
@@ -156,7 +156,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <div className="landing-feature">
               <h3 className="landing-feature-title">Zero fees, ever</h3>
               <p className="landing-feature-body">
-                We don&apos;t take a cut of your trade. Swappr is free to use —
+                We don&apos;t take a cut of your trade. Swaparr is free to use —
                 today and permanently.
               </p>
             </div>
@@ -179,8 +179,8 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <h2 className="landing-cta-heading">Ready to make your first trade?</h2>
             <p className="landing-cta-body">
               {stats && stats.traders > 0
-                ? `Join ${fmt(stats.traders)} trader${stats.traders !== 1 ? 's' : ''} already on Swappr. No credit card, no fees, no friction.`
-                : 'Be one of the first traders on Swappr. No credit card, no fees, no friction.'}
+                ? `Join ${fmt(stats.traders)} trader${stats.traders !== 1 ? 's' : ''} already on Swaparr. No credit card, no fees, no friction.`
+                : 'Be one of the first traders on Swaparr. No credit card, no fees, no friction.'}
             </p>
             <button className="landing-cta-primary landing-cta-large" onClick={onGetStarted}>
               Create your free account
@@ -194,10 +194,10 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
         <footer className="landing-footer">
           <span className="landing-nav-logo" style={{ gap: 8 }}>
             <span className="logo-mark" style={{ width: 26, height: 26, fontSize: 10 }}>SW</span>
-            <span className="logo-wordmark" style={{ fontSize: 15 }}>Swappr</span>
+            <span className="logo-wordmark" style={{ fontSize: 15 }}>Swaparr</span>
           </span>
           <p className="landing-footer-copy">
-            &copy; 2026 Swappr &mdash; Built in Amman, for Amman.
+            &copy; 2026 Swaparr &mdash; Built in Amman, for Amman.
           </p>
           <div className="landing-footer-legal">
             <a href="/privacy">Privacy Policy</a>

@@ -30,7 +30,7 @@ export default function NotFound() {
         padding: '12px 28px', borderRadius: 100, fontWeight: 700,
         fontSize: 15, textDecoration: 'none', letterSpacing: -0.3,
       }}>
-        Back to Swappr
+        Back to Swaparr
       </Link>
     </div>
   );

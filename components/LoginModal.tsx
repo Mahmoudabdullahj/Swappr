@@ -71,7 +71,7 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
 
   const TITLES: Record<Mode, string> = {
     signin: 'Trade what you have.',
-    signup: 'Join Swappr',
+    signup: 'Join Swaparr',
     forgot: 'Reset your password',
   };
   const SUBS: Record<Mode, string> = {
@@ -85,8 +85,8 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
       <div className="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
 
         <div className="login-brand">
-          <span className="login-logo" aria-label="Swappr">SW</span>
-          <span className="login-wordmark">Swappr</span>
+          <span className="login-logo" aria-label="Swaparr">SW</span>
+          <span className="login-wordmark">Swaparr</span>
         </div>
 
         <h1 className="login-title" id="loginTitle">{TITLES[mode]}</h1>

@@ -92,7 +92,7 @@ export default function Navigation({
         {/* Logo — left */}
         <div className="topbar-logo" onClick={() => onViewChange('discover')} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
           <span className="logo-mark">SW</span>
-          <span className="logo-wordmark">Swappr</span>
+          <span className="logo-wordmark">Swaparr</span>
         </div>
 
         {/* Nav links — center */}
