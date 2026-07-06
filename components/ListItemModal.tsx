@@ -206,6 +206,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
   /* ── submit ── */
   function handleDetailsContinue() {
     const errs: Record<string, string> = {};
+    if (images.length === 0) errs.image = 'At least one photo is required';
     if (!title.trim()) errs.title     = 'Title is required';
     if (!condition)    errs.condition = 'Condition is required';
     setErrors(errs);
@@ -408,7 +409,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
         {currentStep === 'details' && (
           <div className="list-modal-body">
             <div
-              className={`list-upload-area${dragOver ? ' drag-over' : ''}${previews.length > 0 ? ' has-images' : ''}`}
+              className={`list-upload-area${dragOver ? ' drag-over' : ''}${previews.length > 0 ? ' has-images' : ''}${errors.image ? ' error' : ''}`}
               onClick={() => previews.length === 0 && fileInputRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
@@ -446,6 +447,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 </div>
               )}
             </div>
+            {errors.image && <p className="list-error" role="alert">{errors.image}</p>}
 
             <div className="list-field">
               <label className="list-label" htmlFor="listTitle">Title</label>

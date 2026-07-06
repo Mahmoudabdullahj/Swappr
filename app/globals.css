@@ -1,6 +1,6 @@
 /* ── RESET & TOKENS ──────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { overflow-x: clip; } /* clip (not hidden) — avoids creating a scroll container */
+html, body { max-width: 100%; }
 
 :root {
   /* Palette — Paper / Stone / Coral / Black */
@@ -756,6 +756,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   opacity: 0;
   transition: opacity 0.2s, transform 0.2s;
   white-space: nowrap;
+  max-width: calc(100vw - 40px);
   pointer-events: none;
 }
 .activity-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -899,7 +900,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 
 @media (max-width: 480px) {
-  .item-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .item-grid { grid-template-columns: 1fr; gap: 12px; }
   .category-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
@@ -1110,6 +1111,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .list-upload-area:hover,
 .list-upload-area.drag-over { border-color: var(--accent); background: var(--accent-dim); }
 .list-upload-area.has-images { cursor: default; padding: 20px; min-height: auto; }
+.list-upload-area.error { border-color: #e8473f; background: #fff5f5; }
 
 .list-upload-icon svg { width: 38px; height: 38px; color: var(--text-muted); }
 .list-upload-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
@@ -2173,7 +2175,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   .landing-features { grid-template-columns: repeat(2, 1fr); }
   .landing-testimonials { grid-template-columns: 1fr; }
 }
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .landing-nav { padding: 0 20px; }
   .landing-hero { padding: 64px 20px 56px; }
   .landing-h1-line1 { white-space: normal; }
@@ -2193,7 +2195,6 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 @media (max-width: 480px) {
   .landing-h1 { letter-spacing: -1.5px; }
-  .landing-h1-line1 { white-space: normal; }
   .landing-hero-actions { flex-direction: column; width: 100%; }
   .landing-cta-primary { width: 100%; text-align: center; }
 }
