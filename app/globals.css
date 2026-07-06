@@ -921,6 +921,8 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 @media (max-width: 768px) {
   .bottom-nav { display: flex; }
   main.content { padding-bottom: 88px; }
+  .item-detail-page { padding-bottom: 88px; }
+  .landing-section-alt { padding-bottom: 88px; }
 }
 
 .bottom-nav-item {

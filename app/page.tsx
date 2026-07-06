@@ -1292,7 +1292,7 @@ export default function Page() {
 
         {/* ── MESSAGES VIEW ── */}
         {!isSearching && activeView === 'messages' && (
-          <main className="content" id="view-messages" style={{ padding: 0, maxWidth: '100%', gap: 0 }}>
+          <main className="content" id="view-messages" style={{ paddingTop: 0, paddingLeft: 0, paddingRight: 0, maxWidth: '100%', gap: 0 }}>
 
             {/* ── Chat view (conversation open) ── */}
             {(activeConvo || chatTarget) ? (
