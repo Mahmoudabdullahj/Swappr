@@ -289,6 +289,7 @@ main.content {
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 .section-title {
   font-family: var(--font-display);
@@ -1708,7 +1709,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 .landing-h1 {
   font-family: var(--font-display);
-  font-size: clamp(42px, 6vw, 72px);
+  font-size: clamp(30px, 8vw, 72px);
   font-weight: 900;
   color: var(--text-primary);
   letter-spacing: -2px;
@@ -2174,6 +2175,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 @media (max-width: 700px) {
   .landing-nav { padding: 0 20px; }
   .landing-hero { padding: 64px 20px 56px; }
+  .landing-h1-line1 { white-space: normal; }
   .landing-stats {
     flex-wrap: wrap;
     justify-content: center;
@@ -2512,6 +2514,14 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   font-size: 20px;
   font-weight: 700;
   color: #fff;
+}
+.my-item-avatar--img {
+  object-fit: cover;
+  background: var(--color-surface-raised);
+}
+.my-item-avatar--emoji {
+  background: var(--color-surface-raised);
+  font-weight: 400;
 }
 
 .my-item-info {

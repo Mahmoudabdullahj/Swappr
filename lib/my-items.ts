@@ -2,6 +2,7 @@ export interface MyItem {
   id: string;
   title: string;
   category: string;
+  img?: string;
   ts: number;
   status: 'active' | 'traded';
 }

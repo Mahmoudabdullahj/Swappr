@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { CatalogItem, UserSession, AppNotification } from '@/lib/types';
+import { CATALOG } from '@/lib/item-catalog';
 import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeOffer, type ReceivedTradeOffer, type TradeTarget } from '@/lib/my-trades';
 import { Session } from '@/lib/session';
@@ -53,7 +54,7 @@ interface ChatTarget {
   itemImg?: string;
 }
 
-const AVATAR_COLORS = ['#5b2ee8', '#e8473f', '#2196f3', '#4caf50', '#ff9800', '#9c27b0'];
+
 
 function timeAgo(ts: number): string {
   const diff = Date.now() - ts;
@@ -1017,13 +1018,21 @@ export default function Page() {
                   <div className="my-items-list" role="list">
                     {filtered.map((item, idx) => (
                       <div key={item.id} className="my-item-card" role="listitem">
-                        <div
-                          className="my-item-avatar"
-                          style={{ background: AVATAR_COLORS[idx % AVATAR_COLORS.length] }}
-                          aria-hidden="true"
-                        >
-                          {item.title.charAt(0).toUpperCase()}
-                        </div>
+                        {item.img ? (
+                          <img
+                            className="my-item-avatar my-item-avatar--img"
+                            src={item.img}
+                            alt=""
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <div
+                            className="my-item-avatar my-item-avatar--emoji"
+                            aria-hidden="true"
+                          >
+                            {CATALOG.find(c => c.name === item.category)?.emoji ?? '📦'}
+                          </div>
+                        )}
                         <div className="my-item-info">
                           <p className="my-item-title">{item.title}</p>
                           <p className="my-item-meta">
