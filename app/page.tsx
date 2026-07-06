@@ -1410,7 +1410,7 @@ export default function Page() {
 
             ) : (
               /* ── Conversation list ── */
-              <div style={{ padding: '40px', maxWidth: 720, margin: '0 auto', width: '100%' }}>
+              <div style={{ padding: 'clamp(16px, 4vw, 40px)', maxWidth: 720, margin: '0 auto', width: '100%' }}>
                 <div className="my-items-header">
                   <div>
                     <h1 className="my-items-title">Messages</h1>

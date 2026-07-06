@@ -1,5 +1,6 @@
 /* ── RESET & TOKENS ──────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-x: clip; } /* clip (not hidden) — avoids creating a scroll container */
 
 :root {
   /* Palette — Paper / Stone / Coral / Black */
@@ -59,7 +60,6 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 ::-webkit-scrollbar { width: 4px; }
@@ -72,6 +72,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
   padding-top: 66px; /* compensate for fixed topbar */
+  max-width: 100%;
 }
 
 /* ── TOPBAR — image 3 style ──────────────────────────────── */
@@ -3138,7 +3139,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 320px;
+  width: min(320px, calc(100vw - 24px));
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -3208,7 +3209,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 
 @media (max-width: 768px) {
-  .notif-dropdown { width: 290px; right: -8px; }
+  .notif-dropdown { width: min(290px, calc(100vw - 24px)); right: 0; }
 }
 
 @media (max-width: 768px) {
