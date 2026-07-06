@@ -90,7 +90,6 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
         </div>
 
         <h1 className="login-title" id="loginTitle">{TITLES[mode]}</h1>
-        <p className="login-sub">{SUBS[mode]}</p>
 
         {/* Sign In / Sign Up toggle — hidden in forgot mode */}
         {mode !== 'forgot' && (
