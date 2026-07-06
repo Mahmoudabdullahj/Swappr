@@ -8,7 +8,7 @@ interface LoginModalProps {
   onLogin: (session: UserSession) => void;
 }
 
-type Mode = 'signin' | 'signup';
+type Mode = 'signin' | 'signup' | 'forgot';
 
 export default function LoginModal({ onLogin }: LoginModalProps) {
   const [mode, setMode]               = useState<Mode>('signin');
@@ -26,6 +26,15 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
     setError(''); setMessage(''); setLoading(true);
     const supabase = createClient();
     try {
+      if (mode === 'forgot') {
+        const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/reset-password',
+        });
+        if (err) throw err;
+        setMessage('Check your email for a password reset link.');
+        setLoading(false);
+        return;
+      }
       if (mode === 'signup') {
         const name = displayName.trim() || email.split('@')[0];
         const { data, error: err } = await supabase.auth.signUp({
@@ -60,6 +69,17 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
     };
   }
 
+  const TITLES: Record<Mode, string> = {
+    signin: 'Trade what you have.',
+    signup: 'Join Swappr',
+    forgot: 'Reset your password',
+  };
+  const SUBS: Record<Mode, string> = {
+    signin: 'A local barter marketplace for Amman. No money — just fair trades.',
+    signup: 'Create an account to start trading in Amman.',
+    forgot: 'Enter your email and we\'ll send you a reset link.',
+  };
+
   return (
     <div className="login-screen" role="main" aria-label="Login">
       <div className="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
@@ -69,30 +89,26 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
           <span className="login-wordmark">Swappr</span>
         </div>
 
-        <h1 className="login-title" id="loginTitle">
-          {mode === 'signin' ? 'Trade what you have.' : 'Join Swappr'}
-        </h1>
-        <p className="login-sub">
-          {mode === 'signin'
-            ? 'A local barter marketplace for Amman. No money — just fair trades.'
-            : 'Create an account to start trading in Amman.'}
-        </p>
+        <h1 className="login-title" id="loginTitle">{TITLES[mode]}</h1>
+        <p className="login-sub">{SUBS[mode]}</p>
 
-        {/* Sign In / Sign Up toggle */}
-        <div style={{ display:'flex', background:'var(--bg-surface)', borderRadius:12, padding:4, gap:4 }}>
-          {(['signin','signup'] as Mode[]).map((m) => (
-            <button key={m} type="button" onClick={() => switchMode(m)} style={{
-              flex:1, padding:'8px 0', borderRadius:8, border:'none', cursor:'pointer',
-              fontFamily:'var(--font-display)', fontWeight:700, fontSize:13,
-              background: mode===m ? '#fff' : 'transparent',
-              color: mode===m ? 'var(--text-primary)' : 'var(--text-muted)',
-              boxShadow: mode===m ? '0 1px 4px rgba(0,0,0,.1)' : 'none',
-              transition:'all .15s',
-            }}>
-              {m === 'signin' ? 'Sign In' : 'Sign Up'}
-            </button>
-          ))}
-        </div>
+        {/* Sign In / Sign Up toggle — hidden in forgot mode */}
+        {mode !== 'forgot' && (
+          <div style={{ display:'flex', background:'var(--bg-surface)', borderRadius:12, padding:4, gap:4 }}>
+            {(['signin','signup'] as Mode[]).map((m) => (
+              <button key={m} type="button" onClick={() => switchMode(m)} style={{
+                flex:1, padding:'8px 0', borderRadius:8, border:'none', cursor:'pointer',
+                fontFamily:'var(--font-display)', fontWeight:700, fontSize:13,
+                background: mode===m ? '#fff' : 'transparent',
+                color: mode===m ? 'var(--text-primary)' : 'var(--text-muted)',
+                boxShadow: mode===m ? '0 1px 4px rgba(0,0,0,.1)' : 'none',
+                transition:'all .15s',
+              }}>
+                {m === 'signin' ? 'Sign In' : 'Sign Up'}
+              </button>
+            ))}
+          </div>
+        )}
 
         <form className="login-form" onSubmit={handleSubmit} noValidate>
           {mode === 'signup' && (
@@ -111,13 +127,21 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
               value={email} onChange={e => setEmail(e.target.value)} />
           </div>
 
-          <div className="login-field">
-            <label className="login-label" htmlFor="loginPassword">Password</label>
-            <input className="login-input" id="loginPassword" type="password"
-              placeholder={mode === 'signup' ? 'At least 6 characters' : 'Your password'}
-              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} required
-              value={password} onChange={e => setPassword(e.target.value)} />
-          </div>
+          {mode !== 'forgot' && (
+            <div className="login-field">
+              <label className="login-label" htmlFor="loginPassword">Password</label>
+              <input className="login-input" id="loginPassword" type="password"
+                placeholder={mode === 'signup' ? 'At least 6 characters' : 'Your password'}
+                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} required
+                value={password} onChange={e => setPassword(e.target.value)} />
+              {mode === 'signin' && (
+                <button type="button" onClick={() => switchMode('forgot')}
+                  style={{ background:'none', border:'none', color:'var(--text-muted)', cursor:'pointer', padding:'4px 0 0', fontSize:12, alignSelf:'flex-start' }}>
+                  Forgot password?
+                </button>
+              )}
+            </div>
+          )}
 
           {error && <p className="login-error" role="alert">{error}</p>}
 
@@ -128,17 +152,29 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
           )}
 
           <button className="login-btn" type="submit" disabled={loading} style={{ marginTop:4 }}>
-            {loading ? 'Please wait…' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+            {loading ? 'Please wait…'
+              : mode === 'signin' ? 'Sign In'
+              : mode === 'signup' ? 'Create Account'
+              : 'Send Reset Link'}
           </button>
         </form>
 
-        <p className="login-terms">
-          {mode === 'signin' ? 'No account yet? ' : 'Already have an account? '}
-          <button type="button" onClick={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}
-            style={{ background:'none', border:'none', color:'var(--accent)', fontWeight:600, cursor:'pointer', padding:0, fontSize:'inherit' }}>
-            {mode === 'signin' ? 'Sign up free' : 'Sign in'}
-          </button>
-        </p>
+        {mode === 'forgot' ? (
+          <p className="login-terms">
+            <button type="button" onClick={() => switchMode('signin')}
+              style={{ background:'none', border:'none', color:'var(--accent)', fontWeight:600, cursor:'pointer', padding:0, fontSize:'inherit' }}>
+              ← Back to Sign In
+            </button>
+          </p>
+        ) : (
+          <p className="login-terms">
+            {mode === 'signin' ? 'No account yet? ' : 'Already have an account? '}
+            <button type="button" onClick={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}
+              style={{ background:'none', border:'none', color:'var(--accent)', fontWeight:600, cursor:'pointer', padding:0, fontSize:'inherit' }}>
+              {mode === 'signin' ? 'Sign up free' : 'Sign in'}
+            </button>
+          </p>
+        )}
         {mode === 'signup' && (
           <p className="login-terms" style={{ marginTop: 8 }}>
             By signing up you agree to our{' '}
