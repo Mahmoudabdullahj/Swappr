@@ -273,7 +273,6 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
     <div
       className={`list-modal-overlay${open ? ' open' : ''}`}
       role="dialog" aria-modal="true"
-      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
       <div className="list-modal">
 
