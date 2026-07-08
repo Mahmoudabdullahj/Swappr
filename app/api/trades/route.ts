@@ -92,6 +92,9 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error('[POST /api/trades] insert error:', error);
+    if (error.code === '23505' || error.message?.includes('unique_offered_target_pair')) {
+      return NextResponse.json({ error: 'You have already offered this item for that listing.' }, { status: 409 });
+    }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

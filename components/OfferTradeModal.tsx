@@ -12,14 +12,16 @@ interface Props {
   targetItem?: TradeTarget | null;
   onTradeSent?: () => void;
   myItems?: MyItem[];
+  alreadyOfferedIds?: Set<string>;
 }
 
-export default function OfferTradeModal({ open, onClose, onListItem, refreshKey, targetItem, onTradeSent, myItems = [] }: Props) {
-  const [items, setItems]     = useState<MyItem[]>([]);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [sent, setSent]       = useState(false);
-  const [sending, setSending] = useState(false);
+export default function OfferTradeModal({ open, onClose, onListItem, refreshKey, targetItem, onTradeSent, myItems = [], alreadyOfferedIds }: Props) {
+  const [items, setItems]         = useState<MyItem[]>([]);
+  const [selected, setSelected]   = useState<string | null>(null);
+  const [sent, setSent]           = useState(false);
+  const [sending, setSending]     = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [localOfferedIds, setLocalOfferedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (open) {
@@ -52,7 +54,14 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
       setSent(true);
       setTimeout(onClose, 1800);
     } catch (err) {
-      setSendError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      if (msg.toLowerCase().includes('already offered') || msg.includes('unique_offered_target_pair')) {
+        setLocalOfferedIds(prev => new Set(prev).add(offeredItem.id));
+        setSelected(null);
+        setSendError('You have already offered this item for that listing.');
+      } else {
+        setSendError(msg);
+      }
     } finally {
       setSending(false);
     }
@@ -117,25 +126,33 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
             <p className="offer-sub">Pick the item you want to put up for this trade.</p>
 
             <div className="offer-grid">
-              {items.map((item) => (
-                <button
-                  key={item.id}
-                  className={`offer-item${selected === item.id ? ' selected' : ''}`}
-                  onClick={() => setSelected(item.id)}
-                  aria-pressed={selected === item.id}
-                >
-                  <span className="offer-item-avatar">{item.title.charAt(0).toUpperCase()}</span>
-                  <span className="offer-item-name">{item.title}</span>
-                  <span className="offer-item-cat">{item.category || 'Other'}</span>
-                  {selected === item.id && (
-                    <span className="offer-item-check" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </span>
-                  )}
-                </button>
-              ))}
+              {items.map((item) => {
+                const isAlreadyOffered = (alreadyOfferedIds?.has(item.id) ?? false) || localOfferedIds.has(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    className={`offer-item${selected === item.id ? ' selected' : ''}${isAlreadyOffered ? ' already-offered' : ''}`}
+                    onClick={() => { if (!isAlreadyOffered) setSelected(item.id); }}
+                    disabled={isAlreadyOffered}
+                    aria-pressed={selected === item.id}
+                    aria-disabled={isAlreadyOffered}
+                  >
+                    <span className="offer-item-avatar">{item.title.charAt(0).toUpperCase()}</span>
+                    <span className="offer-item-name">{item.title}</span>
+                    <span className="offer-item-cat">{item.category || 'Other'}</span>
+                    {isAlreadyOffered && (
+                      <span className="offer-item-already" aria-hidden="true">Already Offered</span>
+                    )}
+                    {selected === item.id && !isAlreadyOffered && (
+                      <span className="offer-item-check" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             {sendError && (

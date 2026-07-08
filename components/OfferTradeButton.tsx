@@ -17,17 +17,28 @@ interface Props {
 }
 
 export default function OfferTradeButton({ item }: Props) {
-  const [showOffer, setShowOffer]   = useState(false);
-  const [showList, setShowList]     = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [myItems, setMyItems]       = useState<MyItem[]>([]);
+  const [showOffer, setShowOffer]           = useState(false);
+  const [showList, setShowList]             = useState(false);
+  const [refreshKey, setRefreshKey]         = useState(0);
+  const [myItems, setMyItems]               = useState<MyItem[]>([]);
+  const [alreadyOfferedIds, setAlreadyOfferedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetch('/api/items/mine')
-      .then(r => r.json())
-      .then(data => setMyItems(Array.isArray(data) ? data : []))
-      .catch(() => {});
-  }, [refreshKey]);
+    Promise.all([
+      fetch('/api/items/mine').then(r => r.json()),
+      fetch('/api/trades').then(r => r.json()),
+    ]).then(([itemsData, tradesData]) => {
+      setMyItems(Array.isArray(itemsData) ? itemsData : []);
+      const offeredIds = new Set<string>(
+        Array.isArray(tradesData)
+          ? tradesData
+              .filter((t: { targetItemId: string }) => t.targetItemId === item.id)
+              .map((t: { offeredItemId: string }) => t.offeredItemId)
+          : []
+      );
+      setAlreadyOfferedIds(offeredIds);
+    }).catch(() => {});
+  }, [refreshKey, item.id]);
 
   return (
     <>
@@ -52,6 +63,7 @@ export default function OfferTradeButton({ item }: Props) {
         refreshKey={refreshKey}
         targetItem={{ id: item.id, title: item.title, category: item.category, img: item.img, seller: item.seller, user_id: item.user_id }}
         myItems={myItems}
+        alreadyOfferedIds={alreadyOfferedIds}
       />
 
       <ListItemModal
