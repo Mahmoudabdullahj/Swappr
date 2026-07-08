@@ -110,7 +110,7 @@ export default function Page() {
   const [session, setSession]               = useState<UserSession | null>(null);
   const [existingSession, setExistingSession] = useState<UserSession | null>(null);
   const [loggedIn, setLoggedIn]             = useState(false);
-  const [activeView, setActiveView]         = useState<View>(viewFromHash);
+  const [activeView, setActiveView]         = useState<View>('discover');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [showListModal, setShowListModal]   = useState(false);
@@ -618,6 +618,12 @@ export default function Page() {
   }
 
   useEffect(() => {
+    // Restore view from hash on first mount
+    const initial = viewFromHash();
+    if (initial !== 'discover') {
+      setActiveView(initial);
+    }
+
     function onHashChange() {
       const v = viewFromHash();
       setActiveView(v);
