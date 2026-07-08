@@ -30,6 +30,7 @@ export interface TradeOffer {
   targetItemTitle: string;
   targetItemImg: string;
   targetItemSeller: string;
+  targetItemOwnerId: string;
   status: 'pending' | 'accepted' | 'declined' | 'completed';
   ts: number;
 }

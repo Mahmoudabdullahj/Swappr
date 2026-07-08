@@ -3441,6 +3441,21 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 .confirm-ok-btn:hover { background: #15803d; }
 
+/* ── Trade message button ── */
+.trade-message-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(22,163,74,0.1);
+  color: #16a34a;
+  border: 1px solid rgba(22,163,74,0.25);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.trade-message-btn:hover { background: rgba(22,163,74,0.18); }
+
 /* ── Trade complete button ── */
 .trade-complete-btn {
   font-size: 11px;

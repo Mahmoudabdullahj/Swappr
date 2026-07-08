@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
       targetItemTitle:      row.target_item_title,
       targetItemImg:        row.target_item_img,
       targetItemSeller:     row.target_item_seller,
+      targetItemOwnerId:    row.target_item_owner_id,
       status:               row.status,
       ts:                   new Date(row.created_at as string).getTime(),
     }))

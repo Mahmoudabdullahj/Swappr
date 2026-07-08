@@ -1203,12 +1203,20 @@ export default function Page() {
                           {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : trade.status === 'completed' ? 'Completed' : 'Pending'}
                         </span>
                         {trade.status === 'accepted' && (
-                          <button
-                            className="trade-complete-btn"
-                            onClick={() => handleMarkTradeComplete(trade.id)}
-                          >
-                            Mark Complete
-                          </button>
+                          <>
+                            <button
+                              className="trade-message-btn"
+                              onClick={() => openChat({ userId: trade.targetItemOwnerId, userName: trade.targetItemSeller, itemId: trade.targetItemId, itemTitle: trade.targetItemTitle, itemImg: trade.targetItemImg })}
+                            >
+                              Message
+                            </button>
+                            <button
+                              className="trade-complete-btn"
+                              onClick={() => handleMarkTradeComplete(trade.id)}
+                            >
+                              Mark Complete
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
@@ -1257,9 +1265,19 @@ export default function Page() {
                           </div>
                         )}
                       </div>
-                      <span className={`trade-status-badge${trade.status !== 'pending' ? ` ${trade.status}` : ''}`}>
-                        {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : trade.status === 'completed' ? 'Completed' : 'Pending'}
-                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                        <span className={`trade-status-badge${trade.status !== 'pending' ? ` ${trade.status}` : ''}`}>
+                          {trade.status === 'accepted' ? 'Accepted' : trade.status === 'declined' ? 'Declined' : trade.status === 'completed' ? 'Completed' : 'Pending'}
+                        </span>
+                        {trade.status === 'accepted' && (
+                          <button
+                            className="trade-message-btn"
+                            onClick={() => openChat({ userId: trade.senderId, userName: trade.senderName, itemId: trade.targetItemId, itemTitle: trade.targetItemTitle, itemImg: trade.targetItemImg })}
+                          >
+                            Message
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
