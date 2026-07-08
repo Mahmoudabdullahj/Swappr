@@ -241,7 +241,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
       fd.append('wantCategory', computedWantCat);
       fd.append('wantAnything', finalAnything ? 'true' : 'false');
       fd.append('description', description);
-      if (images[0]) fd.append('image', images[0]);
+      images.forEach(img => fd.append('image', img));
 
       const res = await fetch('/api/items', { method: 'POST', body: fd });
       if (!res.ok) {
@@ -384,19 +384,31 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                   {!field.required && <span className="list-label-opt"> (optional)</span>}
                 </label>
                 {field.type === 'select' ? (
-                  <select className="list-select" value={specs[field.key] || ''}
-                    onChange={e => setSpecs(s => ({ ...s, [field.key]: e.target.value }))}>
+                  <select className={`list-select${errors[field.key] ? ' error' : ''}`} value={specs[field.key] || ''}
+                    onChange={e => { setSpecs(s => ({ ...s, [field.key]: e.target.value })); setErrors(er => ({ ...er, [field.key]: '' })); }}>
                     <option value="">Select…</option>
                     {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 ) : (
-                  <input className="list-input" type="text" placeholder={field.placeholder || ''}
+                  <input className={`list-input${errors[field.key] ? ' error' : ''}`} type="text" placeholder={field.placeholder || ''}
                     value={specs[field.key] || ''}
-                    onChange={e => setSpecs(s => ({ ...s, [field.key]: e.target.value }))} />
+                    onChange={e => { setSpecs(s => ({ ...s, [field.key]: e.target.value })); setErrors(er => ({ ...er, [field.key]: '' })); }} />
                 )}
+                {errors[field.key] && <p className="list-error" role="alert">{errors[field.key]}</p>}
               </div>
             ))}
-            <button className="list-continue-btn" onClick={() => setCurrentStep('details')}>
+            <button className="list-continue-btn" onClick={() => {
+              const requiredFields = cat?.specs.filter(
+                f => f.required && (!f.brands || f.brands.includes(selectedBrand))
+              ) ?? [];
+              const missing = requiredFields.filter(f => !specs[f.key]?.trim());
+              if (missing.length > 0) {
+                setErrors(Object.fromEntries(missing.map(f => [f.key, `${f.label} is required`])));
+                return;
+              }
+              setErrors({});
+              setCurrentStep('details');
+            }}>
               Continue
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" aria-hidden="true">
                 <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />

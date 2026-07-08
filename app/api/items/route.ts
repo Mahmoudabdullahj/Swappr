@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
     condition:    row.condition,
     price:        row.price,
     img:          row.img,
+    images:       Array.isArray(row.images) ? row.images : (row.img ? [row.img] : []),
     seller:       row.seller,
     sellerAvatar: row.seller_avatar ?? '',
     rating:       row.rating ?? 0,
@@ -67,28 +68,29 @@ export async function POST(request: NextRequest) {
   const wantCategory = (formData.get('wantCategory') as string) || null;
   const wantAnything = formData.get('wantAnything') === 'true';
   const description  = (formData.get('description') as string) || null;
-  const image        = formData.get('image') as File | null;
+  const imageFiles   = formData.getAll('image') as File[];
 
-  let imgUrl = '';
-
-  if (image && image.size > 0) {
+  const uploadedUrls: string[] = [];
+  for (const image of imageFiles) {
+    if (!image || image.size === 0) continue;
     const ext      = image.name.split('.').pop() ?? 'jpg';
-    const fileName = `${userId}/${Date.now()}.${ext}`;
+    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const buffer   = new Uint8Array(await image.arrayBuffer());
-
     const { data: upload, error: uploadErr } = await supabase.storage
       .from('items')
       .upload(fileName, buffer, { contentType: image.type, upsert: false });
-
     if (!uploadErr && upload) {
       const { data: { publicUrl } } = supabase.storage.from('items').getPublicUrl(fileName);
-      imgUrl = publicUrl;
+      uploadedUrls.push(publicUrl);
     }
   }
 
+  const imgUrl    = uploadedUrls[0] ?? '';
+  const imgUrls   = uploadedUrls;
+
   const { data, error } = await supabase
     .from('items')
-    .insert({ user_id: userId, title, category, brand: brand || null, model: model || null, specs: Object.keys(specs).length ? specs : null, condition, price, img: imgUrl, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything, description: description || null })
+    .insert({ user_id: userId, title, category, brand: brand || null, model: model || null, specs: Object.keys(specs).length ? specs : null, condition, price, img: imgUrl, images: imgUrls, seller, want_title: wantTitle, want_category: wantCategory, want_anything: wantAnything, description: description || null })
     .select()
     .single();
 

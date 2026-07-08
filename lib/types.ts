@@ -6,6 +6,7 @@ export interface CatalogItem {
   condition: string;
   price: number;
   img: string;
+  images?: string[];
   seller: string;
   sellerAvatar: string;
   rating: number;
