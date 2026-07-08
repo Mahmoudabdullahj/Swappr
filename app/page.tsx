@@ -18,6 +18,13 @@ import ListItemModal from '@/components/ListItemModal';
 
 type View = 'discover' | 'items' | 'trades' | 'messages' | 'matches' | 'profile';
 
+const VALID_VIEWS: View[] = ['discover', 'items', 'trades', 'messages', 'matches', 'profile'];
+function viewFromHash(): View {
+  if (typeof window === 'undefined') return 'discover';
+  const h = window.location.hash.slice(1) as View;
+  return VALID_VIEWS.includes(h) ? h : 'discover';
+}
+
 interface Match {
   id: string;
   matchedAt: number;
@@ -103,7 +110,7 @@ export default function Page() {
   const [session, setSession]               = useState<UserSession | null>(null);
   const [existingSession, setExistingSession] = useState<UserSession | null>(null);
   const [loggedIn, setLoggedIn]             = useState(false);
-  const [activeView, setActiveView]         = useState<View>('discover');
+  const [activeView, setActiveView]         = useState<View>(viewFromHash);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [showListModal, setShowListModal]   = useState(false);
@@ -489,7 +496,7 @@ export default function Page() {
       setActiveConvo(null);
       setChatTarget(target);
     }
-    setActiveView('messages');
+    handleViewChange('messages');
   }
 
   useEffect(() => {
@@ -607,7 +614,19 @@ export default function Page() {
     setActiveView(view);
     setActiveCategory(null);
     setDiscoverSubView(null);
+    window.location.hash = view === 'discover' ? '' : view;
   }
+
+  useEffect(() => {
+    function onHashChange() {
+      const v = viewFromHash();
+      setActiveView(v);
+      setActiveCategory(null);
+      setDiscoverSubView(null);
+    }
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   function handleSearch(q: string) {
     setSearchQuery(q);
