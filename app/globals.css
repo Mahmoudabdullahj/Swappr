@@ -3165,7 +3165,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   top: calc(100% + 8px);
   right: 0;
   width: min(320px, calc(100vw - 24px));
-  background: var(--surface);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
