@@ -120,6 +120,8 @@ export default function Page() {
   const [settingsName, setSettingsName]     = useState('');
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsMsg, setSettingsMsg]       = useState('');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason]       = useState('');
   const [reportSending, setReportSending]     = useState(false);
@@ -220,10 +222,11 @@ export default function Page() {
       if (s?.user) {
         const stored = Session.get();
         const us: UserSession = stored?.userId === s.user.id
-          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at }
+          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at, avatarUrl: s.user.user_metadata?.avatar_url }
           : {
               userId: s.user.id,
               displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
+              avatarUrl: s.user.user_metadata?.avatar_url,
               loginAt: new Date().toISOString(),
               memberSince: s.user.created_at,
               views: [], searches: [],
@@ -241,10 +244,11 @@ export default function Page() {
       if (s?.user) {
         const stored = Session.get();
         const us: UserSession = stored?.userId === s.user.id
-          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at }
+          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at, avatarUrl: s.user.user_metadata?.avatar_url }
           : {
               userId: s.user.id,
               displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
+              avatarUrl: s.user.user_metadata?.avatar_url,
               loginAt: new Date().toISOString(),
               memberSince: s.user.created_at,
               views: [], searches: [],
@@ -590,6 +594,27 @@ export default function Page() {
       setSettingsMsg('Failed to save. Try again.');
     } finally {
       setSettingsSaving(false);
+    }
+  }
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !session) return;
+    setAvatarUploading(true);
+    try {
+      const form = new FormData();
+      form.append('avatar', file);
+      const res = await fetch('/api/profile', { method: 'POST', body: form });
+      if (!res.ok) throw new Error('Upload failed');
+      const { avatarUrl } = await res.json();
+      const updated = { ...session, avatarUrl };
+      Session.save(updated);
+      setSession(updated);
+    } catch {
+      // upload failed — keep existing avatar
+    } finally {
+      setAvatarUploading(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = '';
     }
   }
 
@@ -1553,9 +1578,30 @@ export default function Page() {
 
             {/* Profile card */}
             <div className="profile-card">
-              <div className="profile-avatar" aria-hidden="true">
-                {session?.displayName.charAt(0).toUpperCase()}
-              </div>
+              <button
+                className={`profile-avatar${avatarUploading ? ' uploading' : ''}`}
+                onClick={() => avatarInputRef.current?.click()}
+                aria-label="Change profile picture"
+                disabled={avatarUploading}
+              >
+                {session?.avatarUrl
+                  ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={session.avatarUrl} alt="" className="profile-avatar-img" />
+                  : session?.displayName.charAt(0).toUpperCase()
+                }
+                <span className="profile-avatar-overlay" aria-hidden="true">
+                  {avatarUploading
+                    ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                    : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  }
+                </span>
+              </button>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                style={{ display: 'none' }}
+                onChange={handleAvatarUpload}
+              />
               <div className="profile-info">
                 <h1 className="profile-name">{session?.displayName}</h1>
                 {session?.memberSince && (

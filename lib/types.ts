@@ -41,6 +41,7 @@ export interface AppNotification {
 export interface UserSession {
   userId: string;
   displayName: string;
+  avatarUrl?: string;
   loginAt: string;
   memberSince?: string;
   views: SessionView[];
