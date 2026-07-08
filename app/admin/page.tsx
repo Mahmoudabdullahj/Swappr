@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import AdminPanel from './AdminPanel';
 
-const ADMIN_EMAIL = 'mahmoudabdullahj@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? '';
 
 export const metadata: Metadata = { robots: { index: false } };
 

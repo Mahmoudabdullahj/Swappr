@@ -70,10 +70,18 @@ export async function POST(request: NextRequest) {
   const description  = (formData.get('description') as string) || null;
   const imageFiles   = formData.getAll('image') as File[];
 
+  const ALLOWED_MIME: Record<string, string> = {
+    'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif',
+  };
+
   const uploadedUrls: string[] = [];
   for (const image of imageFiles) {
     if (!image || image.size === 0) continue;
-    const ext      = image.name.split('.').pop() ?? 'jpg';
+    if (!ALLOWED_MIME[image.type])
+      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
+    if (image.size > 10 * 1024 * 1024)
+      return NextResponse.json({ error: 'File too large' }, { status: 400 });
+    const ext      = ALLOWED_MIME[image.type];
     const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const buffer   = new Uint8Array(await image.arrayBuffer());
     const { data: upload, error: uploadErr } = await supabase.storage

@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import { createServiceClient } from '@/utils/supabase/service';
 import { NextResponse } from 'next/server';
 
-const ADMIN_EMAIL = 'mahmoudabdullahj@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? '';
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const auth = await createClient();

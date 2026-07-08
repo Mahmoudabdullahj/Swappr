@@ -44,6 +44,7 @@ export default function ImageGallery({ images, alt, conditionBadge }: ImageGalle
             className="gallery-main-img"
             onClick={() => openLightbox(active)}
             title="Click to enlarge"
+            onError={e => { (e.target as HTMLImageElement).src = ''; (e.target as HTMLImageElement).style.display = 'none'; }}
           />
         ) : (
           <div className="gallery-placeholder">📦</div>

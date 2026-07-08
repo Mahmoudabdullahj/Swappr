@@ -68,8 +68,14 @@ export async function POST(request: NextRequest) {
     targetItemTitle,
     targetItemImg,
     targetItemSeller,
-    targetItemOwnerId,
   } = body;
+
+  // Fetch real owner from DB — never trust client-supplied owner ID
+  const { data: targetItem } = await db
+    .from('items').select('user_id').eq('id', targetItemId).single();
+  if (!targetItem)
+    return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+  const targetItemOwnerId = targetItem.user_id;
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
 
