@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import type { Metadata } from 'next';
 import OfferTradeButton from '@/components/OfferTradeButton';
+import ImageGallery from '@/components/ImageGallery';
 
 const CONDITION_LABEL: Record<string, string> = {
   'new': 'New', 'brand-new': 'New', 'like-new': 'Like New',
@@ -34,6 +35,10 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
   const condLabel = CONDITION_LABEL[condKey] ?? item.condition;
   const condClass = CONDITION_CLASS[condKey] ?? 'condition-good';
 
+  const images: string[] = Array.isArray(item.images) && item.images.length > 0
+    ? item.images
+    : item.img ? [item.img] : [];
+
   return (
     <main className="item-detail-page">
       <div className="item-detail-container">
@@ -46,16 +51,12 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
         </Link>
 
         <div className="item-detail-layout">
-          <div className="item-detail-image-wrap">
-            {item.img ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={item.img} alt={item.title} />
-            ) : (
-              <div style={{ width: '100%', aspectRatio: '1', background: 'var(--bg-card)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 16, fontSize: 64 }}>
-                📦
-              </div>
-            )}
-            <span className={`card-condition-badge ${condClass}`}>{condLabel}</span>
+          <div className="item-detail-gallery-col">
+            <ImageGallery
+              images={images}
+              alt={item.title}
+              conditionBadge={<span className={`card-condition-badge ${condClass}`}>{condLabel}</span>}
+            />
           </div>
 
           <div className="item-detail-info">
