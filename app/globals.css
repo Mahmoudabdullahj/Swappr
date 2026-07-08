@@ -2122,6 +2122,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  font-family: inherit;
 }
 .profile-avatar-img {
   width: 100%;
