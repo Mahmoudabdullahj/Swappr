@@ -121,6 +121,7 @@ export default function Page() {
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsMsg, setSettingsMsg]       = useState('');
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError]         = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason]       = useState('');
@@ -596,6 +597,9 @@ export default function Page() {
       setSettingsSaving(false);
     }
   }
+
+  // Reset broken-image flag whenever the URL changes (e.g. after a new upload)
+  useEffect(() => { setAvatarError(false); }, [session?.avatarUrl]);
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -1584,9 +1588,9 @@ export default function Page() {
                 aria-label="Change profile picture"
                 disabled={avatarUploading}
               >
-                {session?.avatarUrl
-                  ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={session.avatarUrl} alt="" className="profile-avatar-img" />
-                  : session?.displayName.charAt(0).toUpperCase()
+                {(session?.avatarUrl && !avatarError)
+                  ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={session.avatarUrl} alt="" className="profile-avatar-img" onError={() => setAvatarError(true)} />
+                  : <span aria-hidden="true">{session?.displayName.charAt(0).toUpperCase()}</span>
                 }
                 <span className="profile-avatar-overlay" aria-hidden="true">
                   {avatarUploading

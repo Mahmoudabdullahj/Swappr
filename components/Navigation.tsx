@@ -62,6 +62,7 @@ export default function Navigation({
   const lastY = useRef(0);
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const [navAvatarError, setNavAvatarError] = useState(false);
 
   useEffect(() => {
     if (!notifOpen) return;
@@ -200,7 +201,12 @@ export default function Navigation({
                 aria-label={`View profile for ${session.displayName}`}
                 title="View profile"
               >
-                <span className="session-dot" aria-hidden="true" />
+                <span className="nav-avatar" aria-hidden="true">
+                  {(session.avatarUrl && !navAvatarError)
+                    ? <img src={session.avatarUrl} alt="" onError={() => setNavAvatarError(true)} />
+                    : session.displayName.charAt(0).toUpperCase()
+                  }
+                </span>
                 <span className="session-name">{session.displayName}</span>
               </button>
               <button className="session-logout" onClick={onLogout} aria-label="Log out" title="Log out">
