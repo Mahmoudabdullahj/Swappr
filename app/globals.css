@@ -3251,20 +3251,81 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   color: var(--accent);
 }
 .my-item-traded-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  padding: 5px 11px;
+  border-radius: 6px;
   background: rgba(34,197,94,0.1);
   color: #16a34a;
   border: 1px solid rgba(34,197,94,0.25);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  white-space: nowrap;
   flex-shrink: 0;
   transition: background 0.15s;
 }
 .my-item-traded-btn:hover { background: rgba(34,197,94,0.2); }
+
+/* ── Mark as traded confirmation modal ── */
+.confirm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  padding: 20px;
+}
+.confirm-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
+  max-width: 340px;
+}
+.confirm-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+.confirm-modal-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.confirm-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.confirm-cancel-btn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+.confirm-cancel-btn:hover { background: var(--surface-raised); }
+.confirm-ok-btn {
+  padding: 8px 18px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.confirm-ok-btn:hover { background: #15803d; }
 
 /* ── Trade complete button ── */
 .trade-complete-btn {

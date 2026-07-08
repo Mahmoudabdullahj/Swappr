@@ -147,6 +147,7 @@ export default function Page() {
   });
   const [savedItems, setSavedItems] = useState<CatalogItem[]>([]);
   const [savedLoading, setSavedLoading] = useState(false);
+  const [markTradedItemId, setMarkTradedItemId] = useState<string | null>(null);
 
   // Sync with DB when session loads — authoritative source of truth
   useEffect(() => {
@@ -663,6 +664,34 @@ export default function Page() {
         </div>
       </div>
 
+      {/* Mark as traded confirmation modal */}
+      {markTradedItemId && (
+        <div
+          className="confirm-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirmTradedTitle"
+          onClick={(e) => { if (e.target === e.currentTarget) setMarkTradedItemId(null); }}
+        >
+          <div className="confirm-modal">
+            <h2 className="confirm-modal-title" id="confirmTradedTitle">Mark as traded?</h2>
+            <p className="confirm-modal-body">This will mark the item as traded and remove it from active listings.</p>
+            <div className="confirm-modal-actions">
+              <button className="confirm-cancel-btn" onClick={() => setMarkTradedItemId(null)}>Cancel</button>
+              <button
+                className="confirm-ok-btn"
+                onClick={() => {
+                  handleMarkItemStatus(markTradedItemId, 'traded');
+                  setMarkTradedItemId(null);
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Match modal */}
       <div
         className={`modal-overlay${showMatchModal ? ' open' : ''}`}
@@ -1047,13 +1076,10 @@ export default function Page() {
                         {item.status === 'active' && (
                           <button
                             className="my-item-traded-btn"
-                            onClick={() => handleMarkItemStatus(item.id, 'traded')}
+                            onClick={() => setMarkTradedItemId(item.id)}
                             aria-label={`Mark ${item.title} as traded`}
-                            title="Mark as Traded"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
+                            Mark as traded
                           </button>
                         )}
                         <button
