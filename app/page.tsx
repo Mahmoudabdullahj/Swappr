@@ -110,6 +110,7 @@ export default function Page() {
   const [session, setSession]               = useState<UserSession | null>(null);
   const [existingSession, setExistingSession] = useState<UserSession | null>(null);
   const [loggedIn, setLoggedIn]             = useState(false);
+  const [authLoading, setAuthLoading]       = useState(true);
   const [activeView, setActiveView]         = useState<View>('discover');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showMatchModal, setShowMatchModal] = useState(false);
@@ -233,6 +234,7 @@ export default function Page() {
         setExistingSession(us);
         setLoggedIn(true);
       }
+      setAuthLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
@@ -255,6 +257,7 @@ export default function Page() {
         setSession(null);
         setLoggedIn(false);
       }
+      setAuthLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -617,6 +620,13 @@ export default function Page() {
     window.location.hash = view === 'discover' ? '' : view;
   }
 
+  // Re-apply hash view once auth resolves so no race condition swallows it
+  useEffect(() => {
+    if (authLoading || !loggedIn) return;
+    const v = viewFromHash();
+    if (v !== 'discover') setActiveView(v);
+  }, [authLoading, loggedIn]);
+
   useEffect(() => {
     // Restore view from hash on first mount
     const initial = viewFromHash();
@@ -661,8 +671,8 @@ export default function Page() {
 
   return (
     <>
-      {/* Login screen — only when not logged in */}
-      {!loggedIn && (
+      {/* Login screen — only after auth check confirms no session */}
+      {!authLoading && !loggedIn && (
         <LoginModal onLogin={handleLogin} />
       )}
 
