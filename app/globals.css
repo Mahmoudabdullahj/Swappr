@@ -3675,3 +3675,278 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 .report-submit-btn:hover:not(:disabled) { opacity: 0.85; }
 .report-submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ══════════════════════════════════════════════════════════
+   ANIMATION SYSTEM — v2
+   ══════════════════════════════════════════════════════════ */
+
+/* ── New keyframes ──────────────────────────────────────── */
+
+@keyframes heartBeat {
+  0%   { transform: scale(1); }
+  15%  { transform: scale(1.42); }
+  30%  { transform: scale(0.94); }
+  45%  { transform: scale(1.22); }
+  65%  { transform: scale(1); }
+}
+
+@keyframes iconBounce {
+  0%   { transform: translateY(0) scale(1); }
+  35%  { transform: translateY(-6px) scale(1.13); }
+  65%  { transform: translateY(-2px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes viewEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badgePing {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+
+@keyframes scalePopIn {
+  from { transform: scale(0.93); }
+  to   { transform: scale(1); }
+}
+
+/* ── Card hover enhancements ────────────────────────────── */
+
+article.item-card:hover                    { transform: translateY(-4px); }
+article.item-card:hover .card-image-wrap   { box-shadow: 0 14px 40px rgba(249,92,75,0.13); }
+article.item-card:hover .card-image-wrap img { transform: scale(1.05); }
+
+/* Extend stagger to 12 cards */
+article.item-card:nth-child(7)  { animation-delay: 0.28s; }
+article.item-card:nth-child(8)  { animation-delay: 0.32s; }
+article.item-card:nth-child(9)  { animation-delay: 0.36s; }
+article.item-card:nth-child(10) { animation-delay: 0.40s; }
+article.item-card:nth-child(11) { animation-delay: 0.44s; }
+article.item-card:nth-child(12) { animation-delay: 0.48s; }
+
+/* Like button — heartbeat on activation, press feedback */
+.card-like-btn:active { transform: scale(0.80); }
+.card-like-btn.liked  { animation: heartBeat 0.55s cubic-bezier(0.22,1,0.36,1); }
+
+/* Offer button icon micro-rotation on hover */
+.btn-offer svg { transition: transform 0.2s ease; }
+.btn-offer:hover svg { transform: translateY(-1px) rotate(-8deg); }
+.btn-offer:active    { transform: scale(0.97); }
+
+/* ── Category card enhancements ─────────────────────────── */
+
+/* Staggered entrance */
+.category-grid .category-card              { animation: cardIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+.category-grid .category-card:nth-child(1)  { animation-delay: 0.04s; }
+.category-grid .category-card:nth-child(2)  { animation-delay: 0.07s; }
+.category-grid .category-card:nth-child(3)  { animation-delay: 0.10s; }
+.category-grid .category-card:nth-child(4)  { animation-delay: 0.13s; }
+.category-grid .category-card:nth-child(5)  { animation-delay: 0.16s; }
+.category-grid .category-card:nth-child(6)  { animation-delay: 0.19s; }
+.category-grid .category-card:nth-child(7)  { animation-delay: 0.22s; }
+.category-grid .category-card:nth-child(8)  { animation-delay: 0.25s; }
+.category-grid .category-card:nth-child(9)  { animation-delay: 0.28s; }
+.category-grid .category-card:nth-child(10) { animation-delay: 0.31s; }
+.category-grid .category-card:nth-child(11) { animation-delay: 0.34s; }
+.category-grid .category-card:nth-child(12) { animation-delay: 0.37s; }
+
+/* Icon bounce on hover */
+.category-card:hover .category-icon svg { animation: iconBounce 0.5s cubic-bezier(0.22,1,0.36,1); }
+.category-card:active                   { transform: translateY(0) scale(0.96); }
+
+/* ── Navigation enhancements ────────────────────────────── */
+
+/* Active nav link underline slide-in */
+.topbar-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.topbar-nav-link.active::after { transform: scaleX(1); }
+.topbar-nav-link:active        { transform: scale(0.95); transition: transform 0.08s; }
+
+/* Nav badge ping ring */
+.nav-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: badgePing 1.8s ease-out infinite;
+}
+
+/* Bottom nav — active icon bounce, press states */
+.bottom-nav-item.active svg { animation: iconBounce 0.4s cubic-bezier(0.22,1,0.36,1); }
+.bottom-nav-item:active     { opacity: 0.55; transition: opacity 0.08s; }
+.bottom-nav-cta:active      { transform: scale(0.85); }
+
+/* ── Button micro-interactions ──────────────────────────── */
+
+.btn-primary:active       { transform: translateY(0) scale(0.97); opacity: 1; }
+.btn-match:active         { transform: scale(0.97); opacity: 1; }
+.btn-secondary:active     { transform: scale(0.97); }
+.btn-modal-primary:active { transform: scale(0.97); opacity: 1; }
+.list-continue-btn:active { transform: translateY(0) scale(0.97); opacity: 1; }
+.list-submit-btn:active   { transform: translateY(0) scale(0.97); opacity: 1; }
+.list-back-btn:active     { transform: scale(0.97); }
+.back-btn:active          { transform: scale(0.97); }
+.landing-cta-primary:active { transform: translateY(0) scale(0.97); opacity: 1; }
+
+/* ── Toast — improved easing ────────────────────────────── */
+
+.activity-toast {
+  transition: opacity 0.3s cubic-bezier(0.22,1,0.36,1),
+              transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* ── Notification dropdown entrance ─────────────────────── */
+
+.notif-dropdown { animation: viewEnter 0.22s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* ── Offer item selection pop ───────────────────────────── */
+
+.offer-item.selected { animation: scalePopIn 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* ── Profile avatar — ring hover ────────────────────────── */
+
+.profile-avatar { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.profile-avatar:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 3px var(--accent-dim), 0 0 0 5px rgba(249,92,75,0.12);
+}
+
+/* ── Skeleton shimmer — warmer gradient ─────────────────── */
+
+.item-card-skeleton {
+  background: linear-gradient(90deg, #ece9e4 25%, #f8f6f3 50%, #ece9e4 75%);
+  background-size: 400% 100%;
+}
+
+/* ── My-item & trade cards — subtle hover lift ──────────── */
+
+.my-item-card  { transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s; }
+.my-item-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); border-color: var(--border-active); }
+
+.trade-card    { transition: box-shadow 0.2s, transform 0.2s; }
+.trade-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+
+/* ── LANDING PAGE — hero stagger entrance ───────────────── */
+
+.landing-hero .landing-pill           { animation: heroFadeIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
+.landing-hero .landing-h1             { animation: heroFadeIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
+.landing-hero .landing-sub            { animation: heroFadeIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.28s both; }
+.landing-hero .landing-hero-actions   { animation: heroFadeIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.40s both; }
+.landing-hero .landing-stats          { animation: heroFadeIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.52s both; }
+
+/* Stat value hover lift */
+.landing-stat-value { transition: transform 0.2s ease, color 0.2s ease; }
+.landing-stat:hover .landing-stat-value { transform: translateY(-2px); color: var(--accent); }
+
+/* ── LANDING PAGE — scroll-reveal (JS adds .revealed) ───── */
+
+.landing-section,
+.landing-cta-section {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1),
+              transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.landing-section.revealed,
+.landing-cta-section.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Steps stagger after section reveal */
+.landing-steps .landing-step {
+  transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1),
+              transform 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.landing-section:not(.revealed) .landing-steps .landing-step {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.landing-section.revealed .landing-steps .landing-step:nth-child(1) { transition-delay: 0.12s; }
+.landing-section.revealed .landing-steps .landing-step:nth-child(3) { transition-delay: 0.24s; }
+.landing-section.revealed .landing-steps .landing-step:nth-child(5) { transition-delay: 0.36s; }
+
+/* Floating arrow after reveal (desktop only — mobile hides via existing media query) */
+@media (min-width: 769px) {
+  .landing-section.revealed .landing-step-arrow {
+    display: inline-block;
+    animation: floatY 3.5s ease-in-out 0.6s infinite;
+  }
+}
+
+/* Feature cards stagger */
+.landing-feature {
+  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1),
+              transform 0.5s cubic-bezier(0.22,1,0.36,1),
+              border-color 0.2s;
+}
+.landing-section:not(.revealed) .landing-feature { opacity: 0; transform: translateY(16px); }
+.landing-section.revealed .landing-feature:nth-child(1) { transition-delay: 0.06s; }
+.landing-section.revealed .landing-feature:nth-child(2) { transition-delay: 0.12s; }
+.landing-section.revealed .landing-feature:nth-child(3) { transition-delay: 0.18s; }
+.landing-section.revealed .landing-feature:nth-child(4) { transition-delay: 0.24s; }
+.landing-section.revealed .landing-feature:nth-child(5) { transition-delay: 0.30s; }
+.landing-section.revealed .landing-feature:nth-child(6) { transition-delay: 0.36s; }
+.landing-feature:hover { border-color: var(--text-primary); }
+
+/* Testimonials stagger */
+.landing-testimonial {
+  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1),
+              transform 0.5s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.22s;
+}
+.landing-section:not(.revealed) .landing-testimonial { opacity: 0; transform: translateY(16px); }
+.landing-section.revealed .landing-testimonial:nth-child(1) { transition-delay: 0.06s; }
+.landing-section.revealed .landing-testimonial:nth-child(2) { transition-delay: 0.14s; }
+.landing-section.revealed .landing-testimonial:nth-child(3) { transition-delay: 0.22s; }
+.landing-testimonial:hover { box-shadow: var(--shadow-lift); }
+
+/* CTA section — subtle shine stripe */
+.landing-cta-section { position: relative; overflow: hidden; }
+.landing-cta-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -15%;
+  width: 35%;
+  height: 200%;
+  background: rgba(255,255,255,0.06);
+  transform: rotate(12deg);
+  pointer-events: none;
+}
+
+/* ── Reduced motion ─────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .landing-section,
+  .landing-cta-section { opacity: 1; transform: none; }
+}

@@ -21,6 +21,26 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const targets = document.querySelectorAll<Element>('.landing-section, .landing-cta-section');
+    if (!targets.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+
+    targets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   const fmt = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 
   return (
@@ -39,6 +59,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
 
       {/* ── Hero ── */}
       <section className="landing-hero">
+        <div className="landing-pill">Amman&apos;s barter marketplace</div>
 <h1 className="landing-h1">
           <span className="landing-h1-line1">Trade what you have.</span><br />
           Get what you need.
