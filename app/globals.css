@@ -592,7 +592,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
-  animation: bannerSlide 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  animation: bannerSlide 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
 @keyframes bannerSlide { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 .match-banner-text { flex: 1; min-width: 0; }
@@ -680,12 +680,12 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   text-align: center;
   position: relative;
   transform: scale(0.93) translateY(14px);
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
   box-shadow: 0 24px 64px rgba(0,0,0,0.15);
 }
 .modal-overlay.open .match-modal { transform: scale(1) translateY(0); }
-.modal-emoji { font-size: 48px; margin-bottom: 14px; display: block; animation: bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.15s both; }
-@keyframes bounceIn { from{transform:scale(0)} to{transform:scale(1)} }
+.modal-emoji { font-size: 48px; margin-bottom: 14px; display: block; animation: scaleIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.12s both; }
+@keyframes scaleIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .modal-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.4px; margin-bottom: 8px; }
 .modal-sub { font-size: 14px; color: var(--text-secondary); font-weight: 400; margin-bottom: 28px; line-height: 1.55; }
 .modal-sub strong { color: var(--text-primary); font-weight: 600; }
@@ -1048,7 +1048,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   overflow-y: auto;
   box-shadow: 0 24px 64px rgba(0,0,0,0.15);
   transform: scale(0.93) translateY(14px);
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
 }
 .list-modal-overlay.open .list-modal { transform: scale(1) translateY(0); }
 
@@ -1500,7 +1500,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   overflow-y: auto;
   box-shadow: 0 24px 64px rgba(0,0,0,0.15);
   transform: scale(0.93) translateY(14px);
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
 }
 .offer-overlay.open .offer-modal { transform: scale(1) translateY(0); }
 
@@ -1667,7 +1667,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: sentPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  animation: sentPop 0.4s cubic-bezier(0.22,1,0.36,1) both;
 }
 @keyframes sentPop { from{transform:scale(0)} to{transform:scale(1)} }
 .offer-sent-text {
@@ -3780,7 +3780,7 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
   border-radius: 1px;
   transform: scaleX(0);
   transform-origin: center;
-  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
 }
 .topbar-nav-link.active::after { transform: scaleX(1); }
 .topbar-nav-link:active        { transform: scale(0.95); transition: transform 0.08s; }
@@ -3825,7 +3825,7 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
 
 /* ── Offer item selection pop ───────────────────────────── */
 
-.offer-item.selected { animation: scalePopIn 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+.offer-item.selected { animation: scalePopIn 0.2s cubic-bezier(0.22,1,0.36,1); }
 
 /* ── Profile avatar — ring hover ────────────────────────── */
 
@@ -3862,17 +3862,18 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
 .landing-stat-value { transition: transform 0.2s ease, color 0.2s ease; }
 .landing-stat:hover .landing-stat-value { transform: translateY(-2px); color: var(--accent); }
 
-/* ── LANDING PAGE — scroll-reveal (JS adds .revealed) ───── */
+/* ── LANDING PAGE — scroll-reveal (JS adds .js-reveal-ready then .revealed) ── */
 
-.landing-section,
-.landing-cta-section {
+/* Only hide when JS is confirmed running — prevents blank sections in SSR / hidden tabs */
+.js-reveal-ready .landing-section,
+.js-reveal-ready .landing-cta-section {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1),
               transform 0.7s cubic-bezier(0.22,1,0.36,1);
 }
-.landing-section.revealed,
-.landing-cta-section.revealed {
+.js-reveal-ready .landing-section.revealed,
+.js-reveal-ready .landing-cta-section.revealed {
   opacity: 1;
   transform: translateY(0);
 }
@@ -3882,7 +3883,7 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
   transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1),
               transform 0.55s cubic-bezier(0.22,1,0.36,1);
 }
-.landing-section:not(.revealed) .landing-steps .landing-step {
+.js-reveal-ready .landing-section:not(.revealed) .landing-steps .landing-step {
   opacity: 0;
   transform: translateY(18px);
 }
@@ -3904,7 +3905,7 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
               transform 0.5s cubic-bezier(0.22,1,0.36,1),
               border-color 0.2s;
 }
-.landing-section:not(.revealed) .landing-feature { opacity: 0; transform: translateY(16px); }
+.js-reveal-ready .landing-section:not(.revealed) .landing-feature { opacity: 0; transform: translateY(16px); }
 .landing-section.revealed .landing-feature:nth-child(1) { transition-delay: 0.06s; }
 .landing-section.revealed .landing-feature:nth-child(2) { transition-delay: 0.12s; }
 .landing-section.revealed .landing-feature:nth-child(3) { transition-delay: 0.18s; }
@@ -3919,7 +3920,7 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
               transform 0.5s cubic-bezier(0.22,1,0.36,1),
               box-shadow 0.22s;
 }
-.landing-section:not(.revealed) .landing-testimonial { opacity: 0; transform: translateY(16px); }
+.js-reveal-ready .landing-section:not(.revealed) .landing-testimonial { opacity: 0; transform: translateY(16px); }
 .landing-section.revealed .landing-testimonial:nth-child(1) { transition-delay: 0.06s; }
 .landing-section.revealed .landing-testimonial:nth-child(2) { transition-delay: 0.14s; }
 .landing-section.revealed .landing-testimonial:nth-child(3) { transition-delay: 0.22s; }
@@ -3939,6 +3940,109 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
   pointer-events: none;
 }
 
+/* ── Mobile search overlay entrance ─────────────────────── */
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mobile-search-overlay.open {
+  animation: overlayFadeIn 0.18s cubic-bezier(0.22,1,0.36,1);
+}
+.mobile-search-overlay.open .mobile-search-inner {
+  animation: viewEnter 0.26s cubic-bezier(0.22,1,0.36,1) 0.04s both;
+}
+
+/* ── Lightbox entrance ───────────────────────────────────── */
+
+.lightbox-overlay {
+  animation: overlayFadeIn 0.18s ease-out;
+}
+
+@keyframes lightboxImgIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.lightbox-img {
+  animation: lightboxImgIn 0.26s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* ── Chat bubble entrance ────────────────────────────────── */
+
+@keyframes chatBubbleIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.chat-bubble {
+  animation: chatBubbleIn 0.18s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ── Confirm / report modal entrances ───────────────────── */
+
+.confirm-modal-overlay,
+.report-modal-overlay {
+  animation: overlayFadeIn 0.18s ease-out;
+}
+.confirm-modal,
+.report-modal {
+  animation: viewEnter 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* ── Conversation list stagger ───────────────────────────── */
+
+.conversations-list .conversation-item {
+  animation: cardIn 0.35s cubic-bezier(0.22,1,0.36,1) both;
+}
+.conversations-list .conversation-item:nth-child(1) { animation-delay: 0.02s; }
+.conversations-list .conversation-item:nth-child(2) { animation-delay: 0.05s; }
+.conversations-list .conversation-item:nth-child(3) { animation-delay: 0.08s; }
+.conversations-list .conversation-item:nth-child(4) { animation-delay: 0.11s; }
+.conversations-list .conversation-item:nth-child(5) { animation-delay: 0.14s; }
+.conversations-list .conversation-item:nth-child(6) { animation-delay: 0.17s; }
+
+/* ── Notification dropdown item stagger ──────────────────── */
+
+.notif-dropdown .notif-item {
+  animation: viewEnter 0.2s cubic-bezier(0.22,1,0.36,1) both;
+}
+.notif-dropdown .notif-item:nth-child(1) { animation-delay: 0.04s; }
+.notif-dropdown .notif-item:nth-child(2) { animation-delay: 0.08s; }
+.notif-dropdown .notif-item:nth-child(3) { animation-delay: 0.12s; }
+.notif-dropdown .notif-item:nth-child(4) { animation-delay: 0.16s; }
+.notif-dropdown .notif-item:nth-child(5) { animation-delay: 0.20s; }
+
+/* ── My items / trades / matches list stagger ────────────── */
+
+.my-items-list .my-item-card,
+.trades-list .trade-card,
+.matches-list .match-card {
+  animation: cardIn 0.35s cubic-bezier(0.22,1,0.36,1) both;
+}
+.my-items-list .my-item-card:nth-child(1),
+.trades-list .trade-card:nth-child(1),
+.matches-list .match-card:nth-child(1) { animation-delay: 0.03s; }
+
+.my-items-list .my-item-card:nth-child(2),
+.trades-list .trade-card:nth-child(2),
+.matches-list .match-card:nth-child(2) { animation-delay: 0.07s; }
+
+.my-items-list .my-item-card:nth-child(3),
+.trades-list .trade-card:nth-child(3),
+.matches-list .match-card:nth-child(3) { animation-delay: 0.11s; }
+
+.my-items-list .my-item-card:nth-child(4),
+.trades-list .trade-card:nth-child(4),
+.matches-list .match-card:nth-child(4) { animation-delay: 0.15s; }
+
+.my-items-list .my-item-card:nth-child(5),
+.trades-list .trade-card:nth-child(5),
+.matches-list .match-card:nth-child(5) { animation-delay: 0.19s; }
+
+.my-items-list .my-item-card:nth-child(6),
+.trades-list .trade-card:nth-child(6),
+.matches-list .match-card:nth-child(6) { animation-delay: 0.23s; }
+
 /* ── Reduced motion ─────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -3947,6 +4051,6 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .landing-section,
-  .landing-cta-section { opacity: 1; transform: none; }
+  .js-reveal-ready .landing-section,
+  .js-reveal-ready .landing-cta-section { opacity: 1; transform: none; }
 }

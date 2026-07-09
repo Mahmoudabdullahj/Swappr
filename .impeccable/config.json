@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "bounce-easing",
+        "value": "iconbounce",
+        "reason": "Intentional icon hop microinteraction (category hover, bottom-nav active) — multi-keyframe position trajectory, not an elastic timing curve",
+        "createdAt": "2026-07-09T18:29:36.883Z"
+      }
+    ]
+  }
+}

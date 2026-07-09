@@ -22,8 +22,11 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
   }, []);
 
   useEffect(() => {
+    const landing = document.querySelector('.landing');
     const targets = document.querySelectorAll<Element>('.landing-section, .landing-cta-section');
     if (!targets.length) return;
+
+    landing?.classList.add('js-reveal-ready');
 
     const observer = new IntersectionObserver(
       (entries) => {
