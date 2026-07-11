@@ -3209,12 +3209,12 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .bento-hero:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
 
 .bento-headline {
-  font-size: clamp(26px, 3.6vw, 54px);
+  font-size: clamp(36px, 8vw, 130px);
   font-weight: 900;
-  line-height: 1.08;
+  line-height: 1.0;
   color: #fff;
   margin: 0;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .bento-hero-footer {
@@ -3347,7 +3347,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   }
   .bento-hero { min-height: 260px; }
   .bento-card { min-height: 150px; }
-  .bento-headline { font-size: clamp(28px, 8vw, 40px); }
+  .bento-headline { font-size: clamp(32px, 10vw, 72px); }
 }
 
 /* ── Bento grid entrance ─────────────────────────────── */
