@@ -3199,6 +3199,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   object-fit: cover;
   border-radius: 20px;
   pointer-events: none;
+  z-index: 0;
 }
 
 .bento-hero-overlay {
@@ -3207,6 +3208,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   background: rgba(0, 0, 0, 0.45);
   border-radius: 20px;
   pointer-events: none;
+  z-index: 1;
 }
 
 .bento-hero {
@@ -3233,12 +3235,16 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   color: #fff;
   margin: 0;
   letter-spacing: -0.03em;
+  position: relative;
+  z-index: 2;
 }
 
 .bento-hero-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  z-index: 2;
 }
 
 .bento-list-btn {
