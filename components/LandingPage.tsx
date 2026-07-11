@@ -13,6 +13,7 @@ interface Props {
 
 export default function LandingPage({ onGetStarted, embedded, loggedIn, children }: Props) {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [displayStats, setDisplayStats] = useState<Stats | null>(null);
 
   useEffect(() => {
     fetch('/api/stats')
@@ -20,6 +21,20 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
       .then(setStats)
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!stats) return;
+    const duration = 1400;
+    const start = performance.now();
+    const { listings, traders } = stats;
+    function tick(now: number) {
+      const p = Math.min((now - start) / duration, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      setDisplayStats({ listings: Math.round(listings * e), traders: Math.round(traders * e) });
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }, [stats]);
 
   useEffect(() => {
     const landing = document.querySelector('.landing');
@@ -87,12 +102,12 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
         {/* Stats */}
         <div className="landing-stats">
           <div className="landing-stat">
-            <span className="landing-stat-value">{stats ? fmt(stats.listings) : '—'}</span>
+            <span className="landing-stat-value">{displayStats ? fmt(displayStats.listings) : '—'}</span>
             <span className="landing-stat-label">Active listings</span>
           </div>
           <div className="landing-stat-divider" />
           <div className="landing-stat">
-            <span className="landing-stat-value">{stats ? fmt(stats.traders) : '—'}</span>
+            <span className="landing-stat-value">{displayStats ? fmt(displayStats.traders) : '—'}</span>
             <span className="landing-stat-label">Traders</span>
           </div>
           <div className="landing-stat-divider" />

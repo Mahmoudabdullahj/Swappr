@@ -1739,7 +1739,8 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   display: inline-block;
   padding: 5px 16px;
   border-radius: 999px;
-  background: var(--accent-dim);
+  background: linear-gradient(90deg, var(--accent-dim) 0%, rgba(34,88,246,0.18) 50%, var(--accent-dim) 100%);
+  background-size: 200% 100%;
   border: 1px solid rgba(34,88,246,0.2);
   color: var(--accent);
   font-size: 12px;
@@ -4205,8 +4206,8 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 
 @keyframes heroFadeIn {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(26px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes badgePing {
@@ -4354,11 +4355,11 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
 
 /* ── LANDING PAGE — hero stagger entrance ───────────────── */
 
-.landing-hero .landing-pill           { animation: heroFadeIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
-.landing-hero .landing-h1             { animation: heroFadeIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
-.landing-hero .landing-sub            { animation: heroFadeIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.28s both; }
-.landing-hero .landing-hero-actions   { animation: heroFadeIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.40s both; }
-.landing-hero .landing-stats          { animation: heroFadeIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.52s both; }
+.landing-hero .landing-pill           { animation: heroFadeIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.05s both, pillShimmer 3.5s ease-in-out 0.8s infinite; }
+.landing-hero .landing-h1             { animation: heroFadeIn 0.75s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+.landing-hero .landing-sub            { animation: heroFadeIn 0.7s  cubic-bezier(0.22,1,0.36,1) 0.34s both; }
+.landing-hero .landing-hero-actions   { animation: heroFadeIn 0.7s  cubic-bezier(0.22,1,0.36,1) 0.50s both; }
+.landing-hero .landing-stats          { animation: heroFadeIn 0.7s  cubic-bezier(0.22,1,0.36,1) 0.64s both, statFloat 4.5s ease-in-out 1.4s infinite; }
 
 /* Stat value hover lift */
 .landing-stat-value { transition: transform 0.2s ease, color 0.2s ease; }
@@ -4404,8 +4405,9 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
 /* Feature cards stagger */
 .landing-feature {
   transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1),
-              transform 0.5s cubic-bezier(0.22,1,0.36,1),
-              border-color 0.2s;
+              transform 0.4s cubic-bezier(0.22,1,0.36,1),
+              border-color 0.2s,
+              box-shadow 0.4s;
 }
 .js-reveal-ready .landing-section:not(.revealed) .landing-feature { opacity: 0; transform: translateY(16px); }
 .landing-section.revealed .landing-feature:nth-child(1) { transition-delay: 0.06s; }
@@ -4414,7 +4416,7 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
 .landing-section.revealed .landing-feature:nth-child(4) { transition-delay: 0.24s; }
 .landing-section.revealed .landing-feature:nth-child(5) { transition-delay: 0.30s; }
 .landing-section.revealed .landing-feature:nth-child(6) { transition-delay: 0.36s; }
-.landing-feature:hover { border-color: var(--text-primary); }
+.landing-feature:hover { border-color: var(--text-primary); transform: translateY(-6px); box-shadow: var(--shadow-lift); }
 
 /* Testimonials stagger */
 .landing-testimonial {
@@ -4427,6 +4429,48 @@ article.item-card:nth-child(12) { animation-delay: 0.48s; }
 .landing-section.revealed .landing-testimonial:nth-child(2) { transition-delay: 0.14s; }
 .landing-section.revealed .landing-testimonial:nth-child(3) { transition-delay: 0.22s; }
 .landing-testimonial:hover { box-shadow: var(--shadow-lift); }
+
+/* ── LANDING PAGE — new keyframes ───────────────────────── */
+
+@keyframes pillShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes statFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+
+@keyframes heroAmbient {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -20px) scale(1.04); }
+  66%       { transform: translate(-20px, 14px) scale(0.97); }
+}
+
+@keyframes ctaGlow {
+  0%, 100% { box-shadow: 0 4px 18px rgba(17,17,17,0.18); }
+  50%       { box-shadow: 0 8px 36px rgba(17,17,17,0.30); }
+}
+
+/* ── LANDING — ambient hero background orb ──────────────── */
+.landing-hero { position: relative; }
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  inset: -100px -200px;
+  background:
+    radial-gradient(ellipse 65% 55% at 28% 38%, rgba(34,88,246,0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 45% at 72% 62%, rgba(34,88,246,0.05) 0%, transparent 65%);
+  animation: heroAmbient 16s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+.landing-hero > * { position: relative; z-index: 1; }
+
+/* ── LANDING — CTA button continuous glow ───────────────── */
+.landing-cta-primary { animation: ctaGlow 3s ease-in-out 1.8s infinite; }
+.landing-cta-primary:hover { animation-play-state: paused; }
 
 /* CTA section — subtle shine stripe */
 .landing-cta-section { position: relative; overflow: hidden; }
