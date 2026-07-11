@@ -1127,6 +1127,17 @@ export default function Page() {
                 </div>
               </section>
 
+              {/* ── Trending Near You ── */}
+              <div className="trending-dark-wrap">
+                <TrendingFeed
+                  session={session}
+                  onOfferTrade={(item) => { setTradeTarget(item); setShowOfferModal(true); }}
+                  onSeeAll={() => handleViewChange('discover')}
+                  likedIds={likedIds}
+                  onLikeToggle={handleLikeToggle}
+                />
+              </div>
+
             </main>
 
           ) : (
