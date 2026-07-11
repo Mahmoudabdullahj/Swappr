@@ -3349,6 +3349,37 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   .bento-headline { font-size: clamp(28px, 8vw, 40px); }
 }
 
+/* ── Bento grid entrance ─────────────────────────────── */
+@keyframes bentoEnter {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.bento-hero                           { animation: bentoEnter 0.7s  cubic-bezier(0.22,1,0.36,1) 0.05s both; }
+.bento-right .bento-card:nth-child(1) { animation: bentoEnter 0.65s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+.bento-right .bento-card:nth-child(2) { animation: bentoEnter 0.65s cubic-bezier(0.22,1,0.36,1) 0.30s both; }
+
+/* ── Category card entrance ──────────────────────────── */
+@keyframes catCardEnter {
+  from { opacity: 0; transform: translateY(22px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.cat-section-visible .cat-card:nth-child(1)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.04s  both; }
+.cat-section-visible .cat-card:nth-child(2)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.09s  both; }
+.cat-section-visible .cat-card:nth-child(3)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.14s  both; }
+.cat-section-visible .cat-card:nth-child(4)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.19s  both; }
+.cat-section-visible .cat-card:nth-child(5)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.24s  both; }
+.cat-section-visible .cat-card:nth-child(6)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.29s  both; }
+.cat-section-visible .cat-card:nth-child(7)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.34s  both; }
+.cat-section-visible .cat-card:nth-child(8)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.39s  both; }
+.cat-section-visible .cat-card:nth-child(9)  { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.44s  both; }
+.cat-section-visible .cat-card:nth-child(10) { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.49s  both; }
+.cat-section-visible .cat-card:nth-child(11) { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.54s  both; }
+.cat-section-visible .cat-card:nth-child(12) { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.59s  both; }
+.cat-section-visible .cat-card:nth-child(13) { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.64s  both; }
+.cat-section-visible .cat-card:nth-child(14) { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.69s  both; }
+
 /* ── Category section ── */
 .cat-section {
   padding: 56px 24px 80px;

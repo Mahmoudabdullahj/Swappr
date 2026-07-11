@@ -726,6 +726,18 @@ export default function Page() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  // Trigger category card entrance when the section scrolls into view
+  useEffect(() => {
+    const el = document.querySelector('.cat-section');
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add('cat-section-visible'); observer.disconnect(); } },
+      { threshold: 0.05 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loggedIn, activeView, activeCategory]);
+
   function handleSearch(q: string) {
     setSearchQuery(q);
     if (searchDebounce.current) clearTimeout(searchDebounce.current);
