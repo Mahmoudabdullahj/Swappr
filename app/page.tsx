@@ -123,7 +123,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 const CATEGORY_SLUG_MAP: Record<string, string> = {
-  electronics: 'Electronics',
+  electronics: 'Phones',
   cameras:     'Cameras',
   gaming:      'Gaming',
   instruments: 'Instruments',
