@@ -3362,7 +3362,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.38);
+  background: rgba(0,0,0,0.10);
   z-index: 1;
 }
 
