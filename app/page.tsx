@@ -1588,6 +1588,17 @@ export default function Page() {
                       value={chatInput}
                       onChange={e => setChatInput(e.target.value)}
                       autoComplete="off"
+                      onPaste={(e) => {
+                        const imageItem = Array.from(e.clipboardData.items).find(item => item.type.startsWith('image/'));
+                        if (!imageItem) return;
+                        const file = imageItem.getAsFile();
+                        if (!file) return;
+                        e.preventDefault();
+                        setChatImageFile(file);
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setChatImagePreview(ev.target?.result as string);
+                        reader.readAsDataURL(file);
+                      }}
                     />
                     <button
                       className="chat-send-btn"
