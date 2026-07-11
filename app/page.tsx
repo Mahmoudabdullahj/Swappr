@@ -50,6 +50,7 @@ interface Message {
   senderId: string;
   senderName: string;
   content: string;
+  imageUrl?: string | null;
   createdAt: number;
 }
 
@@ -215,6 +216,9 @@ export default function Page() {
   const [chatError, setChatError]             = useState<string | null>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const convoRefreshKey = useRef(0);
+  const [chatImageFile, setChatImageFile] = useState<File | null>(null);
+  const [chatImagePreview, setChatImagePreview] = useState<string | null>(null);
+  const chatImageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -377,6 +381,8 @@ export default function Page() {
 
   // Load messages when a conversation is opened
   useEffect(() => {
+    setChatImageFile(null);
+    setChatImagePreview(null);
     if (!activeConvo) { setMessages([]); return; }
     fetch(`/api/conversations/${activeConvo.id}/messages`)
       .then(r => r.json())
@@ -410,6 +416,7 @@ export default function Page() {
               senderId:       row.sender_id as string,
               senderName:     row.sender_name as string,
               content:        row.content as string,
+              imageUrl:       (row.image_url as string | null) ?? null,
               createdAt:      new Date(row.created_at as string).getTime(),
             }];
           });
@@ -419,9 +426,21 @@ export default function Page() {
     return () => { supabase.removeChannel(channel); };
   }, [activeConvo, session]);
 
-  async function sendMessage(content: string, targetConvo?: Conversation) {
+  async function uploadChatImage(file: File): Promise<string> {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Failed to upload image');
+    }
+    const { url } = await res.json();
+    return url as string;
+  }
+
+  async function sendMessage(content: string, imageUrl?: string | null, targetConvo?: Conversation) {
     const convo = targetConvo ?? activeConvo;
-    if (!content.trim() || chatSending) return;
+    if ((!content.trim() && !imageUrl) || chatSending) return;
 
     const text = content.trim();
     const optimisticId = `opt-${Date.now()}`;
@@ -431,10 +450,10 @@ export default function Page() {
       senderId:       session?.userId ?? '',
       senderName:     session?.displayName ?? '',
       content:        text,
+      imageUrl:       imageUrl ?? null,
       createdAt:      Date.now(),
     };
 
-    // Show immediately
     setChatInput('');
     setChatError(null);
     if (convo) setMessages(prev => [...prev, optimistic]);
@@ -445,7 +464,7 @@ export default function Page() {
         const res = await fetch(`/api/conversations/${convo.id}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: text }),
+          body: JSON.stringify({ content: text, imageUrl }),
         });
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
@@ -453,8 +472,7 @@ export default function Page() {
           throw new Error(body.error || `Error ${res.status}`);
         }
         const real = await res.json();
-        // Swap optimistic message for the confirmed one
-        setMessages(prev => prev.map(m => m.id === optimisticId ? { ...real, createdAt: real.createdAt } : m));
+        setMessages(prev => prev.map(m => m.id === optimisticId ? real : m));
         fetchConversations();
       } else if (chatTarget) {
         const res = await fetch('/api/conversations', {
@@ -467,6 +485,7 @@ export default function Page() {
             itemTitle:      chatTarget.itemTitle,
             itemImg:        chatTarget.itemImg,
             message:        text,
+            imageUrl,
           }),
         });
         if (!res.ok) {
@@ -478,7 +497,6 @@ export default function Page() {
         const convos: Conversation[] = await convosRes.json();
         setConversations(Array.isArray(convos) ? convos : []);
         const created = convos.find(c => c.id === conversationId) ?? null;
-        // Load messages for the newly created conversation
         const msgsRes = await fetch(`/api/conversations/${conversationId}/messages`);
         const msgs: Message[] = await msgsRes.json();
         setMessages(Array.isArray(msgs) ? msgs : []);
@@ -1478,7 +1496,13 @@ export default function Page() {
                     return (
                       <div key={msg.id} className={`chat-message${isMine ? ' sent' : ' recv'}`}>
                         {!isMine && <span className="chat-sender-name">{msg.senderName}</span>}
-                        <div className="chat-bubble">{msg.content}</div>
+                        <div className={`chat-bubble${msg.imageUrl ? ' has-image' : ''}`}>
+                          {msg.imageUrl && (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img src={msg.imageUrl} alt="Image" className="chat-msg-image" />
+                          )}
+                          {msg.content && <span className={msg.imageUrl ? 'chat-msg-caption' : ''}>{msg.content}</span>}
+                        </div>
                         <span className="chat-time">{timeAgo(msg.createdAt)}</span>
                       </div>
                     );
@@ -1491,29 +1515,92 @@ export default function Page() {
                     {chatError}
                   </p>
                 )}
-                <form
-                  className="chat-input-area"
-                  onSubmit={(e) => { e.preventDefault(); sendMessage(chatInput); }}
-                >
-                  <input
-                    className="chat-input"
-                    type="text"
-                    placeholder="Type a message…"
-                    value={chatInput}
-                    onChange={e => setChatInput(e.target.value)}
-                    autoComplete="off"
-                  />
-                  <button
-                    className="chat-send-btn"
-                    type="submit"
-                    disabled={!chatInput.trim() || chatSending}
-                    aria-label="Send message"
+                <div className="chat-input-wrapper">
+                  {chatImagePreview && (
+                    <div className="chat-image-preview-area">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={chatImagePreview} alt="Attachment preview" className="chat-image-preview" />
+                      <button
+                        type="button"
+                        className="chat-image-preview-remove"
+                        onClick={() => { setChatImageFile(null); setChatImagePreview(null); }}
+                        aria-label="Remove image"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                  <form
+                    className="chat-input-area"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (chatSending) return;
+                      if (!chatInput.trim() && !chatImageFile) return;
+                      let imageUrl: string | null = null;
+                      if (chatImageFile) {
+                        setChatSending(true);
+                        try {
+                          imageUrl = await uploadChatImage(chatImageFile);
+                        } catch (err) {
+                          setChatError(err instanceof Error ? err.message : 'Failed to upload image');
+                          setChatSending(false);
+                          return;
+                        }
+                        setChatImageFile(null);
+                        setChatImagePreview(null);
+                        setChatSending(false);
+                      }
+                      sendMessage(chatInput, imageUrl);
+                    }}
                   >
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
-                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                    </svg>
-                  </button>
-                </form>
+                    <input
+                      ref={chatImageInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setChatImageFile(file);
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setChatImagePreview(ev.target?.result as string);
+                        reader.readAsDataURL(file);
+                        e.target.value = '';
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="chat-attach-btn"
+                      onClick={() => chatImageInputRef.current?.click()}
+                      aria-label="Attach image"
+                      title="Attach image"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                      </svg>
+                    </button>
+                    <input
+                      className="chat-input"
+                      type="text"
+                      placeholder="Type a message…"
+                      value={chatInput}
+                      onChange={e => setChatInput(e.target.value)}
+                      autoComplete="off"
+                    />
+                    <button
+                      className="chat-send-btn"
+                      type="submit"
+                      disabled={(!chatInput.trim() && !chatImageFile) || chatSending}
+                      aria-label="Send message"
+                    >
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                      </svg>
+                    </button>
+                  </form>
+                </div>
               </div>
 
             ) : (

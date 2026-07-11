@@ -34,6 +34,7 @@ export async function GET(
     senderId:       row.sender_id,
     senderName:     row.sender_name,
     content:        row.content,
+    imageUrl:       (row.image_url as string | null) ?? null,
     createdAt:      new Date(row.created_at as string).getTime(),
   }));
 
@@ -60,22 +61,24 @@ export async function POST(
   if (!convo) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const body = await request.json();
-  const content = body.content?.trim();
-  if (!content) return NextResponse.json({ error: 'Message cannot be empty' }, { status: 400 });
+  const content = body.content?.trim() || '';
+  const imageUrl = body.imageUrl?.trim() || null;
+  if (!content && !imageUrl) return NextResponse.json({ error: 'Message cannot be empty' }, { status: 400 });
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
 
   const { data, error } = await supabase
     .from('messages')
-    .insert({ conversation_id: id, sender_id: user.id, sender_name: senderName, content })
+    .insert({ conversation_id: id, sender_id: user.id, sender_name: senderName, content, image_url: imageUrl })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  const lastMsg = content || '📷 Image';
   await supabase
     .from('conversations')
-    .update({ last_message: content, last_message_at: new Date().toISOString() })
+    .update({ last_message: lastMsg, last_message_at: new Date().toISOString() })
     .eq('id', id);
 
   return NextResponse.json({
@@ -84,6 +87,7 @@ export async function POST(
     senderId:       data.sender_id,
     senderName:     data.sender_name,
     content:        data.content,
+    imageUrl:       (data.image_url as string | null) ?? null,
     createdAt:      new Date(data.created_at).getTime(),
   }, { status: 201 });
 }

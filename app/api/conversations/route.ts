@@ -38,14 +38,15 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
   const body = await request.json();
-  const { targetUserId, targetUserName, itemId, itemTitle, itemImg, message } = body;
+  const { targetUserId, targetUserName, itemId, itemTitle, itemImg, message, imageUrl } = body;
 
-  if (!targetUserId || !message?.trim()) {
+  if (!targetUserId || (!message?.trim() && !imageUrl)) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
-  const msgText = message.trim();
+  const msgText = message?.trim() || '';
+  const lastMsg = msgText || '📷 Image';
 
   // Check if conversation already exists between these two users
   const { data: existing } = await supabase
@@ -61,10 +62,9 @@ export async function POST(request: NextRequest) {
 
   if (existing?.id) {
     convoId = existing.id as string;
-    // Update last_message
     await supabase
       .from('conversations')
-      .update({ last_message: msgText, last_message_at: new Date().toISOString() })
+      .update({ last_message: lastMsg, last_message_at: new Date().toISOString() })
       .eq('id', convoId);
   } else {
     const { data: newConvo, error: createErr } = await supabase
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         item_id:      itemId || null,
         item_title:   itemTitle || null,
         item_img:     itemImg || null,
-        last_message: msgText,
+        last_message: lastMsg,
         last_message_at: new Date().toISOString(),
       })
       .select('id')
@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
       sender_id:       user.id,
       sender_name:     senderName,
       content:         msgText,
+      image_url:       imageUrl || null,
     });
 
   if (msgErr) return NextResponse.json({ error: msgErr.message }, { status: 500 });
