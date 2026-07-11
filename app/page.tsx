@@ -76,6 +76,7 @@ function timeAgo(ts: number): string {
 
 // Human-readable names for category slugs
 const CATEGORY_NAMES: Record<string, string> = {
+  mobiles:     'Mobiles',
   electronics: 'Electronics',
   laptops:     'Laptops',
   cameras:     'Cameras',
@@ -92,7 +93,8 @@ const CATEGORY_NAMES: Record<string, string> = {
 };
 
 const CATEGORY_TAGLINES: Record<string, string> = {
-  electronics: 'Phones, tablets & gadgets',
+  mobiles:     'Phones & mobile devices',
+  electronics: 'TVs, audio & smart home',
   laptops:     'Work & play anywhere',
   cameras:     'Capture every moment',
   gaming:      'Level up your setup',
@@ -108,7 +110,7 @@ const CATEGORY_TAGLINES: Record<string, string> = {
 };
 
 const CATEGORY_IMAGES: Record<string, string> = {
-  electronics: '/categories/Mobiles.png',
+  mobiles:     '/categories/Mobiles.png',
   laptops:     '/categories/Laptops.png',
   cameras:     '/categories/Cameras.png',
   gaming:      '/categories/Gaming.png',
@@ -123,7 +125,8 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 const CATEGORY_SLUG_MAP: Record<string, string> = {
-  electronics: 'Phones',
+  mobiles:     'Phones',
+  electronics: 'Electronics',
   cameras:     'Cameras',
   gaming:      'Gaming',
   instruments: 'Instruments',

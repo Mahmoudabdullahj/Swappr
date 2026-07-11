@@ -9,7 +9,8 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { slug: 'electronics', name: 'Electronics',  Icon: CATEGORY_ICONS['Electronics']  },
+  { slug: 'mobiles',     name: 'Mobiles',       Icon: CATEGORY_ICONS['Phones']       },
+  { slug: 'electronics', name: 'Electronics',   Icon: CATEGORY_ICONS['Electronics']  },
   { slug: 'laptops',     name: 'Laptops',       Icon: CATEGORY_ICONS['Laptops']      },
   { slug: 'cameras',     name: 'Cameras',       Icon: CATEGORY_ICONS['Cameras']      },
   { slug: 'gaming',      name: 'Gaming',        Icon: CATEGORY_ICONS['Gaming']       },
