@@ -1004,70 +1004,95 @@ export default function Page() {
               </div>
             </main>
 
-          ) : (
-            /* ── Normal discover view ── */
-            <LandingPage embedded loggedIn={loggedIn}>
+          ) : loggedIn ? (
+            /* ── Bento home (logged in) ── */
+            <main className="bento-home" id="view-discover">
 
-              <main className="content" id="view-discover">
+              {/* Hero box — click → My Items */}
+              <div
+                className="bento-hero"
+                onClick={() => handleViewChange('items')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && handleViewChange('items')}
+                aria-label="Go to My Items"
+              >
+                <h1 className="bento-headline">Trade what<br/>you have,<br/>get what<br/>you need.</h1>
+                <div className="bento-hero-footer">
+                  <button
+                    className="bento-list-btn"
+                    onClick={(e) => { e.stopPropagation(); setShowListModal(true); }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    List an Item
+                  </button>
+                  <div className="bento-hero-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+                      <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
 
-                {/* Match alert banner — hidden until real match system is built */}
-                {false && bannerVisible && (
-                  <section aria-label="Match notification" aria-live="polite">
-                    <div className="match-banner">
-                      <div className="match-pulse" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                      </div>
-                      <div className="match-banner-text">
-                        <p className="match-banner-title">New Exact Match Found</p>
-                        <p className="match-banner-sub">
-                          <strong>Karim A.</strong> wants your Sony headphones and is offering the Fujifilm X-T30 — <strong>~8 km away</strong>
-                        </p>
-                      </div>
-                      <div className="match-items-preview" aria-hidden="true">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img className="match-thumb" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&q=80" alt="Sony WH-1000XM5" />
-                        <div className="match-swap-icon">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
-                          </svg>
-                        </div>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img className="match-thumb" src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=100&q=80" alt="Fujifilm X-T30" />
-                      </div>
-                      <button className="btn-match" onClick={() => setShowMatchModal(true)}>
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                        View Match
-                      </button>
-                      <button className="btn-dismiss" onClick={() => setBannerVisible(false)} aria-label="Dismiss">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      </button>
+              {/* Right column */}
+              <div className="bento-right">
+
+                {/* My Trades — click → Trades */}
+                <div
+                  className="bento-card bento-trades-card"
+                  onClick={() => handleViewChange('trades')}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && handleViewChange('trades')}
+                  aria-label="Go to My Trades"
+                >
+                  <span className="bento-card-label">My Trades</span>
+                  <div className="bento-trades-counts">
+                    <div className="bento-trade-stat">
+                      <span className="bento-count">{myTrades.length}</span>
+                      <span className="bento-count-label">Sent</span>
                     </div>
-                  </section>
-                )}
+                    <div className="bento-trade-stat">
+                      <span className="bento-count">{receivedTrades.length}</span>
+                      <span className="bento-count-label">Received</span>
+                    </div>
+                  </div>
+                  <div className="bento-card-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+                      <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                    </svg>
+                  </div>
+                </div>
 
-                {/* Category grid */}
+                {/* Matches — click → Matches */}
+                <div
+                  className="bento-card bento-matches-card"
+                  onClick={() => handleViewChange('matches')}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && handleViewChange('matches')}
+                  aria-label="Go to Matches"
+                >
+                  <span className="bento-card-label bento-matches-label">Matches</span>
+                  <span className="bento-matches-count">{myMatches.length}</span>
+                  <div className="bento-card-arrow bento-card-arrow-dark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+                      <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                    </svg>
+                  </div>
+                </div>
+
+              </div>
+            </main>
+
+          ) : (
+            /* ── Landing page for guests ── */
+            <LandingPage embedded loggedIn={loggedIn}>
+              <main className="content" id="view-discover">
                 <CategoryGrid activeSlug={activeCategory} onSelect={(slug) => setActiveCategory(slug)} />
-
-
-                {/* Trending / Recommended feed (post-login) */}
-                {loggedIn && (
-                  <TrendingFeed
-                    session={session}
-                    onOfferTrade={(item) => { setTradeTarget(item); setShowOfferModal(true); }}
-                    onSeeAll={() => setDiscoverSubView('trending')}
-                    likedIds={likedIds}
-                    onLikeToggle={handleLikeToggle}
-                  />
-                )}
-
               </main>
-
             </LandingPage>
           )
         )}
