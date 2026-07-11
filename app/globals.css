@@ -3107,23 +3107,24 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .conversations-list {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
 }
 
 .conversation-item {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 24px;
+  padding: 14px 18px;
   background: var(--bg-surface);
-  border: none;
-  border-bottom: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, box-shadow 0.15s;
   text-align: left;
   width: 100%;
 }
-.conversation-item:first-child { border-top: 1px solid var(--border); }
-.conversation-item:hover { background: var(--bg-base); }
+.conversation-item:hover { background: var(--bg-base); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
 .conversation-avatar {
   width: 46px;
