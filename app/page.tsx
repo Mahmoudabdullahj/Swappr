@@ -1038,7 +1038,7 @@ export default function Page() {
               </div>
             </main>
 
-          ) : loggedIn ? (
+          ) : authLoading ? null : loggedIn ? (
             /* ── Bento home (logged in) ── */
             <main className="bento-page" id="view-discover">
               <div className="bento-home">
