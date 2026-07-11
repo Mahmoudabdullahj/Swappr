@@ -219,6 +219,7 @@ export default function Page() {
   const [chatImageFile, setChatImageFile] = useState<File | null>(null);
   const [chatImagePreview, setChatImagePreview] = useState<string | null>(null);
   const chatImageInputRef = useRef<HTMLInputElement>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -1499,7 +1500,7 @@ export default function Page() {
                         <div className={`chat-bubble${msg.imageUrl ? ' has-image' : ''}`}>
                           {msg.imageUrl && (
                             /* eslint-disable-next-line @next/next/no-img-element */
-                            <img src={msg.imageUrl} alt="Image" className="chat-msg-image" />
+                            <img src={msg.imageUrl} alt="Image" className="chat-msg-image" onClick={() => setLightboxUrl(msg.imageUrl!)} />
                           )}
                           {msg.content && <span className={msg.imageUrl ? 'chat-msg-caption' : ''}>{msg.content}</span>}
                         </div>
@@ -1612,6 +1613,19 @@ export default function Page() {
                     </button>
                   </form>
                 </div>
+
+                {/* ── Lightbox ── */}
+                {lightboxUrl && (
+                  <div className="lightbox-overlay" onClick={() => setLightboxUrl(null)} role="dialog" aria-modal="true" aria-label="Image preview">
+                    <button className="lightbox-close" onClick={() => setLightboxUrl(null)} aria-label="Close">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="20" height="20" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={lightboxUrl} alt="Full size" className="lightbox-img" onClick={e => e.stopPropagation()} />
+                  </div>
+                )}
               </div>
 
             ) : (
