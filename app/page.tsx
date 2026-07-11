@@ -1083,55 +1083,6 @@ export default function Page() {
                 </div>
               </div>
 
-              {/* Right column */}
-              <div className="bento-right">
-
-                {/* My Trades — click → Trades */}
-                <div
-                  className="bento-card bento-trades-card"
-                  onClick={() => handleViewChange('trades')}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && handleViewChange('trades')}
-                  aria-label="Go to My Trades"
-                >
-                  <span className="bento-card-label">My Trades</span>
-                  <div className="bento-trades-counts">
-                    <div className="bento-trade-stat">
-                      <span className="bento-count">{myTrades.length}</span>
-                      <span className="bento-count-label">Sent</span>
-                    </div>
-                    <div className="bento-trade-stat">
-                      <span className="bento-count">{receivedTrades.length}</span>
-                      <span className="bento-count-label">Received</span>
-                    </div>
-                  </div>
-                  <div className="bento-card-arrow" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
-                      <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Matches — click → Matches */}
-                <div
-                  className="bento-card bento-matches-card"
-                  onClick={() => handleViewChange('matches')}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && handleViewChange('matches')}
-                  aria-label="Go to Matches"
-                >
-                  <span className="bento-card-label bento-matches-label">Matches</span>
-                  <span className="bento-matches-count">{myMatches.length}</span>
-                  <div className="bento-card-arrow bento-card-arrow-dark" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
-                      <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-                    </svg>
-                  </div>
-                </div>
-
-              </div>
               </div>{/* end bento-home grid */}
 
               {/* ── Category section ── */}
