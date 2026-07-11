@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from 'next';
+import { Bricolage_Grotesque } from 'next/font/google';
 import './globals.css';
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-bricolage',
+  display: 'swap',
+});
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -35,11 +42,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://rsms.me/" />
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-      </head>
+    <html lang="en" className={bricolage.variable}>
       <body>{children}</body>
     </html>
   );

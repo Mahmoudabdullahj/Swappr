@@ -43,8 +43,8 @@ html, body { max-width: 100%; }
 
   --lime:          #2258F6;
 
-  --font-display: 'Inter var', 'Inter', system-ui, sans-serif;
-  --font-body:    'Inter var', 'Inter', system-ui, sans-serif;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-body:    var(--font-bricolage), system-ui, sans-serif;
 
   --shadow-card: 0 2px 12px rgba(0,0,0,0.05);
   --shadow-lift: 0 8px 32px rgba(0,0,0,0.10);
@@ -55,7 +55,6 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-body);
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   background: var(--bg-base);
   color: var(--text-primary);
   min-height: 100vh;
