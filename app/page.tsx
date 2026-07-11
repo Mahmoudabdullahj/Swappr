@@ -1119,24 +1119,26 @@ export default function Page() {
                   {Object.entries(CATEGORY_NAMES).map(([slug, name], i) => (
                     <div
                       key={slug}
-                      className="cat-card"
+                      className={`cat-card${CATEGORY_IMAGES[slug] ? ' cat-card-has-img' : ''}`}
                       onClick={() => setActiveCategory(slug)}
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) => e.key === 'Enter' && setActiveCategory(slug)}
                       aria-label={`Browse ${name}`}
                     >
-                      <div>
-                        <span className="cat-num">{String(i + 1).padStart(2, '0')}.</span>
-                        <h3 className="cat-name">{name.toUpperCase()}</h3>
-                      </div>
                       {CATEGORY_IMAGES[slug] && (
                         /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={CATEGORY_IMAGES[slug]} alt={name} className="cat-card-img" />
+                        <img src={CATEGORY_IMAGES[slug]} alt="" className="cat-card-bg" aria-hidden="true" />
                       )}
-                      <div>
-                        <div className="cat-shop-btn">Browse {name}</div>
-                        <p className="cat-tagline">{CATEGORY_TAGLINES[slug]}</p>
+                      <div className="cat-card-body">
+                        <div>
+                          <span className="cat-num">{String(i + 1).padStart(2, '0')}.</span>
+                          <h3 className="cat-name">{name.toUpperCase()}</h3>
+                        </div>
+                        <div>
+                          <div className="cat-shop-btn">Browse {name}</div>
+                          <p className="cat-tagline">{CATEGORY_TAGLINES[slug]}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
