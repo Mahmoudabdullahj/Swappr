@@ -107,6 +107,14 @@ const CATEGORY_TAGLINES: Record<string, string> = {
   toys:        'Fun for all ages',
 };
 
+const CATEGORY_IMAGES: Record<string, string> = {
+  electronics: '/categories/Mobiles.png',
+  laptops:     '/categories/Laptops.png',
+  cameras:     '/categories/Cameras.png',
+  gaming:      '/categories/Gaming.png',
+  cars:        '/categories/Cars.png',
+};
+
 const CATEGORY_SLUG_MAP: Record<string, string> = {
   electronics: 'Electronics',
   cameras:     'Cameras',
@@ -1122,6 +1130,10 @@ export default function Page() {
                         <span className="cat-num">{String(i + 1).padStart(2, '0')}.</span>
                         <h3 className="cat-name">{name.toUpperCase()}</h3>
                       </div>
+                      {CATEGORY_IMAGES[slug] && (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={CATEGORY_IMAGES[slug]} alt={name} className="cat-card-img" />
+                      )}
                       <div>
                         <div className="cat-shop-btn">Browse {name}</div>
                         <p className="cat-tagline">{CATEGORY_TAGLINES[slug]}</p>
