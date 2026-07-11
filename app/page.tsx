@@ -1519,28 +1519,28 @@ export default function Page() {
                     </svg>
                     Back
                   </button>
-                  <div className="chat-header-info">
+                  <div className="chat-header-center">
+                    <p className="chat-other-name">{activeConvo?.otherUserName ?? chatTarget?.userName}</p>
+                    {(activeConvo?.itemTitle ?? chatTarget?.itemTitle) && (
+                      <p className="chat-item-context">re: {activeConvo?.itemTitle ?? chatTarget?.itemTitle}</p>
+                    )}
+                  </div>
+                  <div className="chat-header-right">
                     <div className="chat-avatar" aria-hidden="true">
                       {(activeConvo?.otherUserName ?? chatTarget?.userName ?? '?').charAt(0).toUpperCase()}
                     </div>
-                    <div>
-                      <p className="chat-other-name">{activeConvo?.otherUserName ?? chatTarget?.userName}</p>
-                      {(activeConvo?.itemTitle ?? chatTarget?.itemTitle) && (
-                        <p className="chat-item-context">re: {activeConvo?.itemTitle ?? chatTarget?.itemTitle}</p>
-                      )}
-                    </div>
+                    <button
+                      className="chat-report-btn"
+                      aria-label="Report user"
+                      title="Report user"
+                      onClick={() => { setReportReason(''); setShowReportModal(true); }}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                        <line x1="4" y1="22" x2="4" y2="15" />
+                      </svg>
+                    </button>
                   </div>
-                  <button
-                    className="chat-report-btn"
-                    aria-label="Report user"
-                    title="Report user"
-                    onClick={() => { setReportReason(''); setShowReportModal(true); }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
-                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                      <line x1="4" y1="22" x2="4" y2="15" />
-                    </svg>
-                  </button>
                 </div>
 
                 {/* Report modal */}
@@ -1581,15 +1581,21 @@ export default function Page() {
                     const isMine = msg.senderId === session?.userId;
                     return (
                       <div key={msg.id} className={`chat-message${isMine ? ' sent' : ' recv'}`}>
-                        {!isMine && <span className="chat-sender-name">{msg.senderName}</span>}
-                        <div className={`chat-bubble${msg.imageUrl ? ' has-image' : ''}`}>
-                          {msg.imageUrl && (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img src={msg.imageUrl} alt="Image" className="chat-msg-image" onClick={() => setLightboxUrl(msg.imageUrl!)} />
-                          )}
-                          {msg.content && <span className={msg.imageUrl ? 'chat-msg-caption' : ''}>{msg.content}</span>}
+                        {!isMine && (
+                          <div className="chat-msg-avatar" aria-hidden="true">
+                            {msg.senderName.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="chat-msg-body">
+                          <div className={`chat-bubble${msg.imageUrl ? ' has-image' : ''}`}>
+                            {msg.imageUrl && (
+                              /* eslint-disable-next-line @next/next/no-img-element */
+                              <img src={msg.imageUrl} alt="Image" className="chat-msg-image" onClick={() => setLightboxUrl(msg.imageUrl!)} />
+                            )}
+                            {msg.content && <span className={msg.imageUrl ? 'chat-msg-caption' : ''}>{msg.content}</span>}
+                          </div>
+                          <span className="chat-time">{timeAgo(msg.createdAt)}</span>
                         </div>
-                        <span className="chat-time">{timeAgo(msg.createdAt)}</span>
                       </div>
                     );
                   })}
@@ -1715,13 +1721,18 @@ export default function Page() {
 
             ) : (
               /* ── Conversation list ── */
-              <div style={{ padding: 'clamp(16px, 4vw, 40px)', maxWidth: 720, margin: '0 auto', width: '100%' }}>
-                <div className="my-items-header">
-                  <div>
-                    <h1 className="my-items-title">Messages</h1>
+              <div className="inbox-wrap">
+                <div className="inbox-header">
+                  <div className="inbox-title-row">
+                    <h1 className="inbox-title">Inbox</h1>
                     {conversations.length > 0 && (
-                      <p className="my-items-count">{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</p>
+                      <span className="inbox-badge">{conversations.length}</span>
                     )}
+                  </div>
+                  <div className="inbox-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+                      <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -1740,32 +1751,33 @@ export default function Page() {
                   </div>
                 ) : (
                   <div className="conversations-list" role="list">
-                    {conversations.map((convo) => (
-                      <button
-                        key={convo.id}
-                        className="conversation-item"
-                        role="listitem"
-                        onClick={() => { setActiveConvo(convo); setChatTarget(null); }}
-                      >
-                        <div className="conversation-avatar" aria-hidden="true">
-                          {convo.otherUserName.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="conversation-info">
-                          <div className="conversation-row">
-                            <span className="conversation-name">{convo.otherUserName}</span>
-                            {convo.lastMessageAt && (
-                              <span className="conversation-time">{timeAgo(convo.lastMessageAt)}</span>
+                    {conversations.map((convo) => {
+                      const isRecent = convo.lastMessageAt ? (Date.now() - convo.lastMessageAt) < 30 * 60 * 1000 : false;
+                      return (
+                        <button
+                          key={convo.id}
+                          className="conversation-item"
+                          role="listitem"
+                          onClick={() => { setActiveConvo(convo); setChatTarget(null); }}
+                        >
+                          <div className="conversation-avatar" aria-hidden="true">
+                            {convo.otherUserName.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="conversation-info">
+                            <span className="convo-status-label">{isRecent ? 'Active chat' : 'Chat'}</span>
+                            <div className="conversation-row">
+                              <span className="conversation-name">{convo.otherUserName}</span>
+                              {convo.lastMessageAt && (
+                                <span className="conversation-time">{timeAgo(convo.lastMessageAt)}</span>
+                              )}
+                            </div>
+                            {convo.lastMessage && (
+                              <p className="conversation-last">{convo.lastMessage}</p>
                             )}
                           </div>
-                          {convo.itemTitle && (
-                            <p className="conversation-context">re: {convo.itemTitle}</p>
-                          )}
-                          {convo.lastMessage && (
-                            <p className="conversation-last">{convo.lastMessage}</p>
-                          )}
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
