@@ -1064,7 +1064,7 @@ export default function Page() {
                 onKeyDown={(e) => e.key === 'Enter' && handleViewChange('items')}
                 aria-label="Go to My Items"
               >
-                <h1 className="bento-headline">Trade what<br/>you have,<br/>get what<br/>you need.</h1>
+                <h1 className="bento-headline">Trade what you have,<br/>get what you need.</h1>
                 <div className="bento-hero-footer">
                   <button
                     className="bento-list-btn"
