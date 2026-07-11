@@ -91,6 +91,22 @@ const CATEGORY_NAMES: Record<string, string> = {
   toys:        'Toys',
 };
 
+const CATEGORY_TAGLINES: Record<string, string> = {
+  electronics: 'Phones, tablets & gadgets',
+  laptops:     'Work & play anywhere',
+  cameras:     'Capture every moment',
+  gaming:      'Level up your setup',
+  watches:     'Style meets smart tech',
+  cars:        'Drive something new',
+  headphones:  'Sound without limits',
+  instruments: 'Make music, trade gear',
+  fashion:     'Fresh style, fair trade',
+  books:       'Stories worth sharing',
+  sports:      'Gear up & get active',
+  furniture:   'Transform your space',
+  toys:        'Fun for all ages',
+};
+
 const CATEGORY_SLUG_MAP: Record<string, string> = {
   electronics: 'Electronics',
   cameras:     'Cameras',
@@ -1006,7 +1022,8 @@ export default function Page() {
 
           ) : loggedIn ? (
             /* ── Bento home (logged in) ── */
-            <main className="bento-home" id="view-discover">
+            <main className="bento-page" id="view-discover">
+              <div className="bento-home">
 
               {/* Hero box — click → My Items */}
               <div
@@ -1085,6 +1102,35 @@ export default function Page() {
                 </div>
 
               </div>
+              </div>{/* end bento-home grid */}
+
+              {/* ── Category section ── */}
+              <section className="cat-section">
+                <h2 className="cat-section-title">Browse by Category</h2>
+                <div className="cat-grid">
+                  {Object.entries(CATEGORY_NAMES).map(([slug, name], i) => (
+                    <div
+                      key={slug}
+                      className="cat-card"
+                      onClick={() => setActiveCategory(slug)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && setActiveCategory(slug)}
+                      aria-label={`Browse ${name}`}
+                    >
+                      <div>
+                        <span className="cat-num">{String(i + 1).padStart(2, '0')}.</span>
+                        <h3 className="cat-name">{name.toUpperCase()}</h3>
+                      </div>
+                      <div>
+                        <div className="cat-shop-btn">Browse {name}</div>
+                        <p className="cat-tagline">{CATEGORY_TAGLINES[slug]}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
             </main>
 
           ) : (
