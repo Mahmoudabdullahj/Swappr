@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { CatalogItem, UserSession, AppNotification } from '@/lib/types';
 import type { MyItem } from '@/lib/my-items';

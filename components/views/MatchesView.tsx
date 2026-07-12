@@ -1,6 +1,6 @@
 'use client';
 
-import type { UserSession, CatalogItem } from '@/lib/types';
+import type { UserSession } from '@/lib/types';
 import type { TradeTarget } from '@/lib/my-trades';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 

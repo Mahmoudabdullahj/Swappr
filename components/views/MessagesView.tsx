@@ -75,7 +75,6 @@ export default function MessagesView({
   const [reportError, setReportError] = useState('');
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const chatImageInputRef = useRef<HTMLInputElement>(null);
-  const convoRefreshKey = useRef(0);
 
   const fetchConversations = () => {
     if (!session) { setConversations([]); return; }

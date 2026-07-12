@@ -74,12 +74,6 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
     signup: 'Join Swaparr',
     forgot: 'Reset your password',
   };
-  const SUBS: Record<Mode, string> = {
-    signin: 'A local barter marketplace for Amman. No money — just fair trades.',
-    signup: 'Create an account to start trading in Amman.',
-    forgot: 'Enter your email and we\'ll send you a reset link.',
-  };
-
   return (
     <div className="login-screen" role="main" aria-label="Login">
       <div className="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
