@@ -75,6 +75,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
   const [wantBrand, setWantBrand]               = useState('');
   const [wantModel, setWantModel]               = useState('');
   const [wantModelSearch, setWantModelSearch]   = useState('');
+  const [wantGameName, setWantGameName]         = useState('');
 
   const [errors, setErrors]         = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -163,7 +164,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
   }
 
   function handleWantBrandSelect(brand: string) {
-    setWantBrand(brand); setWantModel(''); setWantModelSearch('');
+    setWantBrand(brand); setWantModel(''); setWantModelSearch(''); setWantGameName('');
     if (wantCat?.brands) {
       setCurrentStep('wants_model');
     }
@@ -222,6 +223,8 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
       const finalAnything = overrideAnything ?? wantAnything;
 
       const computedWantTitle = finalAnything ? ''
+        : wantBrand === 'Video Games' && wantGameName && wantModel ? `${wantGameName} (${wantModel})`
+        : wantBrand === 'Video Games' && wantGameName              ? `Video Games - ${wantGameName}`
         : wantModel  ? `${wantBrand} ${wantModel}`
         : wantBrand  ? wantBrand
         : wantCat?.name || '';
@@ -613,6 +616,21 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 </button>
               ))}
             </div>
+            {wantBrand === 'Video Games' && wantModel && (
+              <div className="list-field" style={{ marginTop: 16 }}>
+                <label className="list-label">
+                  Which game?<span className="list-label-opt"> (optional)</span>
+                </label>
+                <input
+                  className="list-input"
+                  type="text"
+                  placeholder="e.g. Elden Ring, FIFA 25, Spider-Man 2"
+                  value={wantGameName}
+                  onChange={e => setWantGameName(e.target.value)}
+                  autoFocus
+                />
+              </div>
+            )}
             {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
             <ListItemBtn />
           </div>
