@@ -22,10 +22,10 @@ const ProfileView   = dynamic(() => import('@/components/views/ProfileView'));
 type View = 'discover' | 'items' | 'trades' | 'messages' | 'matches' | 'profile';
 
 const VALID_VIEWS: View[] = ['discover', 'items', 'trades', 'messages', 'matches', 'profile'];
-function viewFromHash(): View {
+function viewFromParams(): View {
   if (typeof window === 'undefined') return 'discover';
-  const h = window.location.hash.slice(1) as View;
-  return VALID_VIEWS.includes(h) ? h : 'discover';
+  const v = new URLSearchParams(window.location.search).get('v') as View;
+  return VALID_VIEWS.includes(v) ? v : 'discover';
 }
 
 interface Match {
@@ -366,25 +366,26 @@ export default function Page() {
   function handleViewChange(view: string) {
     const v = view as View;
     setActiveView(v);
-    window.location.hash = v === 'discover' ? '' : v;
+    const url = v === 'discover' ? '/' : `/?v=${v}`;
+    history.pushState({}, '', url);
   }
 
-  // Re-apply hash view once auth resolves so no race condition swallows it
+  // Re-apply param view once auth resolves so no race condition swallows it
   useEffect(() => {
     if (authLoading || !loggedIn) return;
-    const v = viewFromHash();
+    const v = viewFromParams();
     if (v !== 'discover') setActiveView(v);
   }, [authLoading, loggedIn]);
 
   useEffect(() => {
-    const initial = viewFromHash();
+    const initial = viewFromParams();
     if (initial !== 'discover') setActiveView(initial);
 
-    function onHashChange() {
-      setActiveView(viewFromHash());
+    function onPopState() {
+      setActiveView(viewFromParams());
     }
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
   // ── Search ──
