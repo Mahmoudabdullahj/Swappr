@@ -1715,10 +1715,21 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   border-radius: 16px;
   overflow: hidden;
   padding-bottom: 14px;
+  isolation: isolate;
+}
+.trending-dark-wrap article.item-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+  z-index: 10;
 }
 
 .trending-dark-wrap .card-image-wrap {
   border-radius: 0;
+  border: none;
   margin-bottom: 12px;
 }
 
