@@ -122,8 +122,8 @@ const CATEGORY_IMAGES: Record<string, string> = {
   sports:      '/categories/Sports.png',
   furniture:   '/categories/Furniture.png',
   toys:        '/categories/Toys.png',
-  electronics: '/Categories/Electronics.png',
-  headphones:  '/Categories/Headphones.png',
+  electronics: '/categories/Electronics.png',
+  headphones:  '/categories/Headphones.png',
 };
 
 const CATEGORY_SLUG_MAP: Record<string, string> = {
