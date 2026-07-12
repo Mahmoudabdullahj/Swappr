@@ -1706,7 +1706,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 
 .trending-dark-wrap .item-grid {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 16px;
 }
 
