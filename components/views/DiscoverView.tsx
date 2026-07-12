@@ -257,8 +257,8 @@ export default function DiscoverView({
             Back
           </button>
           <div>
-            <h1 className="feed-page-title">Trending Near You</h1>
-            <p className="feed-page-sub">Popular items in your area · {allFeedItems.length} listings</p>
+            <h1 className="feed-page-title">All Listings</h1>
+            <p className="feed-page-sub">All items near you · {allFeedItems.length} listings</p>
           </div>
         </div>
         <div className="item-grid" role="list">

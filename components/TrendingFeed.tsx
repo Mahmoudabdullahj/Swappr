@@ -21,7 +21,7 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll, likedIds
   useEffect(() => {
     if (!session) return;
     setLoading(true);
-    fetch('/api/items?limit=8')
+    fetch('/api/items?limit=100')
       .then((r) => r.json())
       .then((data) => { setItems(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
@@ -40,8 +40,8 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll, likedIds
     showToast(liked ? `Saved: "${item.title}"` : `Removed: "${item.title}"`);
   }
 
-  const heading  = 'Trending Near You';
-  const tagLabel = 'Trending';
+  const heading  = 'All Listings';
+  const tagLabel = 'Live';
 
   return (
     <>
