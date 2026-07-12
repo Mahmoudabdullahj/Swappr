@@ -47,9 +47,8 @@ export default function CategoryGrid({ activeSlug, onSelect }: CategoryGridProps
           <button
             key={slug}
             className={`category-card${activeSlug === slug ? ' active' : ''}`}
-            role="listitem"
-            aria-pressed={activeSlug === slug}
             aria-label={name}
+            aria-current={activeSlug === slug ? 'true' : undefined}
             onClick={() => handleSelect(slug)}
           >
             <span className="category-icon" aria-hidden="true">

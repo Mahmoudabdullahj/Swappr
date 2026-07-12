@@ -146,7 +146,6 @@ const CATEGORY_SLUG_MAP: Record<string, string> = {
 
 export default function Page() {
   const [session, setSession]               = useState<UserSession | null>(null);
-  const [existingSession, setExistingSession] = useState<UserSession | null>(null);
   const [loggedIn, setLoggedIn]             = useState(false);
   const [authLoading, setAuthLoading]       = useState(true);
   const [activeView, setActiveView]         = useState<View>('discover');
@@ -164,6 +163,7 @@ export default function Page() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason]       = useState('');
   const [reportSending, setReportSending]     = useState(false);
+  const [reportError, setReportError]         = useState('');
   const [offerRefreshKey, setOfferRefreshKey] = useState(0);
   const [tradeTarget, setTradeTarget]       = useState<TradeTarget | null>(null);
   const [myTrades, setMyTrades]             = useState<TradeOffer[]>([]);
@@ -186,6 +186,7 @@ export default function Page() {
   const [allFeedItems, setAllFeedItems]     = useState<CatalogItem[]>([]);
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (searchDebounce.current) clearTimeout(searchDebounce.current); }, []);
 
   // Likes / wishlist — seed from localStorage for instant restore on refresh
   const [likedIds, setLikedIds] = useState<Set<string>>(() => {
@@ -197,6 +198,7 @@ export default function Page() {
   const [savedItems, setSavedItems] = useState<CatalogItem[]>([]);
   const [savedLoading, setSavedLoading] = useState(false);
   const [markTradedItemId, setMarkTradedItemId] = useState<string | null>(null);
+  const [deleteConfirmItem, setDeleteConfirmItem] = useState<{ id: string; title: string } | null>(null);
 
   // Sync with DB when session loads — authoritative source of truth
   useEffect(() => {
@@ -277,7 +279,6 @@ export default function Page() {
             };
         Session.save(us);
         setSession(us);
-        setExistingSession(us);
         setLoggedIn(true);
       }
       setAuthLoading(false);
@@ -582,7 +583,13 @@ export default function Page() {
   }, [discoverSubView]);
 
   async function handleDeleteItem(id: string, title: string) {
-    if (!confirm(`Remove "${title}" from your listings?`)) return;
+    setDeleteConfirmItem({ id, title });
+  }
+
+  async function confirmDeleteItem() {
+    if (!deleteConfirmItem) return;
+    const { id } = deleteConfirmItem;
+    setDeleteConfirmItem(null);
     const prev = myItems;
     setMyItems(items => items.filter(i => i.id !== id));
     const res = await fetch(`/api/items/${id}`, { method: 'DELETE' });
@@ -617,15 +624,18 @@ export default function Page() {
     if (!otherUserId) return;
     setReportSending(true);
     try {
-      await fetch('/api/reports', {
+      const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportedUserId: otherUserId, reason: reportReason, itemId }),
       });
-    } finally {
-      setReportSending(false);
+      if (!res.ok) throw new Error('Failed to send report');
       setShowReportModal(false);
       setReportReason('');
+    } catch {
+      setReportError('Failed to send report. Please try again.');
+    } finally {
+      setReportSending(false);
     }
   }
 
@@ -681,7 +691,6 @@ export default function Page() {
   function handleLogin(newSession: UserSession) {
     Session.save(newSession);
     setSession(newSession);
-    setExistingSession(newSession);
     setLoggedIn(true);
   }
 
@@ -692,7 +701,6 @@ export default function Page() {
     localStorage.removeItem('swappr_liked_ids');
     setSession(null);
     setLoggedIn(false);
-    setExistingSession(null);
     setLikedIds(new Set());
     setSavedItems([]);
     setBannerVisible(true);
@@ -795,6 +803,26 @@ export default function Page() {
           <button className="mobile-search-cancel" onClick={toggleMobileSearch}>Cancel</button>
         </div>
       </div>
+
+      {/* Delete item confirmation modal */}
+      {deleteConfirmItem && (
+        <div
+          className="confirm-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirmDeleteTitle"
+          onClick={(e) => { if (e.target === e.currentTarget) setDeleteConfirmItem(null); }}
+        >
+          <div className="confirm-modal">
+            <h2 className="confirm-modal-title" id="confirmDeleteTitle">Remove listing?</h2>
+            <p className="confirm-modal-body">"{deleteConfirmItem.title}" will be permanently removed from your listings.</p>
+            <div className="confirm-modal-actions">
+              <button className="confirm-cancel-btn" onClick={() => setDeleteConfirmItem(null)}>Cancel</button>
+              <button className="confirm-ok-btn" style={{ background: '#e53e3e' }} onClick={confirmDeleteItem}>Remove</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mark as traded confirmation modal */}
       {markTradedItemId && (
@@ -1053,7 +1081,11 @@ export default function Page() {
               </div>
             </main>
 
-          ) : authLoading ? null : loggedIn ? (
+          ) : authLoading ? (
+            <main style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 66px)' }}>
+              <div style={{ width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} aria-label="Loading" role="status" />
+            </main>
+          ) : loggedIn ? (
             /* ── Bento home (logged in) ── */
             <main className="bento-page" id="view-discover">
               <div className="bento-home">
@@ -1074,6 +1106,8 @@ export default function Page() {
                   muted
                   loop
                   playsInline
+                  poster="/hero-poster.webp"
+                  preload="none"
                 />
                 <div className="bento-hero-overlay" />
                 <h1 className="bento-headline">Trade what you have,<br/>get what you need.</h1>
@@ -1547,7 +1581,7 @@ export default function Page() {
 
                 {/* Report modal */}
                 {showReportModal && (
-                  <div className="report-modal-overlay" onClick={() => setShowReportModal(false)}>
+                  <div className="report-modal-overlay" onClick={() => { setShowReportModal(false); setReportError(''); }}>
                     <div className="report-modal" onClick={e => e.stopPropagation()}>
                       <h3 className="report-modal-title">Report User</h3>
                       <form onSubmit={handleReport}>
@@ -1561,8 +1595,9 @@ export default function Page() {
                           rows={3}
                           required
                         />
+                        {reportError && <p style={{ color: '#e53e3e', fontSize: 13, marginBottom: 8 }}>{reportError}</p>}
                         <div className="report-modal-actions">
-                          <button type="button" className="report-cancel-btn" onClick={() => setShowReportModal(false)}>Cancel</button>
+                          <button type="button" className="report-cancel-btn" onClick={() => { setShowReportModal(false); setReportError(''); }}>Cancel</button>
                           <button type="submit" className="report-submit-btn" disabled={reportSending || !reportReason.trim()}>
                             {reportSending ? 'Sending…' : 'Submit Report'}
                           </button>

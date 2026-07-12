@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://swappr.jo'),
+  metadataBase: new URL('https://swaparr.com'),
   title: {
     default: 'Swaparr: Trade What You Have',
     template: '%s | Swaparr',
@@ -43,6 +43,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={bricolage.variable}>
+      <head>
+        <link rel="preconnect" href="https://ekcsvucupmmgkekjjdqx.supabase.co" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body>{children}</body>
     </html>
   );

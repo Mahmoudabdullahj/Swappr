@@ -238,7 +238,6 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
       fd.append('specs',        JSON.stringify(specs));
       fd.append('condition',    condition || 'good');
       fd.append('price',        '0');
-      fd.append('userId',       s?.userId || 'anonymous');
       fd.append('seller',       s?.displayName || 'Anonymous');
       fd.append('wantTitle',    computedWantTitle);
       fd.append('wantCategory', computedWantCat);
@@ -275,7 +274,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
   return (
     <div
       className={`list-modal-overlay${open ? ' open' : ''}`}
-      role="dialog" aria-modal="true"
+      role="dialog" aria-modal="true" aria-labelledby="listModalTitle"
     >
       <div className="list-modal">
 
@@ -288,7 +287,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
           ) : (
             <div style={{ width: 32 }} />
           )}
-          <h2 className="list-modal-title" style={{ flex: 1, textAlign: 'center' }}>
+          <h2 className="list-modal-title" id="listModalTitle" style={{ flex: 1, textAlign: 'center' }}>
             {STEP_TITLES[currentStep] ?? 'List Your Item'}
           </h2>
           <button className="list-modal-close" onClick={handleClose} aria-label="Close">
