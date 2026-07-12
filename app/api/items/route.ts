@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import sharp from 'sharp';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -81,12 +82,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
     if (image.size > 10 * 1024 * 1024)
       return NextResponse.json({ error: 'File too large' }, { status: 400 });
-    const ext      = ALLOWED_MIME[image.type];
-    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const buffer   = new Uint8Array(await image.arrayBuffer());
+    const raw    = Buffer.from(await image.arrayBuffer());
+    const buffer = await sharp(raw)
+      .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer();
+    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
     const { data: upload, error: uploadErr } = await supabase.storage
       .from('items')
-      .upload(fileName, buffer, { contentType: image.type, upsert: false });
+      .upload(fileName, buffer, { contentType: 'image/webp', upsert: false });
     if (!uploadErr && upload) {
       const { data: { publicUrl } } = supabase.storage.from('items').getPublicUrl(fileName);
       uploadedUrls.push(publicUrl);

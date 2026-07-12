@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { createServiceClient } from '@/utils/supabase/service';
 import { NextRequest, NextResponse } from 'next/server';
+import sharp from 'sharp';
 
 const ALLOWED_MIME: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -35,14 +36,17 @@ export async function POST(request: NextRequest) {
   if (!ALLOWED_MIME[file.type]) return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
   if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: 'File too large (max 5 MB)' }, { status: 400 });
 
-  const ext = ALLOWED_MIME[file.type];
-  const path = `avatars/${user.id}.${ext}`;
-  const buffer = new Uint8Array(await file.arrayBuffer());
+  const raw    = Buffer.from(await file.arrayBuffer());
+  const buffer = await sharp(raw)
+    .resize(400, 400, { fit: 'cover', position: 'center' })
+    .webp({ quality: 85 })
+    .toBuffer();
+  const path = `avatars/${user.id}.webp`;
 
   const db = createServiceClient();
   const { error: uploadErr } = await db.storage
     .from('items')
-    .upload(path, buffer, { contentType: file.type, upsert: true });
+    .upload(path, buffer, { contentType: 'image/webp', upsert: true });
 
   if (uploadErr) return NextResponse.json({ error: uploadErr.message }, { status: 500 });
 
