@@ -366,15 +366,33 @@ export default function Page() {
   function handleViewChange(view: string) {
     const v = view as View;
     setActiveView(v);
+    if (v !== 'messages') setActiveConvo(null);
     const url = v === 'discover' ? '/' : `/?v=${v}`;
     history.pushState({}, '', url);
   }
 
-  // Re-apply param view once auth resolves so no race condition swallows it
+  function handleConvoChange(convo: Conversation | null) {
+    setActiveConvo(convo);
+    const url = convo ? `/?v=messages&convo=${convo.id}` : '/?v=messages';
+    history.replaceState({}, '', url);
+  }
+
+  // Re-apply param view + convo once auth resolves
   useEffect(() => {
     if (authLoading || !loggedIn) return;
+    const params = new URLSearchParams(window.location.search);
     const v = viewFromParams();
     if (v !== 'discover') setActiveView(v);
+    const convoId = params.get('convo');
+    if (convoId && v === 'messages') {
+      fetch('/api/conversations')
+        .then(r => r.json())
+        .then((convos: Conversation[]) => {
+          const found = Array.isArray(convos) ? convos.find(c => c.id === convoId) : null;
+          if (found) setActiveConvo(found);
+        })
+        .catch(() => {});
+    }
   }, [authLoading, loggedIn]);
 
   useEffect(() => {
@@ -382,7 +400,9 @@ export default function Page() {
     if (initial !== 'discover') setActiveView(initial);
 
     function onPopState() {
-      setActiveView(viewFromParams());
+      const v = viewFromParams();
+      setActiveView(v);
+      if (v !== 'messages') setActiveConvo(null);
     }
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
@@ -542,7 +562,7 @@ export default function Page() {
             session={session}
             activeConvo={activeConvo}
             chatTarget={chatTarget}
-            onConvoChange={setActiveConvo}
+            onConvoChange={handleConvoChange}
             onChatTargetChange={setChatTarget}
             onViewChange={handleViewChange}
           />
