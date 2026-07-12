@@ -62,14 +62,16 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
   const {
-    offeredItemId,
-    offeredItemTitle,
-    offeredItemCategory,
+    offeredItems,
     targetItemId,
     targetItemTitle,
     targetItemImg,
     targetItemSeller,
   } = body;
+
+  if (!Array.isArray(offeredItems) || offeredItems.length === 0) {
+    return NextResponse.json({ error: 'No items selected' }, { status: 400 });
+  }
 
   // Fetch real owner from DB — never trust client-supplied owner ID
   const { data: targetItem } = await db
@@ -80,14 +82,19 @@ export async function POST(request: NextRequest) {
 
   const senderName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
 
+  // Bundle multiple items into single record using separator-joined strings
+  const storedId       = offeredItems.map((i: { id: string }) => i.id).join(',');
+  const storedTitle    = offeredItems.map((i: { title: string }) => i.title).join(' + ');
+  const storedCategory = offeredItems.length === 1 ? offeredItems[0].category : 'Multiple';
+
   const { data, error } = await db
     .from('trade_offers')
     .insert({
       sender_id:             user.id,
       sender_name:           senderName,
-      offered_item_id:       offeredItemId,
-      offered_item_title:    offeredItemTitle,
-      offered_item_category: offeredItemCategory,
+      offered_item_id:       storedId,
+      offered_item_title:    storedTitle,
+      offered_item_category: storedCategory,
       target_item_id:        targetItemId,
       target_item_title:     targetItemTitle,
       target_item_img:       targetItemImg,
@@ -100,17 +107,17 @@ export async function POST(request: NextRequest) {
   if (error) {
     console.error('[POST /api/trades] insert error:', error);
     if (error.code === '23505' || error.message?.includes('unique_offered_target_pair')) {
-      return NextResponse.json({ error: 'You have already offered this item for that listing.' }, { status: 409 });
+      return NextResponse.json({ error: 'You have already offered these items for that listing.' }, { status: 409 });
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Notify the item owner
+  const itemWord = offeredItems.length === 1 ? 'item' : 'items';
   await db.from('notifications').insert({
     user_id:   targetItemOwnerId,
     type:      'trade_offer',
     title:     `${senderName} wants to trade`,
-    body:      `Offering their ${offeredItemTitle} for your ${targetItemTitle}`,
+    body:      `Offering their ${storedTitle} (${offeredItems.length} ${itemWord}) for your ${targetItemTitle}`,
     link_view: 'trades',
   });
 

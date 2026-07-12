@@ -75,9 +75,7 @@ export const MyTrades = {
   },
 
   async add(offer: {
-    offeredItemId: string;
-    offeredItemTitle: string;
-    offeredItemCategory: string;
+    offeredItems: Array<{ id: string; title: string; category: string }>;
     targetItemId: string;
     targetItemTitle: string;
     targetItemImg: string;

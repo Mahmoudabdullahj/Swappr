@@ -17,55 +17,59 @@ interface Props {
 
 export default function OfferTradeModal({ open, onClose, onListItem, refreshKey, targetItem, onTradeSent, myItems = [], alreadyOfferedIds }: Props) {
   const [items, setItems]         = useState<MyItem[]>([]);
-  const [selected, setSelected]   = useState<string | null>(null);
+  const [selected, setSelected]   = useState<Set<string>>(new Set());
   const [sent, setSent]           = useState(false);
   const [sending, setSending]     = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
-  const [localOfferedIds, setLocalOfferedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (open) {
       setItems(myItems);
-      setSelected(null);
+      setSelected(new Set());
       setSent(false);
       setSending(false);
       setSendError(null);
     }
   }, [open, refreshKey, myItems]);
 
+  function toggleItem(id: string) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   async function handleSend() {
-    if (!selected || sending) return;
-    const offeredItem = items.find(i => i.id === selected);
-    if (!offeredItem || !targetItem) return;
+    if (selected.size === 0 || sending || !targetItem) return;
+    const offeredItems = items
+      .filter(i => selected.has(i.id))
+      .map(i => ({ id: i.id, title: i.title, category: i.category }));
+    if (offeredItems.length === 0) return;
     setSending(true);
     setSendError(null);
     try {
       await MyTrades.add({
-        offeredItemId:       offeredItem.id,
-        offeredItemTitle:    offeredItem.title,
-        offeredItemCategory: offeredItem.category,
-        targetItemId:        targetItem.id,
-        targetItemTitle:     targetItem.title,
-        targetItemImg:       targetItem.img,
-        targetItemSeller:    targetItem.seller,
-        targetItemOwnerId:   targetItem.user_id,
+        offeredItems,
+        targetItemId:      targetItem.id,
+        targetItemTitle:   targetItem.title,
+        targetItemImg:     targetItem.img,
+        targetItemSeller:  targetItem.seller,
+        targetItemOwnerId: targetItem.user_id,
       });
       onTradeSent?.();
       setSent(true);
       setTimeout(onClose, 1800);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
-      if (msg.toLowerCase().includes('already offered') || msg.includes('unique_offered_target_pair')) {
-        setLocalOfferedIds(prev => new Set(prev).add(offeredItem.id));
-        setSelected(null);
-        setSendError('You have already offered this item for that listing.');
-      } else {
-        setSendError(msg);
-      }
+      setSendError(msg);
     } finally {
       setSending(false);
     }
   }
+
+  const selectedItems = items.filter(i => selected.has(i.id));
 
   return (
     <div
@@ -80,7 +84,13 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
         {/* Header */}
         <div className="offer-modal-header">
           <h2 className="offer-modal-title" id="offerTitle">
-            {sent ? 'Offer sent!' : items.length === 0 ? 'Offer a trade' : 'Which item are you offering?'}
+            {sent
+              ? 'Offer sent!'
+              : items.length === 0
+              ? 'Offer a trade'
+              : selected.size === 0
+              ? 'Pick items to offer'
+              : `${selected.size} item${selected.size > 1 ? 's' : ''} selected`}
           </h2>
           <button className="list-modal-close" onClick={onClose} aria-label="Close">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -123,18 +133,19 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
         {/* ── Item picker ── */}
         {!sent && items.length > 0 && (
           <div className="offer-body">
-            <p className="offer-sub">Pick the item you want to put up for this trade.</p>
+            <p className="offer-sub">Select one or more items you want to put up for this trade.</p>
 
             <div className="offer-grid">
               {items.map((item) => {
-                const isAlreadyOffered = (alreadyOfferedIds?.has(item.id) ?? false) || localOfferedIds.has(item.id);
+                const isAlreadyOffered = alreadyOfferedIds?.has(item.id) ?? false;
+                const isSelected = selected.has(item.id);
                 return (
                   <button
                     key={item.id}
-                    className={`offer-item${selected === item.id ? ' selected' : ''}${isAlreadyOffered ? ' already-offered' : ''}`}
-                    onClick={() => { if (!isAlreadyOffered) setSelected(item.id); }}
+                    className={`offer-item${isSelected ? ' selected' : ''}${isAlreadyOffered ? ' already-offered' : ''}`}
+                    onClick={() => { if (!isAlreadyOffered) toggleItem(item.id); }}
                     disabled={isAlreadyOffered}
-                    aria-pressed={selected === item.id}
+                    aria-pressed={isSelected}
                     aria-disabled={isAlreadyOffered}
                   >
                     <span className="offer-item-avatar">{item.title.charAt(0).toUpperCase()}</span>
@@ -143,7 +154,7 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
                     {isAlreadyOffered && (
                       <span className="offer-item-already" aria-hidden="true">Already Offered</span>
                     )}
-                    {selected === item.id && !isAlreadyOffered && (
+                    {isSelected && !isAlreadyOffered && (
                       <span className="offer-item-check" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
                           <polyline points="20 6 9 17 4 12" />
@@ -155,6 +166,25 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
               })}
             </div>
 
+            {/* Selection summary */}
+            {selectedItems.length > 0 && (
+              <div className="offer-summary">
+                <span className="offer-summary-label">Offering:</span>
+                <div className="offer-summary-chips">
+                  {selectedItems.map(item => (
+                    <span key={item.id} className="offer-summary-chip">
+                      {item.title}
+                      <button
+                        className="offer-summary-chip-remove"
+                        onClick={() => toggleItem(item.id)}
+                        aria-label={`Remove ${item.title}`}
+                      >×</button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {sendError && (
               <p style={{ color: '#e8473f', fontSize: 13, margin: '0 0 8px', textAlign: 'center' }}>{sendError}</p>
             )}
@@ -165,10 +195,14 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
               <button
                 className="list-submit-btn"
                 onClick={handleSend}
-                disabled={!selected || sending}
-                style={{ opacity: selected && !sending ? 1 : 0.45, cursor: selected && !sending ? 'pointer' : 'not-allowed' }}
+                disabled={selected.size === 0 || sending}
+                style={{ opacity: selected.size > 0 && !sending ? 1 : 0.45, cursor: selected.size > 0 && !sending ? 'pointer' : 'not-allowed' }}
               >
-                {sending ? 'Sending…' : 'Send Offer'}
+                {sending
+                  ? 'Sending…'
+                  : selected.size > 1
+                  ? `Send Bundle (${selected.size})`
+                  : 'Send Offer'}
                 {!sending && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
                     <path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" />

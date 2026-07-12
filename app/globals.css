@@ -1646,6 +1646,54 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 .offer-list-more:hover { color: var(--accent); }
 
+/* Bundle selection summary */
+.offer-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+}
+.offer-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.offer-summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.offer-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 8px 3px 10px;
+}
+.offer-summary-chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-muted);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.offer-summary-chip-remove:hover { color: #e8473f; }
+
 /* Sent confirmation */
 .offer-sent {
   display: flex;
