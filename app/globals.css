@@ -3462,7 +3462,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   .bento-home {
     grid-template-columns: 1fr;
     height: auto;
-    min-height: calc(100vh - 66px - 64px);
+    min-height: unset;
     padding-bottom: 24px;
   }
   .bento-hero { min-height: 260px; }
