@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import Image from 'next/image';
 import type { CatalogItem, UserSession, AppNotification } from '@/lib/types';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import type { MyItem } from '@/lib/my-items';
@@ -1111,8 +1112,14 @@ export default function Page() {
                       aria-label={`Browse ${name}`}
                     >
                       {CATEGORY_IMAGES[slug] && (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={CATEGORY_IMAGES[slug]} alt="" className="cat-card-bg" aria-hidden="true" />
+                        <Image
+                          src={CATEGORY_IMAGES[slug]}
+                          alt=""
+                          fill
+                          sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 400px"
+                          className="cat-card-bg"
+                          aria-hidden="true"
+                        />
                       )}
                       <div className="cat-card-body">
                         <div>
