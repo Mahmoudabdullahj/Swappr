@@ -3355,15 +3355,6 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   z-index: 0;
 }
 
-.bento-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 20px;
-  pointer-events: none;
-  z-index: 1;
-}
-
 .bento-hero {
   background: #111;
   border-radius: 20px;

@@ -304,7 +304,6 @@ export default function DiscoverView({
               poster="/hero-poster.webp"
               preload="none"
             />
-            <div className="bento-hero-overlay" />
             <h1 className="bento-headline">Trade what you have,<br/>get what you need.</h1>
             <div className="bento-hero-footer">
               <button
