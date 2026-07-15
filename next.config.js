@@ -18,7 +18,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self'",
-      `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com https://i.pravatar.cc`,
+      `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com https://i.pravatar.cc https://lh3.googleusercontent.com`,
       `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}`,
       "frame-ancestors 'none'",
     ].join('; '),
