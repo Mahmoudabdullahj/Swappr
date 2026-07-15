@@ -8,8 +8,8 @@ import { MyTrades, type TradeOffer, type ReceivedTradeOffer, type TradeTarget } 
 import { Session } from '@/lib/session';
 import { createClient } from '@/utils/supabase/client';
 import LoginModal from '@/components/LoginModal';
-import ListItemModal from '@/components/ListItemModal';
-import OfferTradeModal from '@/components/OfferTradeModal';
+const ListItemModal  = dynamic(() => import('@/components/ListItemModal'),  { ssr: false });
+const OfferTradeModal = dynamic(() => import('@/components/OfferTradeModal'), { ssr: false });
 import Navigation from '@/components/Navigation';
 
 const DiscoverView  = dynamic(() => import('@/components/views/DiscoverView'));
