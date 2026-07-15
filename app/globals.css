@@ -1084,6 +1084,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 
 .trending-dark-wrap article.item-card {
+  border: 2px solid var(--accent);
   border-radius: 16px;
   overflow: hidden;
   padding-bottom: 14px;
@@ -1091,6 +1092,8 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 
 .trending-dark-wrap .card-image-wrap {
+  border: none;
+  border-radius: 0;
   margin-bottom: 12px;
 }
 
