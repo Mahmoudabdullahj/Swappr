@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeTarget } from '@/lib/my-trades';
+import styles from './OfferTradeModal.module.css';
 
 interface Props {
   open: boolean;
@@ -73,17 +74,17 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
 
   return (
     <div
-      className={`offer-overlay${open ? ' open' : ''}`}
+      className={`${styles['offer-overlay']}${open ? ` ${styles.open}` : ''}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="offerTitle"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="offer-modal">
+      <div className={styles['offer-modal']}>
 
         {/* Header */}
-        <div className="offer-modal-header">
-          <h2 className="offer-modal-title" id="offerTitle">
+        <div className={styles['offer-modal-header']}>
+          <h2 className={styles['offer-modal-title']} id="offerTitle">
             {sent
               ? 'Offer sent!'
               : items.length === 0
@@ -101,13 +102,13 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
 
         {/* ── Sent confirmation ── */}
         {sent && (
-          <div className="offer-sent">
-            <div className="offer-sent-circle">
+          <div className={styles['offer-sent']}>
+            <div className={styles['offer-sent-circle']}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="28" height="28">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <p className="offer-sent-text">
+            <p className={styles['offer-sent-text']}>
               Your offer is on its way. We&apos;ll let you know as soon as they respond.
             </p>
           </div>
@@ -115,10 +116,10 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
 
         {/* ── No items listed ── */}
         {!sent && items.length === 0 && (
-          <div className="offer-empty">
-            <div className="offer-empty-icon">📦</div>
-            <p className="offer-empty-title">No items listed yet</p>
-            <p className="offer-empty-sub">
+          <div className={styles['offer-empty']}>
+            <div className={styles['offer-empty-icon']}>📦</div>
+            <p className={styles['offer-empty-title']}>No items listed yet</p>
+            <p className={styles['offer-empty-sub']}>
               You need at least one listed item to make a trade offer.
             </p>
             <button className="list-continue-btn" onClick={onListItem}>
@@ -132,30 +133,30 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
 
         {/* ── Item picker ── */}
         {!sent && items.length > 0 && (
-          <div className="offer-body">
-            <p className="offer-sub">Select one or more items you want to put up for this trade.</p>
+          <div className={styles['offer-body']}>
+            <p className={styles['offer-sub']}>Select one or more items you want to put up for this trade.</p>
 
-            <div className="offer-grid">
+            <div className={styles['offer-grid']}>
               {items.map((item) => {
                 const isAlreadyOffered = alreadyOfferedIds?.has(item.id) ?? false;
                 const isSelected = selected.has(item.id);
                 return (
                   <button
                     key={item.id}
-                    className={`offer-item${isSelected ? ' selected' : ''}${isAlreadyOffered ? ' already-offered' : ''}`}
+                    className={`${styles['offer-item']}${isSelected ? ` ${styles.selected}` : ''}${isAlreadyOffered ? ` ${styles['already-offered']}` : ''}`}
                     onClick={() => { if (!isAlreadyOffered) toggleItem(item.id); }}
                     disabled={isAlreadyOffered}
                     aria-pressed={isSelected}
                     aria-disabled={isAlreadyOffered}
                   >
-                    <span className="offer-item-avatar">{item.title.charAt(0).toUpperCase()}</span>
-                    <span className="offer-item-name">{item.title}</span>
-                    <span className="offer-item-cat">{item.category || 'Other'}</span>
+                    <span className={styles['offer-item-avatar']}>{item.title.charAt(0).toUpperCase()}</span>
+                    <span className={styles['offer-item-name']}>{item.title}</span>
+                    <span className={styles['offer-item-cat']}>{item.category || 'Other'}</span>
                     {isAlreadyOffered && (
-                      <span className="offer-item-already" aria-hidden="true">Already Offered</span>
+                      <span className={styles['offer-item-already']} aria-hidden="true">Already Offered</span>
                     )}
                     {isSelected && !isAlreadyOffered && (
-                      <span className="offer-item-check" aria-hidden="true">
+                      <span className={styles['offer-item-check']} aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
@@ -168,14 +169,14 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
 
             {/* Selection summary */}
             {selectedItems.length > 0 && (
-              <div className="offer-summary">
-                <span className="offer-summary-label">Offering:</span>
-                <div className="offer-summary-chips">
+              <div className={styles['offer-summary']}>
+                <span className={styles['offer-summary-label']}>Offering:</span>
+                <div className={styles['offer-summary-chips']}>
                   {selectedItems.map(item => (
-                    <span key={item.id} className="offer-summary-chip">
+                    <span key={item.id} className={styles['offer-summary-chip']}>
                       {item.title}
                       <button
-                        className="offer-summary-chip-remove"
+                        className={styles['offer-summary-chip-remove']}
                         onClick={() => toggleItem(item.id)}
                         aria-label={`Remove ${item.title}`}
                       >×</button>
@@ -188,8 +189,8 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
             {sendError && (
               <p style={{ color: '#e8473f', fontSize: 13, margin: '0 0 8px', textAlign: 'center' }}>{sendError}</p>
             )}
-            <div className="offer-actions">
-              <button className="offer-list-more" onClick={onListItem}>
+            <div className={styles['offer-actions']}>
+              <button className={styles['offer-list-more']} onClick={onListItem}>
                 + List another item
               </button>
               <button
