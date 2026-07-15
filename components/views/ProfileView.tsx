@@ -6,6 +6,7 @@ import type { MyItem } from '@/lib/my-items';
 import type { TradeOffer } from '@/lib/my-trades';
 import { Session } from '@/lib/session';
 import ItemCard from '@/components/ItemCard';
+import styles from './ProfileView.module.css';
 
 interface ProfileViewProps {
   session: UserSession | null;
@@ -95,18 +96,18 @@ export default function ProfileView({
     <main className="content" id="view-profile">
 
       {/* Profile card */}
-      <div className="profile-card">
+      <div className={styles['profile-card']}>
         <button
-          className={`profile-avatar${avatarUploading ? ' uploading' : ''}`}
+          className={`${styles['profile-avatar']}${avatarUploading ? ` ${styles.uploading}` : ''}`}
           onClick={() => avatarInputRef.current?.click()}
           aria-label="Change profile picture"
           disabled={avatarUploading}
         >
           {(session?.avatarUrl && !avatarError)
-            ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={session.avatarUrl} alt="" className="profile-avatar-img" onError={() => setAvatarError(true)} />
+            ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={session.avatarUrl} alt="" className={styles['profile-avatar-img']} onError={() => setAvatarError(true)} />
             : <span aria-hidden="true">{session?.displayName.charAt(0).toUpperCase()}</span>
           }
-          <span className="profile-avatar-overlay" aria-hidden="true">
+          <span className={styles['profile-avatar-overlay']} aria-hidden="true">
             {avatarUploading
               ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
               : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -120,16 +121,16 @@ export default function ProfileView({
           style={{ display: 'none' }}
           onChange={handleAvatarUpload}
         />
-        <div className="profile-info">
-          <h1 className="profile-name">{session?.displayName}</h1>
+        <div className={styles['profile-info']}>
+          <h1 className={styles['profile-name']}>{session?.displayName}</h1>
           {session?.memberSince && (
-            <p className="profile-since">
+            <p className={styles['profile-since']}>
               Member since {new Date(session.memberSince).toLocaleDateString('en-JO', { month: 'long', year: 'numeric' })}
             </p>
           )}
         </div>
         <button
-          className="profile-settings-btn"
+          className={styles['profile-settings-btn']}
           aria-label="Settings"
           onClick={() => { setSettingsName(session?.displayName || ''); setSettingsMsg(''); setShowSettings(s => !s); }}
         >
@@ -142,22 +143,22 @@ export default function ProfileView({
 
       {/* Settings panel */}
       {showSettings && (
-        <div className="settings-panel">
-          <h2 className="settings-title">Settings</h2>
-          <form onSubmit={handleSaveSettings} className="settings-form">
-            <label className="settings-label" htmlFor="settings-name">Display Name</label>
+        <div className={styles['settings-panel']}>
+          <h2 className={styles['settings-title']}>Settings</h2>
+          <form onSubmit={handleSaveSettings} className={styles['settings-form']}>
+            <label className={styles['settings-label']} htmlFor="settings-name">Display Name</label>
             <input
               id="settings-name"
-              className="settings-input"
+              className={styles['settings-input']}
               value={settingsName}
               onChange={e => setSettingsName(e.target.value)}
               maxLength={40}
               placeholder="Your display name"
             />
             {settingsMsg && (
-              <p className={`settings-msg${settingsMsg === 'Saved!' ? ' ok' : ' err'}`}>{settingsMsg}</p>
+              <p className={`${styles['settings-msg']}${settingsMsg === 'Saved!' ? ` ${styles.ok}` : ` ${styles.err}`}`}>{settingsMsg}</p>
             )}
-            <button type="submit" className="settings-save-btn" disabled={settingsSaving}>
+            <button type="submit" className={styles['settings-save-btn']} disabled={settingsSaving}>
               {settingsSaving ? 'Saving…' : 'Save Changes'}
             </button>
           </form>
@@ -172,24 +173,24 @@ export default function ProfileView({
       )}
 
       {/* Stats */}
-      <div className="profile-stats">
-        <div className="profile-stat">
-          <span className="profile-stat-value">{myItems.length}</span>
-          <span className="profile-stat-label">Listings</span>
+      <div className={styles['profile-stats']}>
+        <div className={styles['profile-stat']}>
+          <span className={styles['profile-stat-value']}>{myItems.length}</span>
+          <span className={styles['profile-stat-label']}>Listings</span>
         </div>
-        <div className="profile-stat">
-          <span className="profile-stat-value">{myTrades.length}</span>
-          <span className="profile-stat-label">Trades Sent</span>
+        <div className={styles['profile-stat']}>
+          <span className={styles['profile-stat-value']}>{myTrades.length}</span>
+          <span className={styles['profile-stat-label']}>Trades Sent</span>
         </div>
-        <div className="profile-stat">
-          <span className="profile-stat-value">{likedIds.size}</span>
-          <span className="profile-stat-label">Saved</span>
+        <div className={styles['profile-stat']}>
+          <span className={styles['profile-stat-value']}>{likedIds.size}</span>
+          <span className={styles['profile-stat-label']}>Saved</span>
         </div>
       </div>
 
       {/* Saved items */}
-      <div className="profile-section-header">
-        <h2 className="profile-section-title">Saved Items</h2>
+      <div className={styles['profile-section-header']}>
+        <h2 className={styles['profile-section-title']}>Saved Items</h2>
         {savedItems.length > 0 && (
           <span className="section-count">{savedItems.length} item{savedItems.length !== 1 ? 's' : ''}</span>
         )}
@@ -224,7 +225,7 @@ export default function ProfileView({
         </div>
       )}
 
-      <footer className="profile-legal-footer">
+      <footer className={styles['profile-legal-footer']}>
         <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         <span aria-hidden="true">·</span>
         <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
