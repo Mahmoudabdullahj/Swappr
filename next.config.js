@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
 const supabaseHost = 'ekcsvucupmmgkekjjdqx.supabase.co';
 
 const securityHeaders = [
@@ -15,8 +16,8 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://rsms.me",
-      "font-src 'self' https://fonts.gstatic.com https://rsms.me",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self'",
       `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com https://i.pravatar.cc`,
       `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}`,
       "frame-ancestors 'none'",
@@ -34,6 +35,17 @@ const nextConfig = {
   },
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }];
+  },
+  webpack(config, { isServer, webpack }) {
+    if (!isServer) {
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /next[\\/]dist[\\/]build[\\/]polyfills[\\/]polyfill-module/,
+          path.resolve(__dirname, 'lib/empty.js')
+        )
+      );
+    }
+    return config;
   },
 };
 
