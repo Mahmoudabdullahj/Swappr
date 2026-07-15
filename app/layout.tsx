@@ -45,8 +45,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={bricolage.variable}>
       <head>
         <link rel="preconnect" href="https://ekcsvucupmmgkekjjdqx.supabase.co" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/hero-poster.webp" fetchPriority="high" />
       </head>
       <body>{children}</body>
