@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import type { CatalogItem, UserSession } from '@/lib/types';
-import LandingPage from '@/components/LandingPage';
+import dynamic from 'next/dynamic';
+const LandingPage = dynamic(() => import('@/components/LandingPage'), { ssr: false });
 import CategoryGrid from '@/components/CategoryGrid';
 import TrendingFeed from '@/components/TrendingFeed';
 import ItemCard from '@/components/ItemCard';

@@ -26,6 +26,9 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
+  experimental: {
+    optimizePackageImports: ['@supabase/supabase-js', '@supabase/ssr'],
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
