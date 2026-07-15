@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { UserSession } from '@/lib/types';
 import { createClient } from '@/utils/supabase/client';
+import styles from './MessagesView.module.css';
 
 function timeAgo(ts: number): string {
   const diff = Date.now() - ts;
@@ -244,10 +245,10 @@ export default function MessagesView({
 
       {/* ── Chat view (conversation open) ── */}
       {(activeConvo || chatTarget) ? (
-        <div className="chat-view">
-          <div className="chat-header">
+        <div className={styles['chat-view']}>
+          <div className={styles['chat-header']}>
             <button
-              className="back-btn"
+              className={styles['back-btn']}
               onClick={() => { onConvoChange(null); onChatTargetChange(null); }}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -255,18 +256,18 @@ export default function MessagesView({
               </svg>
               Back
             </button>
-            <div className="chat-header-center">
-              <p className="chat-other-name">{activeConvo?.otherUserName ?? chatTarget?.userName}</p>
+            <div className={styles['chat-header-center']}>
+              <p className={styles['chat-other-name']}>{activeConvo?.otherUserName ?? chatTarget?.userName}</p>
               {(activeConvo?.itemTitle ?? chatTarget?.itemTitle) && (
-                <p className="chat-item-context">re: {activeConvo?.itemTitle ?? chatTarget?.itemTitle}</p>
+                <p className={styles['chat-item-context']}>re: {activeConvo?.itemTitle ?? chatTarget?.itemTitle}</p>
               )}
             </div>
-            <div className="chat-header-right">
-              <div className="chat-avatar" aria-hidden="true">
+            <div className={styles['chat-header-right']}>
+              <div className={styles['chat-avatar']} aria-hidden="true">
                 {(activeConvo?.otherUserName ?? chatTarget?.userName ?? '?').charAt(0).toUpperCase()}
               </div>
               <button
-                className="chat-report-btn"
+                className={styles['chat-report-btn']}
                 aria-label="Report user"
                 title="Report user"
                 onClick={() => { setReportReason(''); setShowReportModal(true); }}
@@ -281,14 +282,14 @@ export default function MessagesView({
 
           {/* Report modal */}
           {showReportModal && (
-            <div className="report-modal-overlay" onClick={() => { setShowReportModal(false); setReportError(''); }}>
-              <div className="report-modal" onClick={e => e.stopPropagation()}>
-                <h3 className="report-modal-title">Report User</h3>
+            <div className={styles['report-modal-overlay']} onClick={() => { setShowReportModal(false); setReportError(''); }}>
+              <div className={styles['report-modal']} onClick={e => e.stopPropagation()}>
+                <h3 className={styles['report-modal-title']}>Report User</h3>
                 <form onSubmit={handleReport}>
                   <label className="settings-label" htmlFor="report-reason">Reason</label>
                   <textarea
                     id="report-reason"
-                    className="report-reason-input"
+                    className={styles['report-reason-input']}
                     value={reportReason}
                     onChange={e => setReportReason(e.target.value)}
                     placeholder="Describe the issue…"
@@ -296,9 +297,9 @@ export default function MessagesView({
                     required
                   />
                   {reportError && <p style={{ color: '#e53e3e', fontSize: 13, marginBottom: 8 }}>{reportError}</p>}
-                  <div className="report-modal-actions">
-                    <button type="button" className="report-cancel-btn" onClick={() => { setShowReportModal(false); setReportError(''); }}>Cancel</button>
-                    <button type="submit" className="report-submit-btn" disabled={reportSending || !reportReason.trim()}>
+                  <div className={styles['report-modal-actions']}>
+                    <button type="button" className={styles['report-cancel-btn']} onClick={() => { setShowReportModal(false); setReportError(''); }}>Cancel</button>
+                    <button type="submit" className={styles['report-submit-btn']} disabled={reportSending || !reportReason.trim()}>
                       {reportSending ? 'Sending…' : 'Submit Report'}
                     </button>
                   </div>
@@ -307,31 +308,31 @@ export default function MessagesView({
             </div>
           )}
 
-          <div className="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
+          <div className={styles['chat-messages']} role="log" aria-live="polite" aria-label="Chat messages">
             {messages.length === 0 && !chatTarget && (
-              <div className="chat-empty">Start of your conversation</div>
+              <div className={styles['chat-empty']}>Start of your conversation</div>
             )}
             {messages.length === 0 && chatTarget && (
-              <div className="chat-empty">Say hi to {chatTarget.userName}!</div>
+              <div className={styles['chat-empty']}>Say hi to {chatTarget.userName}!</div>
             )}
             {messages.map((msg) => {
               const isMine = msg.senderId === session?.userId;
               return (
-                <div key={msg.id} className={`chat-message${isMine ? ' sent' : ' recv'}`}>
+                <div key={msg.id} className={`${styles['chat-message']}${isMine ? ` ${styles.sent}` : ` ${styles.recv}`}`}>
                   {!isMine && (
-                    <div className="chat-msg-avatar" aria-hidden="true">
+                    <div className={styles['chat-msg-avatar']} aria-hidden="true">
                       {msg.senderName.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <div className="chat-msg-body">
-                    <div className={`chat-bubble${msg.imageUrl ? ' has-image' : ''}`}>
+                  <div className={styles['chat-msg-body']}>
+                    <div className={`${styles['chat-bubble']}${msg.imageUrl ? ` ${styles['has-image']}` : ''}`}>
                       {msg.imageUrl && (
                         /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={msg.imageUrl} alt="Image" className="chat-msg-image" onClick={() => setLightboxUrl(msg.imageUrl!)} />
+                        <img src={msg.imageUrl} alt="Image" className={styles['chat-msg-image']} onClick={() => setLightboxUrl(msg.imageUrl!)} />
                       )}
-                      {msg.content && <span className={msg.imageUrl ? 'chat-msg-caption' : ''}>{msg.content}</span>}
+                      {msg.content && <span className={msg.imageUrl ? styles['chat-msg-caption'] : ''}>{msg.content}</span>}
                     </div>
-                    <span className="chat-time">{timeAgo(msg.createdAt)}</span>
+                    <span className={styles['chat-time']}>{timeAgo(msg.createdAt)}</span>
                   </div>
                 </div>
               );
@@ -344,14 +345,14 @@ export default function MessagesView({
               {chatError}
             </p>
           )}
-          <div className="chat-input-wrapper">
+          <div className={styles['chat-input-wrapper']}>
             {chatImagePreview && (
-              <div className="chat-image-preview-area">
+              <div className={styles['chat-image-preview-area']}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={chatImagePreview} alt="Attachment preview" className="chat-image-preview" />
+                <img src={chatImagePreview} alt="Attachment preview" className={styles['chat-image-preview']} />
                 <button
                   type="button"
-                  className="chat-image-preview-remove"
+                  className={styles['chat-image-preview-remove']}
                   onClick={() => { setChatImageFile(null); setChatImagePreview(null); }}
                   aria-label="Remove image"
                 >
@@ -362,7 +363,7 @@ export default function MessagesView({
               </div>
             )}
             <form
-              className="chat-input-area"
+              className={styles['chat-input-area']}
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (chatSending) return;
@@ -401,7 +402,7 @@ export default function MessagesView({
               />
               <button
                 type="button"
-                className="chat-attach-btn"
+                className={styles['chat-attach-btn']}
                 onClick={() => chatImageInputRef.current?.click()}
                 aria-label="Attach image"
                 title="Attach image"
@@ -411,7 +412,7 @@ export default function MessagesView({
                 </svg>
               </button>
               <input
-                className="chat-input"
+                className={styles['chat-input']}
                 type="text"
                 placeholder="Type a message…"
                 value={chatInput}
@@ -430,7 +431,7 @@ export default function MessagesView({
                 }}
               />
               <button
-                className="chat-send-btn"
+                className={styles['chat-send-btn']}
                 type="submit"
                 disabled={(!chatInput.trim() && !chatImageFile) || chatSending}
                 aria-label="Send message"
@@ -442,7 +443,7 @@ export default function MessagesView({
             </form>
           </div>
 
-          {/* ── Lightbox ── */}
+          {/* ── Lightbox ── (classes remain global) */}
           {lightboxUrl && (
             <div className="lightbox-overlay" onClick={() => setLightboxUrl(null)} role="dialog" aria-modal="true" aria-label="Image preview">
               <button className="lightbox-close" onClick={() => setLightboxUrl(null)} aria-label="Close">
@@ -458,15 +459,15 @@ export default function MessagesView({
 
       ) : (
         /* ── Conversation list ── */
-        <div className="inbox-wrap">
-          <div className="inbox-header">
-            <div className="inbox-title-row">
-              <h1 className="inbox-title">Inbox</h1>
+        <div className={styles['inbox-wrap']}>
+          <div className={styles['inbox-header']}>
+            <div className={styles['inbox-title-row']}>
+              <h1 className={styles['inbox-title']}>Inbox</h1>
               {conversations.length > 0 && (
-                <span className="inbox-badge">{conversations.length}</span>
+                <span className={styles['inbox-badge']}>{conversations.length}</span>
               )}
             </div>
-            <div className="inbox-arrow" aria-hidden="true">
+            <div className={styles['inbox-arrow']} aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
                 <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
               </svg>
@@ -483,29 +484,29 @@ export default function MessagesView({
               </button>
             </div>
           ) : (
-            <div className="conversations-list" role="list">
+            <div className={styles['conversations-list']} role="list">
               {conversations.map((convo) => {
                 const isRecent = convo.lastMessageAt ? (Date.now() - convo.lastMessageAt) < 30 * 60 * 1000 : false;
                 return (
                   <button
                     key={convo.id}
-                    className="conversation-item"
+                    className={styles['conversation-item']}
                     role="listitem"
                     onClick={() => { onConvoChange(convo); onChatTargetChange(null); }}
                   >
-                    <div className="conversation-avatar" aria-hidden="true">
+                    <div className={styles['conversation-avatar']} aria-hidden="true">
                       {convo.otherUserName.charAt(0).toUpperCase()}
                     </div>
-                    <div className="conversation-info">
-                      <span className="convo-status-label">{isRecent ? 'Active chat' : 'Chat'}</span>
-                      <div className="conversation-row">
-                        <span className="conversation-name">{convo.otherUserName}</span>
+                    <div className={styles['conversation-info']}>
+                      <span className={styles['convo-status-label']}>{isRecent ? 'Active chat' : 'Chat'}</span>
+                      <div className={styles['conversation-row']}>
+                        <span className={styles['conversation-name']}>{convo.otherUserName}</span>
                         {convo.lastMessageAt && (
-                          <span className="conversation-time">{timeAgo(convo.lastMessageAt)}</span>
+                          <span className={styles['conversation-time']}>{timeAgo(convo.lastMessageAt)}</span>
                         )}
                       </div>
                       {convo.lastMessage && (
-                        <p className="conversation-last">{convo.lastMessage}</p>
+                        <p className={styles['conversation-last']}>{convo.lastMessage}</p>
                       )}
                     </div>
                   </button>
