@@ -302,7 +302,7 @@ export default function DiscoverView({
               loop
               playsInline
               poster="/hero-poster.webp"
-              preload="none"
+              preload="metadata"
             />
             <h1 className="bento-headline">Trade what you have,<br/>get what you need.</h1>
             <div className="bento-hero-footer">
