@@ -3,6 +3,7 @@
 import type { UserSession } from '@/lib/types';
 import type { TradeTarget } from '@/lib/my-trades';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
+import styles from './MatchesView.module.css';
 
 function timeAgo(ts: number): string {
   const diff = Date.now() - ts;
@@ -140,39 +141,39 @@ export default function MatchesView({
             </button>
           </div>
         ) : (
-          <div className="matches-list" role="list">
+          <div className={styles['matches-list']} role="list">
             {myMatches.map((match) => (
-              <div key={match.id} className="match-card" role="listitem">
+              <div key={match.id} className={styles['match-card']} role="listitem">
                 {/* My item */}
-                <div className="match-side">
+                <div className={styles['match-side']}>
                   {match.myItem.img
-                    ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.myItem.img} alt={match.myItem.title} className="match-img" />
-                    : (() => { const Icon = CATEGORY_ICONS[match.myItem.category] ?? CATEGORY_ICONS['Other']; return <div className="match-img-placeholder"><Icon size={24} strokeWidth={1.5} /></div>; })()
+                    ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.myItem.img} alt={match.myItem.title} className={styles['match-img']} />
+                    : (() => { const Icon = CATEGORY_ICONS[match.myItem.category] ?? CATEGORY_ICONS['Other']; return <div className={styles['match-img-placeholder']}><Icon size={24} strokeWidth={1.5} /></div>; })()
                   }
-                  <div className="match-item-info">
-                    <p className="match-item-label">You&apos;re offering</p>
+                  <div className={styles['match-item-info']}>
+                    <p className={styles['match-item-label']}>You&apos;re offering</p>
                     <p className="trade-target-title">{match.myItem.title}</p>
                     <p className="trade-time">{match.myItem.category}</p>
                   </div>
                 </div>
 
-                <div className="match-swap-icon" aria-hidden="true">⇄</div>
+                <div className={styles['match-swap-icon']} aria-hidden="true">⇄</div>
 
                 {/* Their item */}
-                <div className="match-side">
+                <div className={styles['match-side']}>
                   {match.theirItem.img
-                    ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.theirItem.img} alt={match.theirItem.title} className="match-img" />
-                    : (() => { const Icon = CATEGORY_ICONS[match.theirItem.category] ?? CATEGORY_ICONS['Other']; return <div className="match-img-placeholder"><Icon size={24} strokeWidth={1.5} /></div>; })()
+                    ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={match.theirItem.img} alt={match.theirItem.title} className={styles['match-img']} />
+                    : (() => { const Icon = CATEGORY_ICONS[match.theirItem.category] ?? CATEGORY_ICONS['Other']; return <div className={styles['match-img-placeholder']}><Icon size={24} strokeWidth={1.5} /></div>; })()
                   }
-                  <div className="match-item-info">
-                    <p className="match-item-label">You want</p>
+                  <div className={styles['match-item-info']}>
+                    <p className={styles['match-item-label']}>You want</p>
                     <p className="trade-target-title">{match.theirItem.title}</p>
                     <p className="trade-meta">by {match.theirItem.seller}</p>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="match-actions">
+                <div className={styles['match-actions']}>
                   <p className="trade-time">{timeAgo(match.matchedAt)}</p>
                   <button
                     className="list-submit-btn"
@@ -182,7 +183,7 @@ export default function MatchesView({
                     Offer Trade
                   </button>
                   <button
-                    className="match-msg-btn"
+                    className={styles['match-msg-btn']}
                     onClick={() => onOpenChat({ userId: match.theirItem.ownerId, userName: match.theirItem.seller, itemId: match.theirItem.id, itemTitle: match.theirItem.title, itemImg: match.theirItem.img })}
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13" aria-hidden="true">
