@@ -3,6 +3,7 @@
 import { useState, useRef, useMemo } from 'react';
 import { Session } from '@/lib/session';
 import { CATALOG, CategoryConfig } from '@/lib/item-catalog';
+import styles from './ListItemModal.module.css';
 
 interface ListItemModalProps {
   open: boolean;
@@ -273,21 +274,21 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
   return (
     <div
-      className={`list-modal-overlay${open ? ' open' : ''}`}
+      className={`${styles['list-modal-overlay']}${open ? ` ${styles.open}` : ''}`}
       role="dialog" aria-modal="true" aria-labelledby="listModalTitle"
     >
-      <div className="list-modal">
+      <div className={styles['list-modal']}>
 
         {/* Header */}
-        <div className="list-modal-header">
+        <div className={styles['list-modal-header']}>
           {currentStep !== 'category' ? (
-            <button className="list-back-icon-btn" onClick={goBack} aria-label="Go back">
+            <button className={styles['list-back-icon-btn']} onClick={goBack} aria-label="Go back">
               <BackArrow />
             </button>
           ) : (
             <div style={{ width: 32 }} />
           )}
-          <h2 className="list-modal-title" id="listModalTitle" style={{ flex: 1, textAlign: 'center' }}>
+          <h2 className={styles['list-modal-title']} id="listModalTitle" style={{ flex: 1, textAlign: 'center' }}>
             {STEP_TITLES[currentStep] ?? 'List Your Item'}
           </h2>
           <button className="list-modal-close" onClick={handleClose} aria-label="Close">
@@ -299,11 +300,11 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* Step dots */}
         {selectedCatSlug && (
-          <div className="list-step-dots-bar">
+          <div className={styles['list-step-dots-bar']}>
             {allSteps.map((s, i) => (
               <span
                 key={s}
-                className={`list-step-dot${i < stepIndex ? ' done' : i === stepIndex ? ' active' : ''}`}
+                className={`${styles['list-step-dot']}${i < stepIndex ? ` ${styles.done}` : i === stepIndex ? ` ${styles.active}` : ''}`}
               />
             ))}
           </div>
@@ -311,15 +312,15 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: category ── */}
         {currentStep === 'category' && (
-          <div className="list-modal-body">
-            <p className="list-step-hint">What are you listing?</p>
-            <div className="list-cat-grid">
+          <div className={styles['list-modal-body']}>
+            <p className={styles['list-step-hint']}>What are you listing?</p>
+            <div className={styles['list-cat-grid']}>
               {CATALOG.map(c => (
                 <button key={c.slug}
-                  className={`list-cat-item${selectedCatSlug === c.slug ? ' selected' : ''}`}
+                  className={`${styles['list-cat-item']}${selectedCatSlug === c.slug ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleCategorySelect(c.slug)}>
-                  <span className="list-cat-emoji">{c.emoji}</span>
-                  <span className="list-cat-name">{c.name}</span>
+                  <span className={styles['list-cat-emoji']}>{c.emoji}</span>
+                  <span className={styles['list-cat-name']}>{c.name}</span>
                 </button>
               ))}
             </div>
@@ -328,15 +329,15 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: brand / type ── */}
         {currentStep === 'brand' && (
-          <div className="list-modal-body">
-            <p className="list-step-hint">{cat?.brands ? 'Select a brand' : 'Select a type'}</p>
-            <div className="list-brand-grid">
+          <div className={styles['list-modal-body']}>
+            <p className={styles['list-step-hint']}>{cat?.brands ? 'Select a brand' : 'Select a type'}</p>
+            <div className={styles['list-brand-grid']}>
               {(cat?.brands?.map(b => b.name) ?? cat?.types ?? []).map(name => (
                 <button key={name}
-                  className={`list-brand-card${selectedBrand === name ? ' selected' : ''}`}
+                  className={`${styles['list-brand-card']}${selectedBrand === name ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleBrandSelect(name)}>
                   <span>{name}</span>
-                  {selectedBrand === name && <span className="list-brand-check"><CheckIcon /></span>}
+                  {selectedBrand === name && <span className={styles['list-brand-check']}><CheckIcon /></span>}
                 </button>
               ))}
             </div>
@@ -345,13 +346,13 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: model ── */}
         {currentStep === 'model' && (
-          <div className="list-modal-body">
-            <p className="list-step-hint">{selectedBrand}</p>
+          <div className={styles['list-modal-body']}>
+            <p className={styles['list-step-hint']}>{selectedBrand}</p>
             {brandModels.length > 6 && (
-              <input className="list-model-search" placeholder="Search models…"
+              <input className={styles['list-model-search']} placeholder="Search models…"
                 value={modelSearch} onChange={e => setModelSearch(e.target.value)} autoFocus />
             )}
-            <div className="list-model-list">
+            <div className={styles['list-model-list']}>
               {filteredModels.length === 0 && (
                 <p style={{ color: 'var(--text-secondary)', fontSize: 13, textAlign: 'center', padding: '16px 0' }}>
                   No models match your search
@@ -359,7 +360,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
               )}
               {filteredModels.map(model => (
                 <button key={model}
-                  className={`list-model-item${selectedModel === model ? ' selected' : ''}`}
+                  className={`${styles['list-model-item']}${selectedModel === model ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleModelSelect(model)}>
                   <span>{model}</span>
                   {selectedModel === model ? <CheckIcon /> : <ChevronRight />}
@@ -371,31 +372,31 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: specs ── */}
         {currentStep === 'specs' && (
-          <div className="list-modal-body">
+          <div className={styles['list-modal-body']}>
             {(selectedBrand || selectedModel) && (
-              <div className="list-selected-summary">
+              <div className={styles['list-selected-summary']}>
                 {selectedBrand && <span>{selectedBrand}</span>}
-                {selectedModel && <><span className="list-summary-sep">›</span><span>{selectedModel}</span></>}
+                {selectedModel && <><span className={styles['list-summary-sep']}>›</span><span>{selectedModel}</span></>}
               </div>
             )}
             {cat?.specs.filter(field => !field.brands || field.brands.includes(selectedBrand)).map(field => (
-              <div key={field.key} className="list-field">
-                <label className="list-label">
+              <div key={field.key} className={styles['list-field']}>
+                <label className={styles['list-label']}>
                   {field.label}
-                  {!field.required && <span className="list-label-opt"> (optional)</span>}
+                  {!field.required && <span className={styles['list-label-opt']}> (optional)</span>}
                 </label>
                 {field.type === 'select' ? (
-                  <select className={`list-select${errors[field.key] ? ' error' : ''}`} value={specs[field.key] || ''}
+                  <select className={`${styles['list-select']}${errors[field.key] ? ` ${styles.error}` : ''}`} value={specs[field.key] || ''}
                     onChange={e => { setSpecs(s => ({ ...s, [field.key]: e.target.value })); setErrors(er => ({ ...er, [field.key]: '' })); }}>
                     <option value="">Select…</option>
                     {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 ) : (
-                  <input className={`list-input${errors[field.key] ? ' error' : ''}`} type="text" placeholder={field.placeholder || ''}
+                  <input className={`${styles['list-input']}${errors[field.key] ? ` ${styles.error}` : ''}`} type="text" placeholder={field.placeholder || ''}
                     value={specs[field.key] || ''}
                     onChange={e => { setSpecs(s => ({ ...s, [field.key]: e.target.value })); setErrors(er => ({ ...er, [field.key]: '' })); }} />
                 )}
-                {errors[field.key] && <p className="list-error" role="alert">{errors[field.key]}</p>}
+                {errors[field.key] && <p className={styles['list-error']} role="alert">{errors[field.key]}</p>}
               </div>
             ))}
             <button className="list-continue-btn" onClick={() => {
@@ -420,9 +421,9 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: details ── */}
         {currentStep === 'details' && (
-          <div className="list-modal-body">
+          <div className={styles['list-modal-body']}>
             <div
-              className={`list-upload-area${dragOver ? ' drag-over' : ''}${previews.length > 0 ? ' has-images' : ''}${errors.image ? ' error' : ''}`}
+              className={`${styles['list-upload-area']}${dragOver ? ` ${styles['drag-over']}` : ''}${previews.length > 0 ? ` ${styles['has-images']}` : ''}${errors.image ? ` ${styles.error}` : ''}`}
               onClick={() => previews.length === 0 && fileInputRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
@@ -431,27 +432,27 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 onChange={e => { addFiles(e.target.files); e.target.value = ''; }} />
               {previews.length === 0 ? (
                 <>
-                  <div className="list-upload-icon" aria-hidden="true">
+                  <div className={styles['list-upload-icon']} aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="3" y="3" width="18" height="18" rx="3" />
                       <circle cx="8.5" cy="8.5" r="1.5" />
                       <polyline points="21 15 16 10 5 21" />
                     </svg>
                   </div>
-                  <p className="list-upload-label">Click or drag photos here</p>
-                  <p className="list-upload-sub">Up to 5 images · JPG, PNG, WEBP</p>
+                  <p className={styles['list-upload-label']}>Click or drag photos here</p>
+                  <p className={styles['list-upload-sub']}>Up to 5 images · JPG, PNG, WEBP</p>
                 </>
               ) : (
-                <div className="list-image-previews" onClick={e => e.stopPropagation()}>
+                <div className={styles['list-image-previews']} onClick={e => e.stopPropagation()}>
                   {previews.map((src, i) => (
-                    <div key={i} className="list-preview-thumb">
+                    <div key={i} className={styles['list-preview-thumb']}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={src} alt={`Preview ${i + 1}`} />
-                      <button className="list-preview-remove" onClick={() => removeImage(i)} aria-label={`Remove image ${i + 1}`}>×</button>
+                      <button className={styles['list-preview-remove']} onClick={() => removeImage(i)} aria-label={`Remove image ${i + 1}`}>×</button>
                     </div>
                   ))}
                   {previews.length < 5 && (
-                    <button className="list-preview-add" onClick={() => fileInputRef.current?.click()} aria-label="Add more photos">
+                    <button className={styles['list-preview-add']} onClick={() => fileInputRef.current?.click()} aria-label="Add more photos">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                       </svg>
@@ -460,18 +461,18 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 </div>
               )}
             </div>
-            {errors.image && <p className="list-error" role="alert">{errors.image}</p>}
+            {errors.image && <p className={styles['list-error']} role="alert">{errors.image}</p>}
 
-            <div className="list-field">
-              <label className="list-label" htmlFor="listTitle">Title</label>
-              <input id="listTitle" className={`list-input${errors.title ? ' error' : ''}`}
+            <div className={styles['list-field']}>
+              <label className={styles['list-label']} htmlFor="listTitle">Title</label>
+              <input id="listTitle" className={`${styles['list-input']}${errors.title ? ` ${styles.error}` : ''}`}
                 type="text" placeholder="e.g. Apple MacBook Pro 14&quot; M4" value={title}
                 onChange={e => { setTitle(e.target.value); setErrors(er => ({ ...er, title: '' })); }} />
-              {errors.title && <p className="list-error" role="alert">{errors.title}</p>}
+              {errors.title && <p className={styles['list-error']} role="alert">{errors.title}</p>}
             </div>
 
-            <div className="list-field">
-              <label className="list-label">Condition</label>
+            <div className={styles['list-field']}>
+              <label className={styles['list-label']}>Condition</label>
               <div style={{ display: 'flex', gap: 8 }}>
                 {CONDITIONS.map(({ value, label }) => (
                   <button key={value} type="button"
@@ -486,20 +487,20 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                   >{label}</button>
                 ))}
               </div>
-              {errors.condition && <p className="list-error" role="alert">{errors.condition}</p>}
+              {errors.condition && <p className={styles['list-error']} role="alert">{errors.condition}</p>}
             </div>
 
 
-            <div className="list-field">
-              <label className="list-label" htmlFor="listDesc">
-                Description <span className="list-label-opt">(optional)</span>
+            <div className={styles['list-field']}>
+              <label className={styles['list-label']} htmlFor="listDesc">
+                Description <span className={styles['list-label-opt']}>(optional)</span>
               </label>
-              <textarea id="listDesc" className="list-textarea"
+              <textarea id="listDesc" className={styles['list-textarea']}
                 placeholder="Describe the condition, age, what's included…"
                 rows={3} value={description} onChange={e => setDescription(e.target.value)} />
             </div>
 
-            {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
+            {errors.submit && <p className={styles['list-error']} role="alert">{errors.submit}</p>}
 
             <button className="list-continue-btn" onClick={handleDetailsContinue} disabled={submitting}>
               {submitting ? 'Saving…' : skipWantStep ? 'List Item' : 'Continue'}
@@ -516,17 +517,17 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: wants — category ── */}
         {currentStep === 'wants_cat' && (
-          <div className="list-modal-body">
-            <p className="list-step2-intro">
+          <div className={styles['list-modal-body']}>
+            <p className={styles['list-step2-intro']}>
               What would you like in return? We&apos;ll notify you when a match is found.
             </p>
 
             {/* Open to anything */}
             <button type="button"
-              className={`list-anything-btn${wantAnything ? ' active' : ''}`}
+              className={`${styles['list-anything-btn']}${wantAnything ? ` ${styles.active}` : ''}`}
               onClick={() => { setWantAnything(true); submitListing(true); }}
               aria-pressed={wantAnything}>
-              <span className="list-anything-check" aria-hidden="true">
+              <span className={styles['list-anything-check']} aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
                   <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
                   <path d="M12 8v4l3 3" />
@@ -535,15 +536,15 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
               Open to anything
             </button>
 
-            <p className="list-step-hint" style={{ marginTop: 4 }}>Or pick a category:</p>
+            <p className={styles['list-step-hint']} style={{ marginTop: 4 }}>Or pick a category:</p>
 
-            <div className="list-cat-grid">
+            <div className={styles['list-cat-grid']}>
               {CATALOG.map(c => (
                 <button key={c.slug}
-                  className={`list-cat-item${wantCatSlug === c.slug ? ' selected' : ''}`}
+                  className={`${styles['list-cat-item']}${wantCatSlug === c.slug ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleWantCatSelect(c.slug)}>
-                  <span className="list-cat-emoji">{c.emoji}</span>
-                  <span className="list-cat-name">{c.name}</span>
+                  <span className={styles['list-cat-emoji']}>{c.emoji}</span>
+                  <span className={styles['list-cat-name']}>{c.name}</span>
                 </button>
               ))}
             </div>
@@ -551,7 +552,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
             {/* Show List Item only for categories with no brand/type sub-step */}
             {wantCatSlug && !wantCat?.brands && !wantCat?.types && (
               <>
-                {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
+                {errors.submit && <p className={styles['list-error']} role="alert">{errors.submit}</p>}
                 <ListItemBtn />
               </>
             )}
@@ -560,27 +561,27 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: wants — brand / type ── */}
         {currentStep === 'wants_brand' && (
-          <div className="list-modal-body">
-            <div className="list-selected-summary">
+          <div className={styles['list-modal-body']}>
+            <div className={styles['list-selected-summary']}>
               <span>{wantCat?.emoji} {wantCat?.name}</span>
             </div>
-            <p className="list-step-hint">
+            <p className={styles['list-step-hint']}>
               {wantCat?.brands ? 'Select a brand' : 'Select a type'}
             </p>
-            <div className="list-brand-grid">
+            <div className={styles['list-brand-grid']}>
               {(wantCat?.brands?.map(b => b.name) ?? wantCat?.types ?? []).map(name => (
                 <button key={name}
-                  className={`list-brand-card${wantBrand === name ? ' selected' : ''}`}
+                  className={`${styles['list-brand-card']}${wantBrand === name ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleWantBrandSelect(name)}>
                   <span>{name}</span>
-                  {wantBrand === name && <span className="list-brand-check"><CheckIcon /></span>}
+                  {wantBrand === name && <span className={styles['list-brand-check']}><CheckIcon /></span>}
                 </button>
               ))}
             </div>
             {/* For type-based categories, show List Item after selecting a type */}
             {wantBrand && !wantCat?.brands && (
               <>
-                {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
+                {errors.submit && <p className={styles['list-error']} role="alert">{errors.submit}</p>}
                 <ListItemBtn />
               </>
             )}
@@ -589,18 +590,18 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
         {/* ── STEP: wants — model ── */}
         {currentStep === 'wants_model' && (
-          <div className="list-modal-body">
-            <div className="list-selected-summary">
+          <div className={styles['list-modal-body']}>
+            <div className={styles['list-selected-summary']}>
               <span>{wantCat?.emoji} {wantCat?.name}</span>
-              <span className="list-summary-sep">›</span>
+              <span className={styles['list-summary-sep']}>›</span>
               <span>{wantBrand}</span>
             </div>
-            <p className="list-step-hint">Select a model <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>(optional)</span></p>
+            <p className={styles['list-step-hint']}>Select a model <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>(optional)</span></p>
             {wantBrandModels.length > 6 && (
-              <input className="list-model-search" placeholder="Search models…"
+              <input className={styles['list-model-search']} placeholder="Search models…"
                 value={wantModelSearch} onChange={e => setWantModelSearch(e.target.value)} autoFocus />
             )}
-            <div className="list-model-list">
+            <div className={styles['list-model-list']}>
               {filteredWantModels.length === 0 && (
                 <p style={{ color: 'var(--text-secondary)', fontSize: 13, textAlign: 'center', padding: '16px 0' }}>
                   No models match your search
@@ -608,7 +609,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
               )}
               {filteredWantModels.map(model => (
                 <button key={model}
-                  className={`list-model-item${wantModel === model ? ' selected' : ''}`}
+                  className={`${styles['list-model-item']}${wantModel === model ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleWantModelToggle(model)}>
                   <span>{model}</span>
                   {wantModel === model ? <CheckIcon /> : <ChevronRight />}
@@ -616,12 +617,12 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
               ))}
             </div>
             {wantBrand === 'Video Games' && wantModel && (
-              <div className="list-field" style={{ marginTop: 16 }}>
-                <label className="list-label">
-                  Which game?<span className="list-label-opt"> (optional)</span>
+              <div className={styles['list-field']} style={{ marginTop: 16 }}>
+                <label className={styles['list-label']}>
+                  Which game?<span className={styles['list-label-opt']}> (optional)</span>
                 </label>
                 <input
-                  className="list-input"
+                  className={styles['list-input']}
                   type="text"
                   placeholder="e.g. Elden Ring, FIFA 25, Spider-Man 2"
                   value={wantGameName}
@@ -630,7 +631,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 />
               </div>
             )}
-            {errors.submit && <p className="list-error" role="alert">{errors.submit}</p>}
+            {errors.submit && <p className={styles['list-error']} role="alert">{errors.submit}</p>}
             <ListItemBtn />
           </div>
         )}
