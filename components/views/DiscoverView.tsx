@@ -297,7 +297,7 @@ export default function DiscoverView({
           >
             <video
               className="bento-hero-video"
-              src="/hero.mp4"
+              src="/hero2.mp4"
               autoPlay
               muted
               loop
