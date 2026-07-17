@@ -352,7 +352,7 @@ export default function DiscoverView({
                 )}
                 <div className="cat-card-body">
                   <div>
-                    <span className="cat-num">{String(i + 1).padStart(2, '0')}.</span>
+                    <span className="cat-num">{String(i + 1).padStart(2, '0')}</span>
                     <h3 className="cat-name">{name.toUpperCase()}</h3>
                   </div>
                   <div>
