@@ -68,7 +68,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-top: 66px; /* compensate for fixed topbar */
+  padding-top: 110px; /* compensate for fixed topbar */
   max-width: 100%;
 }
 
@@ -79,7 +79,7 @@ header.topbar {
   align-items: center;
   gap: 0;
   padding: 0 40px;
-  height: 66px;
+  height: 110px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   position: fixed;
