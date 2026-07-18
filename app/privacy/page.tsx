@@ -11,8 +11,7 @@ export default function PrivacyPage() {
     <div className="legal-page">
       <header className="legal-header">
         <Link href="/" className="legal-logo">
-          <span className="logo-mark" style={{ width: 28, height: 28, fontSize: 11 }}>SW</span>
-          <span className="logo-wordmark" style={{ fontSize: 16 }}>Swaparr</span>
+          <img src="/logo.png" alt="Baddel" style={{ height: 44 }} />
         </Link>
       </header>
 

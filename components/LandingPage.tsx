@@ -69,8 +69,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
       {!embedded && (
         <header className={styles['landing-nav']}>
           <div className={styles['landing-nav-logo']}>
-            <span className="logo-mark">SW</span>
-            <span className="logo-wordmark">Swaparr</span>
+            <img src="/logo.png" alt="Baddel" style={{ height: 52 }} />
           </div>
           <button className={styles['landing-signin-btn']} onClick={onGetStarted}>Sign in</button>
         </header>
@@ -230,9 +229,8 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
       {/* ── Footer — hidden when embedded inside the app shell ── */}
       {!embedded && (
         <footer className={styles['landing-footer']}>
-          <span className={styles['landing-nav-logo']} style={{ gap: 8 }}>
-            <span className="logo-mark" style={{ width: 26, height: 26, fontSize: 10 }}>SW</span>
-            <span className="logo-wordmark" style={{ fontSize: 15 }}>Swaparr</span>
+          <span className={styles['landing-nav-logo']}>
+            <img src="/logo.png" alt="Baddel" style={{ height: 40 }} />
           </span>
           <p className={styles['landing-footer-copy']}>
             &copy; 2026 Swaparr. Built in Amman, for Amman.

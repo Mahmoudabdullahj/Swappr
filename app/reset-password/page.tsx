@@ -29,8 +29,7 @@ export default function ResetPasswordPage() {
     <div className="login-screen" role="main" aria-label="Reset password">
       <div className="login-card">
         <div className="login-brand">
-          <span className="login-logo" aria-label="Swaparr">SW</span>
-          <span className="login-wordmark">Swaparr</span>
+          <img src="/logo.png" alt="Baddel" style={{ height: 72 }} />
         </div>
 
         <h1 className="login-title">Set new password</h1>
