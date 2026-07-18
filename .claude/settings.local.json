@@ -48,7 +48,21 @@
       "Bash(echo \"Dev server PID: $!\")",
       "Bash(npm list *)",
       "Bash(lighthouse http://localhost:3000 --output=json --output-path=\"E:/Swapit/Swapit/lighthouse-report.json\" --chrome-flags=\"--headless --no-sandbox --disable-gpu\" --only-categories=performance,accessibility,best-practices,seo)",
-      "Bash(where ffmpeg *)"
+      "Bash(where ffmpeg *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(python3 -c \"import sys,json; lines=[l for l in sys.stdin.read\\(\\).strip\\(\\).split\\('\\\\n'\\) if l]; [print\\(json.loads\\(l\\).get\\('message',{}\\).get\\('content',''\\)[:500] if isinstance\\(json.loads\\(l\\).get\\('message',{}\\).get\\('content',''\\),str\\) else str\\(json.loads\\(l\\).get\\('message',{}\\).get\\('content',''\\)\\)[:500]\\) for l in lines[-5:]]\")",
+      "Bash(awk '/^\\\\/\\\\* ──/ {count++; print NR\": \"count\". \"$0}' app/globals.css)",
+      "Bash(awk '/^\\\\/\\\\* ──/{if\\(start\\) printf \"%s: %d lines\\\\n\", section, NR-start; section=$0; start=NR} END{printf \"%s: %d lines\\\\n\", section, NR-start}' app/globals.css)",
+      "Bash(sort -t: -k2 -rn)",
+      "Bash(cat next.config.ts)",
+      "Bash(cat next.config.js)",
+      "Bash(cat next.config.mjs)",
+      "Bash(cp \"E:/Swapit/Baddel logo/Blue.png\" \"E:/Swapit/Swapit/public/logo.png\")",
+      "Bash(cp \"E:/Swapit/Baddel logo/white.png\" \"E:/Swapit/Swapit/public/logo-white.png\")",
+      "Bash(sed -i 's|swaparr\\\\.com|baddel.shop|g' app/layout.tsx)",
+      "Bash(sed -i 's|swappr\\\\.jo|baddel.shop|g' app/layout.tsx app/terms/page.tsx app/privacy/page.tsx app/sitemap.ts public/robots.txt)",
+      "Bash(sed -i 's|Swaparr|Baddel|g' app/layout.tsx app/opengraph-image.tsx app/not-found.tsx 'app/items/[id]/page.tsx' app/admin/AdminPanel.tsx components/LandingPage.tsx components/LoginModal.tsx app/terms/page.tsx app/privacy/page.tsx)",
+      "Bash(sed -i 's|\"name\": \"swaparr\"|\"name\": \"baddel\"|g' package.json)"
     ]
   }
 }

@@ -71,7 +71,7 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
 
   const TITLES: Record<Mode, string> = {
     signin: 'Trade what you have.',
-    signup: 'Join Swaparr',
+    signup: 'Join Baddel',
     forgot: 'Reset your password',
   };
   return (

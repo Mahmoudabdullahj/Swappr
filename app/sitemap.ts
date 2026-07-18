@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { createClient } from '@/utils/supabase/server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = 'https://swappr.jo';
+  const base = 'https://baddel.shop';
 
   const supabase = await createClient();
   const { data: items } = await supabase

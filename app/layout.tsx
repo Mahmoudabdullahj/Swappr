@@ -14,27 +14,27 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://swaparr.com'),
+  metadataBase: new URL('https://baddel.shop'),
   title: {
-    default: 'Swaparr: Trade What You Have',
-    template: '%s | Swaparr',
+    default: 'Baddel: Trade What You Have',
+    template: '%s | Baddel',
   },
-  description: 'Swaparr is a local barter marketplace for Amman. No money changes hands, just fair direct trades between people near you.',
+  description: 'Baddel is a local barter marketplace for Amman. No money changes hands, just fair direct trades between people near you.',
   keywords: ['barter', 'trade', 'swap', 'Amman', 'Jordan', 'marketplace', 'no money', 'local'],
-  authors: [{ name: 'Swaparr' }],
+  authors: [{ name: 'Baddel' }],
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
     locale: 'en_JO',
-    url: 'https://swappr.jo',
-    siteName: 'Swaparr',
-    title: 'Swaparr: Trade What You Have',
+    url: 'https://baddel.shop',
+    siteName: 'Baddel',
+    title: 'Baddel: Trade What You Have',
     description: 'A local barter marketplace for Amman. No money, just fair trades between people near you.',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Swaparr: Trade What You Have' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Baddel: Trade What You Have' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Swaparr: Trade What You Have',
+    title: 'Baddel: Trade What You Have',
     description: 'A local barter marketplace for Amman. No money, just fair trades between people near you.',
     images: ['/opengraph-image'],
   },

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   if (!item) return { title: 'Item not found' };
   return {
     title: `${item.title} | ${item.category}`,
-    description: `${item.title} listed by ${item.seller} on Swaparr. No money, just fair trades.`,
+    description: `${item.title} listed by ${item.seller} on Baddel. No money, just fair trades.`,
   };
 }
 

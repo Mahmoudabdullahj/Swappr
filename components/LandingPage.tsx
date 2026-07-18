@@ -83,7 +83,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
           Get what you need.
         </h1>
         <p className={styles['landing-sub']}>
-          Swaparr is a local barter marketplace. No money changes hands,
+          Baddel is a local barter marketplace. No money changes hands,
           just fair direct trades between people near you.
         </p>
 
@@ -157,10 +157,10 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
       {/* ── Injected content (e.g. exact matches + trending) ── */}
       {children}
 
-      {/* ── Why Swaparr ── */}
+      {/* ── Why Baddel ── */}
       <section className={`${styles['landing-section']} ${styles['landing-section-alt']}`}>
         <div className={styles['landing-section-inner']}>
-          <p className={styles['landing-overline']}>Why Swaparr</p>
+          <p className={styles['landing-overline']}>Why Baddel</p>
           <h2 className={styles['landing-h2']}>Built different from the start</h2>
           <div className={styles['landing-features']}>
             <div className={styles['landing-feature']}>
@@ -194,7 +194,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <div className={styles['landing-feature']}>
               <h3 className={styles['landing-feature-title']}>Zero fees, ever</h3>
               <p className={styles['landing-feature-body']}>
-                We don&apos;t take a cut of your trade. Swaparr is free to use,
+                We don&apos;t take a cut of your trade. Baddel is free to use,
                 today and permanently.
               </p>
             </div>
@@ -216,8 +216,8 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <h2 className={styles['landing-cta-heading']}>Ready to make your first trade?</h2>
             <p className={styles['landing-cta-body']}>
               {stats && stats.traders > 0
-                ? `Join ${fmt(stats.traders)} trader${stats.traders !== 1 ? 's' : ''} already on Swaparr. No credit card, no fees, no friction.`
-                : 'Be one of the first traders on Swaparr. No credit card, no fees, no friction.'}
+                ? `Join ${fmt(stats.traders)} trader${stats.traders !== 1 ? 's' : ''} already on Baddel. No credit card, no fees, no friction.`
+                : 'Be one of the first traders on Baddel. No credit card, no fees, no friction.'}
             </p>
             <button className={`${styles['landing-cta-primary']} ${styles['landing-cta-large']}`} onClick={onGetStarted}>
               Create your free account
@@ -233,7 +233,7 @@ export default function LandingPage({ onGetStarted, embedded, loggedIn, children
             <img src="/logo.png" alt="Baddel" style={{ height: 40 }} />
           </span>
           <p className={styles['landing-footer-copy']}>
-            &copy; 2026 Swaparr. Built in Amman, for Amman.
+            &copy; 2026 Baddel. Built in Amman, for Amman.
           </p>
           <div className={styles['landing-footer-legal']}>
             <a href="/privacy">Privacy Policy</a>

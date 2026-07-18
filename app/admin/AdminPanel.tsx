@@ -56,7 +56,7 @@ export default function AdminPanel() {
       <div className="my-items-header" style={{ marginBottom: 20 }}>
         <div>
           <h1 className="my-items-title">Admin Panel</h1>
-          <p className="my-items-count">Swaparr dashboard</p>
+          <p className="my-items-count">Baddel dashboard</p>
         </div>
       </div>
 

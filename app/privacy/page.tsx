@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'How Swaparr collects, uses, and protects your information.',
+  description: 'How Baddel collects, uses, and protects your information.',
 };
 
 export default function PrivacyPage() {
@@ -19,10 +19,10 @@ export default function PrivacyPage() {
         <h1>Privacy Policy</h1>
         <p className="legal-date">Last updated: July 2026</p>
 
-        <p>Swaparr (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the platform&rdquo;) is a local barter marketplace based in Amman, Jordan. This policy explains what information we collect, how we use it, and your rights.</p>
+        <p>Baddel (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the platform&rdquo;) is a local barter marketplace based in Amman, Jordan. This policy explains what information we collect, how we use it, and your rights.</p>
 
         <h2>1. Information We Collect</h2>
-        <p>When you use Swaparr we collect:</p>
+        <p>When you use Baddel we collect:</p>
         <ul>
           <li><strong>Account information:</strong> your display name and email address when you register.</li>
           <li><strong>Listings:</strong> photos, titles, descriptions, and item categories you submit when posting an item.</li>
@@ -45,29 +45,29 @@ export default function PrivacyPage() {
         <h2>4. Data Sharing</h2>
         <p>We share your information only:</p>
         <ul>
-          <li>With other Swaparr users, to the extent necessary to facilitate trades (e.g., your display name appears on your listings and messages).</li>
+          <li>With other Baddel users, to the extent necessary to facilitate trades (e.g., your display name appears on your listings and messages).</li>
           <li>With service providers (Supabase, Vercel) who help us operate the platform, under confidentiality obligations.</li>
           <li>When required by Jordanian law or a valid legal process.</li>
         </ul>
 
         <h2>5. Your Rights</h2>
-        <p>You may request to access, correct, or delete your account data at any time by contacting us at <a href="mailto:hello@swappr.jo">hello@swappr.jo</a>. We will respond within 30 days.</p>
+        <p>You may request to access, correct, or delete your account data at any time by contacting us at <a href="mailto:hello@baddel.shop">hello@baddel.shop</a>. We will respond within 30 days.</p>
 
         <h2>6. Cookies &amp; Local Storage</h2>
-        <p>Swaparr uses browser local storage to keep you signed in and remember your session preferences. We do not use third-party advertising cookies.</p>
+        <p>Baddel uses browser local storage to keep you signed in and remember your session preferences. We do not use third-party advertising cookies.</p>
 
         <h2>7. Children</h2>
-        <p>Swaparr is not directed at children under 13. If you believe a child has created an account, please contact us and we will delete it promptly.</p>
+        <p>Baddel is not directed at children under 13. If you believe a child has created an account, please contact us and we will delete it promptly.</p>
 
         <h2>8. Changes to This Policy</h2>
         <p>We may update this policy from time to time. We will notify users of material changes by updating the date at the top of this page.</p>
 
         <h2>9. Contact</h2>
-        <p>Questions? Reach us at <a href="mailto:hello@swappr.jo">hello@swappr.jo</a>.</p>
+        <p>Questions? Reach us at <a href="mailto:hello@baddel.shop">hello@baddel.shop</a>.</p>
       </main>
 
       <footer className="legal-footer">
-        <p>&copy; 2026 Swaparr. Built in Amman, for Amman.</p>
+        <p>&copy; 2026 Baddel. Built in Amman, for Amman.</p>
         <div className="legal-footer-links">
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms of Service</Link>
