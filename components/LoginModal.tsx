@@ -79,7 +79,7 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
       <div className="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
 
         <div className="login-brand">
-          <img src="/logo.png" alt="Baddel" style={{ height: 72 }} />
+          <img src="/logo-nav.png" alt="Baddel" style={{ height: 100 }} />
         </div>
 
         <h1 className="login-title" id="loginTitle">{TITLES[mode]}</h1>
