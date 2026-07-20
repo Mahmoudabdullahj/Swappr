@@ -21,7 +21,7 @@ export default function Footer({ onCategorySelect }: FooterProps) {
 
         {/* Brand */}
         <div className="footer-brand">
-          <img src="/logo-white.png" alt="Baddel" className="footer-logo" />
+          <img src="/logo-footer.png" alt="Baddel" width={201} height={53} className="footer-logo" />
           <p className="footer-desc">
             A local barter marketplace for Amman. No money changes hands — just fair direct trades between people near you.
           </p>

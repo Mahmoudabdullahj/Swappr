@@ -932,9 +932,9 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .footer-brand { display: flex; flex-direction: column; }
 .footer-logo {
   display: block;
-  height: 120px;
-  width: auto;
-  margin: -24px 0 -8px -22px; /* trim symmetric transparent padding from image */
+  width: 201px;
+  height: 53px;
+  margin-bottom: 20px;
 }
 .footer-desc {
   font-size: 14px;
