@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque } from 'next/font/google';
+import { AppProvider } from '@/lib/app-context';
+import AppShell from '@/components/AppShell';
 import './globals.css';
 
 const bricolage = Bricolage_Grotesque({
@@ -49,7 +51,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/hero-poster.webp" fetchPriority="high" />
       </head>
-      <body>{children}</body>
+      <body>
+        <AppProvider>
+          <AppShell>{children}</AppShell>
+        </AppProvider>
+      </body>
     </html>
   );
 }

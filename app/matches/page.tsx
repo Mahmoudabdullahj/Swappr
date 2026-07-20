@@ -1,0 +1,41 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { useApp } from '@/lib/app-context';
+import type { ChatTarget } from '@/lib/types';
+
+const MatchesView = dynamic(() => import('@/components/views/MatchesView'));
+
+export default function MatchesPage() {
+  const router = useRouter();
+  const {
+    session, myMatches, newMatch, showMatchModal, setShowMatchModal,
+    openOfferTrade, openListItem,
+    setChatTarget, setActiveConvo,
+  } = useApp();
+
+  function handleViewChange(view: string) {
+    router.push(view === 'discover' ? '/' : `/${view}`);
+  }
+
+  function openChat(target: ChatTarget) {
+    setActiveConvo(null);
+    setChatTarget(target);
+    router.push('/messages');
+  }
+
+  return (
+    <MatchesView
+      session={session}
+      myMatches={myMatches}
+      newMatch={newMatch}
+      showMatchModal={showMatchModal}
+      onCloseMatchModal={() => setShowMatchModal(false)}
+      onOpenChat={openChat}
+      onOfferTrade={openOfferTrade}
+      onListItem={(skipWant) => openListItem(!!skipWant)}
+      onViewChange={handleViewChange}
+    />
+  );
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { UserSession } from '@/lib/types';
+import type { UserSession, Conversation, ChatTarget } from '@/lib/types';
 import { createClient } from '@/utils/supabase/client';
 import styles from './MessagesView.module.css';
 
@@ -15,18 +15,6 @@ function timeAgo(ts: number): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-interface Conversation {
-  id: string;
-  otherUserId: string;
-  otherUserName: string;
-  itemId?: string | null;
-  itemTitle?: string | null;
-  itemImg?: string | null;
-  lastMessage?: string | null;
-  lastMessageAt?: number | null;
-  createdAt: number;
-}
-
 interface Message {
   id: string;
   conversationId: string;
@@ -35,14 +23,6 @@ interface Message {
   content: string;
   imageUrl?: string | null;
   createdAt: number;
-}
-
-interface ChatTarget {
-  userId: string;
-  userName: string;
-  itemId?: string;
-  itemTitle?: string;
-  itemImg?: string;
 }
 
 interface MessagesViewProps {

@@ -52,3 +52,30 @@ export interface UserSession {
     medianPrice: number | null;
   };
 }
+
+export interface Match {
+  id: string;
+  matchedAt: number;
+  myItem: { id: string; title: string; img: string; category: string; };
+  theirItem: { id: string; title: string; img: string; category: string; seller: string; ownerId: string; };
+}
+
+export interface Conversation {
+  id: string;
+  otherUserId: string;
+  otherUserName: string;
+  itemId?: string | null;
+  itemTitle?: string | null;
+  itemImg?: string | null;
+  lastMessage?: string | null;
+  lastMessageAt?: number | null;
+  createdAt: number;
+}
+
+export interface ChatTarget {
+  userId: string;
+  userName: string;
+  itemId?: string;
+  itemTitle?: string;
+  itemImg?: string;
+}
