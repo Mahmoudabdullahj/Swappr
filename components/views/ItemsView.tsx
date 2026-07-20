@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import type { UserSession } from '@/lib/types';
 import type { MyItem } from '@/lib/my-items';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
@@ -148,11 +149,12 @@ export default function ItemsView({
               {filtered.map((item) => (
                 <div key={item.id} className="my-item-card" role="listitem">
                   {item.img ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       className="my-item-avatar my-item-avatar--img"
                       src={item.img}
                       alt=""
+                      width={46}
+                      height={46}
                       aria-hidden="true"
                     />
                   ) : (() => {
