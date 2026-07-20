@@ -6,11 +6,12 @@ import type { CatalogItem, UserSession, AppNotification } from '@/lib/types';
 import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeOffer, type ReceivedTradeOffer, type TradeTarget } from '@/lib/my-trades';
 import { Session } from '@/lib/session';
-import { createClient } from '@/utils/supabase/client';
-import LoginModal from '@/components/LoginModal';
-const ListItemModal  = dynamic(() => import('@/components/ListItemModal'),  { ssr: false });
-const OfferTradeModal = dynamic(() => import('@/components/OfferTradeModal'), { ssr: false });
+import { getClient } from '@/utils/supabase/lazy-client';
 import Navigation from '@/components/Navigation';
+
+const LoginModal     = dynamic(() => import('@/components/LoginModal'),              { ssr: false });
+const ListItemModal  = dynamic(() => import('@/components/ListItemModal'),            { ssr: false });
+const OfferTradeModal = dynamic(() => import('@/components/OfferTradeModal'),         { ssr: false });
 
 const DiscoverView  = dynamic(() => import('@/components/views/DiscoverView'));
 const ItemsView     = dynamic(() => import('@/components/views/ItemsView'));
@@ -109,56 +110,72 @@ export default function Page() {
   const searchDebounce  = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (searchDebounce.current) clearTimeout(searchDebounce.current); }, []);
 
+  // Cached Supabase client — set once auth loads, reused by all subsequent effects
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabaseRef = useRef<any>(null);
+
   // ── Auth ──
   useEffect(() => {
-    const supabase = createClient();
+    let cancelled = false;
+    let sub: { unsubscribe: () => void } | null = null;
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      if (s?.user) {
-        const stored = Session.get();
-        const us: UserSession = stored?.userId === s.user.id
-          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at, avatarUrl: s.user.user_metadata?.avatar_url }
-          : {
-              userId: s.user.id,
-              displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
-              avatarUrl: s.user.user_metadata?.avatar_url,
-              loginAt: new Date().toISOString(),
-              memberSince: s.user.created_at,
-              views: [], searches: [],
-              profile: { topCategories: [], topKeywords: [], medianPrice: null },
-            };
-        Session.save(us);
-        setSession(us);
-        setLoggedIn(true);
-      }
-      setAuthLoading(false);
+    getClient().then((supabase) => {
+      if (cancelled) return;
+      supabaseRef.current = supabase;
+
+      supabase.auth.getSession().then(({ data: { session: s } }) => {
+        if (cancelled) return;
+        if (s?.user) {
+          const stored = Session.get();
+          const us: UserSession = stored?.userId === s.user.id
+            ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at, avatarUrl: s.user.user_metadata?.avatar_url }
+            : {
+                userId: s.user.id,
+                displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
+                avatarUrl: s.user.user_metadata?.avatar_url,
+                loginAt: new Date().toISOString(),
+                memberSince: s.user.created_at,
+                views: [], searches: [],
+                profile: { topCategories: [], topKeywords: [], medianPrice: null },
+              };
+          Session.save(us);
+          setSession(us);
+          setLoggedIn(true);
+        }
+        setAuthLoading(false);
+      });
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
+        if (cancelled) return;
+        if (s?.user) {
+          const stored = Session.get();
+          const us: UserSession = stored?.userId === s.user.id
+            ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at, avatarUrl: s.user.user_metadata?.avatar_url }
+            : {
+                userId: s.user.id,
+                displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
+                avatarUrl: s.user.user_metadata?.avatar_url,
+                loginAt: new Date().toISOString(),
+                memberSince: s.user.created_at,
+                views: [], searches: [],
+                profile: { topCategories: [], topKeywords: [], medianPrice: null },
+              };
+          Session.save(us);
+          setSession(us);
+          setLoggedIn(true);
+        } else {
+          setSession(null);
+          setLoggedIn(false);
+        }
+        setAuthLoading(false);
+      });
+      sub = subscription;
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      if (s?.user) {
-        const stored = Session.get();
-        const us: UserSession = stored?.userId === s.user.id
-          ? { ...stored, memberSince: stored.memberSince ?? s.user.created_at, avatarUrl: s.user.user_metadata?.avatar_url }
-          : {
-              userId: s.user.id,
-              displayName: s.user.user_metadata?.display_name || s.user.email?.split('@')[0] || 'User',
-              avatarUrl: s.user.user_metadata?.avatar_url,
-              loginAt: new Date().toISOString(),
-              memberSince: s.user.created_at,
-              views: [], searches: [],
-              profile: { topCategories: [], topKeywords: [], medianPrice: null },
-            };
-        Session.save(us);
-        setSession(us);
-        setLoggedIn(true);
-      } else {
-        setSession(null);
-        setLoggedIn(false);
-      }
-      setAuthLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      sub?.unsubscribe();
+    };
   }, []);
 
   // ── Fetch my items ──
@@ -222,15 +239,15 @@ export default function Page() {
   }, [session]);
 
   useEffect(() => {
-    if (!session) return;
-    const supabase = createClient();
+    if (!session || !supabaseRef.current) return;
+    const supabase = supabaseRef.current;
     const channel = supabase
       .channel(`notifications:${session.userId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${session.userId}` },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
+        (payload: { new: Record<string, unknown> }) => {
+          const row = payload.new;
           setNotifications(prev => [{
             id:        row.id as string,
             type:      row.type as 'trade_offer' | 'new_message',
@@ -332,13 +349,9 @@ export default function Page() {
 
   // ── openChat — cross-view handler ──
   const conversationsRef = useRef<Conversation[]>([]);
-  // keep ref in sync so openChat always has fresh data without being in its dep array
   useEffect(() => { conversationsRef.current = []; }, []); // initial placeholder
 
   function openChat(target: ChatTarget) {
-    // We don't keep conversations in root state; MessagesView owns them.
-    // Pass through to MessagesView by setting activeConvo/chatTarget directly.
-    // MessagesView will check its own conversations list on mount.
     setActiveConvo(null);
     setChatTarget(target);
     handleViewChange('messages');
@@ -352,7 +365,7 @@ export default function Page() {
   }
 
   async function handleLogout() {
-    const supabase = createClient();
+    const supabase = supabaseRef.current ?? await getClient();
     await supabase.auth.signOut();
     Session.destroy();
     localStorage.removeItem('swappr_liked_ids');
