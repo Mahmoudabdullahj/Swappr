@@ -931,10 +931,9 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 }
 .footer-brand { display: flex; flex-direction: column; }
 .footer-logo {
-  height: 48px;
+  height: 56px;
   width: auto;
   margin-bottom: 20px;
-  filter: brightness(0) invert(1);
 }
 .footer-desc {
   font-size: 14px;
