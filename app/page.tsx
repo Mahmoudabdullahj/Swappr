@@ -110,8 +110,6 @@ export default function Page() {
   const searchDebounce  = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (searchDebounce.current) clearTimeout(searchDebounce.current); }, []);
 
-  // Cached Supabase client — set once auth loads, reused by all subsequent effects
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabaseRef = useRef<any>(null);
 
   // ── Auth ──
