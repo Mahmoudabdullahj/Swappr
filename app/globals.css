@@ -930,20 +930,11 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   gap: 56px;
 }
 .footer-brand { display: flex; flex-direction: column; }
-.footer-logo-wrap {
-  position: relative;
-  width: 160px;
-  height: 46px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
 .footer-logo {
-  position: absolute;
-  height: 160px;
+  display: block;
+  height: 120px;
   width: auto;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: -24px 0 -8px -22px; /* trim symmetric transparent padding from image */
 }
 .footer-desc {
   font-size: 14px;
