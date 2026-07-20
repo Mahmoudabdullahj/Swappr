@@ -875,6 +875,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
     padding: 0 12px;
     height: 56px;
   }
+  .topbar-logo img { height: 44px !important; }
   .topbar-nav { display: none; }
   .mobile-search-btn { display: flex; }
   .search-bar { display: none; }
