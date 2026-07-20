@@ -304,6 +304,7 @@ export default function DiscoverView({
               playsInline
               poster="/hero-poster.webp"
               preload="metadata"
+              aria-hidden="true"
             />
             <h1 className="bento-headline">Trade what you have,<br/>get what you need.</h1>
             <div className="bento-hero-footer">
@@ -348,6 +349,7 @@ export default function DiscoverView({
                     sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 400px"
                     className="cat-card-bg"
                     aria-hidden="true"
+                    priority={i === 0}
                   />
                 )}
                 <div className="cat-card-body">

@@ -92,7 +92,7 @@ export default function Navigation({
 
         {/* Logo — left */}
         <div className="topbar-logo" onClick={() => onViewChange('discover')} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
-          <img src="/logo-nav.png" alt="Baddel" style={{ height: 100 }} />
+          <img src="/logo-nav.png" alt="Baddel" width={100} height={100} style={{ height: 100 }} />
         </div>
 
         {/* Nav links — center */}

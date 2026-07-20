@@ -66,7 +66,7 @@ export default function ItemCard({
   }
 
   return (
-    <article className="item-card" role="listitem" tabIndex={0} onClick={() => router.push(`/items/${id}`)}>
+    <article className="item-card" tabIndex={0} onClick={() => router.push(`/items/${id}`)}>
 
       {/* ── Image — purple border (ref image 1) ── */}
       <div className="card-image-wrap">

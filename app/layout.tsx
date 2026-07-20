@@ -44,7 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={bricolage.variable}>
       <head>
-        <link rel="preconnect" href="https://ekcsvucupmmgkekjjdqx.supabase.co" />
+        <link rel="preconnect" href="https://ekcsvucupmmgkekjjdqx.supabase.co" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://infird.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/hero-poster.webp" fetchPriority="high" />
       </head>
       <body>{children}</body>

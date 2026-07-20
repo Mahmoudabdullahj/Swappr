@@ -3,10 +3,11 @@ const path = require('path');
 const supabaseHost = 'ekcsvucupmmgkekjjdqx.supabase.co';
 
 const securityHeaders = [
-  { key: 'X-Frame-Options',        value: 'DENY' },
-  { key: 'X-Content-Type-Options', value: 'nosniff' },
-  { key: 'X-XSS-Protection',       value: '1; mode=block' },
-  { key: 'Referrer-Policy',        value: 'strict-origin-when-cross-origin' },
+  { key: 'X-Frame-Options',           value: 'DENY' },
+  { key: 'X-Content-Type-Options',    value: 'nosniff' },
+  { key: 'X-XSS-Protection',          value: '1; mode=block' },
+  { key: 'Referrer-Policy',           value: 'strict-origin-when-cross-origin' },
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
   {
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
@@ -18,7 +19,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self'",
-      `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com https://i.pravatar.cc https://lh3.googleusercontent.com`,
+      `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com https://i.pravatar.cc https://lh3.googleusercontent.com https://infird.com`,
       `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}`,
       "frame-ancestors 'none'",
     ].join('; '),
