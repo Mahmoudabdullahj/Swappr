@@ -60,6 +60,43 @@ const CATEGORY_IMAGES: Record<string, string> = {
   headphones:  '/categories/Headphones.png',
 };
 
+const CATEGORY_PILLS = [
+  { slug: 'mobiles',     name: 'Phones',      emoji: '📱' },
+  { slug: 'laptops',     name: 'Laptops',     emoji: '💻' },
+  { slug: 'gaming',      name: 'Gaming',      emoji: '🎮' },
+  { slug: 'cameras',     name: 'Cameras',     emoji: '📷' },
+  { slug: 'headphones',  name: 'Headphones',  emoji: '🎧' },
+  { slug: 'electronics', name: 'Electronics', emoji: '🖥️' },
+  { slug: 'watches',     name: 'Smartwatches',emoji: '⌚' },
+  { slug: 'cars',        name: 'Cars',        emoji: '🚗' },
+  { slug: 'fashion',     name: 'Fashion',     emoji: '👗' },
+  { slug: 'books',       name: 'Books',       emoji: '📚' },
+  { slug: 'sports',      name: 'Sports',      emoji: '⚽' },
+  { slug: 'furniture',   name: 'Furniture',   emoji: '🛋️' },
+  { slug: 'instruments', name: 'Instruments', emoji: '🎸' },
+  { slug: 'toys',        name: 'Toys',        emoji: '🧸' },
+];
+
+function CategoryPillBar({ active, onSelect }: { active: string | null; onSelect: (slug: string | null) => void }) {
+  return (
+    <nav className="cat-pill-bar" aria-label="Filter by category">
+      <button className={`cat-pill${!active ? ' active' : ''}`} onClick={() => onSelect(null)}>
+        All
+      </button>
+      {CATEGORY_PILLS.map(({ slug, name, emoji }) => (
+        <button
+          key={slug}
+          className={`cat-pill${active === slug ? ' active' : ''}`}
+          onClick={() => onSelect(slug)}
+          aria-pressed={active === slug}
+        >
+          <span aria-hidden="true">{emoji}</span>{name}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
 const CATEGORY_SLUG_MAP: Record<string, string> = {
   mobiles:     'Phones',
   electronics: 'Electronics',
@@ -169,6 +206,7 @@ export default function DiscoverView({
   if (activeCategory) {
     return (
       <main className="content" id="view-category">
+        <CategoryPillBar active={activeCategory} onSelect={setActiveCategory} />
         <div className="category-page-header">
           <button className="back-btn" onClick={() => setActiveCategory(null)}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -284,6 +322,7 @@ export default function DiscoverView({
   if (loggedIn) {
     return (
       <main className="bento-page" id="view-discover">
+        <CategoryPillBar active={activeCategory} onSelect={setActiveCategory} />
         <div className="bento-home">
 
           {/* Hero box — click → My Items */}

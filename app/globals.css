@@ -1915,6 +1915,60 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .cat-section-visible .cat-card:nth-child(13) { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.64s  both; }
 .cat-section-visible .cat-card:nth-child(14) { animation: catCardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.69s  both; }
 
+/* ── Category pill bar ── */
+.cat-pill-bar {
+  position: sticky;
+  top: 110px;
+  z-index: 40;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 32px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 32px), transparent 100%);
+}
+.cat-pill-bar::-webkit-scrollbar { display: none; }
+
+.cat-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.cat-pill:hover:not(.active) {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+.cat-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111;
+}
+
+@media (max-width: 768px) {
+  .cat-pill-bar {
+    top: 56px;
+    padding: 8px 12px;
+  }
+}
+
 /* ── Category section ── */
 .cat-section {
   padding: 56px 24px 80px;
