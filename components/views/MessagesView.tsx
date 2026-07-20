@@ -491,7 +491,6 @@ export default function MessagesView({
                   <button
                     key={convo.id}
                     className={styles['conversation-item']}
-                    role="listitem"
                     onClick={() => { onConvoChange(convo); onChatTargetChange(null); }}
                   >
                     <div className={styles['conversation-avatar']} aria-hidden="true">
