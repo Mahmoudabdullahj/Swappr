@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useMemo } from 'react';
+import { useFocusTrap } from '@/lib/use-focus-trap';
 import { Session } from '@/lib/session';
 import { CATALOG, CategoryConfig } from '@/lib/item-catalog';
 import styles from './ListItemModal.module.css';
@@ -131,6 +132,8 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
   }
 
   function handleClose() { onClose(); setTimeout(reset, 300); }
+
+  const dialogRef = useFocusTrap(open, handleClose);
 
   /* ── item navigation ── */
   function handleCategorySelect(slug: string) {
@@ -274,6 +277,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
 
   return (
     <div
+      ref={dialogRef}
       className={`${styles['list-modal-overlay']}${open ? ` ${styles.open}` : ''}`}
       role="dialog" aria-modal="true" aria-labelledby="listModalTitle"
     >

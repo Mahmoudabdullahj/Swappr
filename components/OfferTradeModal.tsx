@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useFocusTrap } from '@/lib/use-focus-trap';
 import type { MyItem } from '@/lib/my-items';
 import { MyTrades, type TradeTarget } from '@/lib/my-trades';
 import styles from './OfferTradeModal.module.css';
@@ -22,6 +23,8 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
   const [sent, setSent]           = useState(false);
   const [sending, setSending]     = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+
+  const dialogRef = useFocusTrap(open, onClose);
 
   useEffect(() => {
     if (open) {
@@ -74,6 +77,7 @@ export default function OfferTradeModal({ open, onClose, onListItem, refreshKey,
 
   return (
     <div
+      ref={dialogRef}
       className={`${styles['offer-overlay']}${open ? ` ${styles.open}` : ''}`}
       role="dialog"
       aria-modal="true"
