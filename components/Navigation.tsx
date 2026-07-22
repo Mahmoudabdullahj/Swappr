@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { UserSession, AppNotification } from '@/lib/types';
 
 function notifTimeAgo(ts: number): string {
@@ -58,6 +59,7 @@ export default function Navigation({
   onNotifOpen,
   onNotifNavigate,
 }: NavigationProps) {
+  const router = useRouter();
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
   const [notifOpen, setNotifOpen] = useState(false);
