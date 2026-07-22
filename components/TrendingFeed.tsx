@@ -63,7 +63,7 @@ export default function TrendingFeed({ session, onOfferTrade, onSeeAll, likedIds
           ) : items.length === 0 ? (
             <div className="empty-state" style={{ gridColumn: '1 / -1' }}>
               <div className="empty-state-icon">🏙️</div>
-              <p className="empty-state-text">No nearby listings yet.<br />Be the first to list something!</p>
+              <p className="empty-state-text">No listings yet.<br />Be the first to list something!</p>
             </div>
           ) : (
             items.map((item) => (
