@@ -1795,7 +1795,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .bento-home {
   display: block;
   padding: 12px 12px 28px;
-  height: calc(100vh - 66px);
+  height: calc(100vh - 110px);
   box-sizing: border-box;
 }
 
