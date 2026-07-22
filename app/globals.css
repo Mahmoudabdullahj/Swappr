@@ -1,6 +1,7 @@
 /* ── RESET & TOKENS ──────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { max-width: 100%; }
+a, button, [role="button"], input, select, textarea, label { touch-action: manipulation; }
 
 :root {
   /* Palette — Gray / Blue / Black */
