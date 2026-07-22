@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { sendPushToUser } from '@/lib/push';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -53,7 +54,7 @@ export async function POST(
   // Verify participant
   const { data: convo } = await supabase
     .from('conversations')
-    .select('id')
+    .select('id, user_a_id, user_b_id, user_a_name, user_b_name')
     .eq('id', id)
     .or(`user_a_id.eq.${user.id},user_b_id.eq.${user.id}`)
     .maybeSingle();
@@ -80,6 +81,13 @@ export async function POST(
     .from('conversations')
     .update({ last_message: lastMsg, last_message_at: new Date().toISOString() })
     .eq('id', id);
+
+  const recipientId = convo.user_a_id === user.id ? convo.user_b_id : convo.user_a_id;
+  await sendPushToUser(supabase, recipientId, {
+    title: `New message from ${senderName}`,
+    body:  lastMsg,
+    url:   '/messages',
+  });
 
   return NextResponse.json({
     id:             data.id,

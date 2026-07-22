@@ -62,7 +62,13 @@
       "Bash(sed -i 's|swaparr\\\\.com|baddel.shop|g' app/layout.tsx)",
       "Bash(sed -i 's|swappr\\\\.jo|baddel.shop|g' app/layout.tsx app/terms/page.tsx app/privacy/page.tsx app/sitemap.ts public/robots.txt)",
       "Bash(sed -i 's|Swaparr|Baddel|g' app/layout.tsx app/opengraph-image.tsx app/not-found.tsx 'app/items/[id]/page.tsx' app/admin/AdminPanel.tsx components/LandingPage.tsx components/LoginModal.tsx app/terms/page.tsx app/privacy/page.tsx)",
-      "Bash(sed -i 's|\"name\": \"swaparr\"|\"name\": \"baddel\"|g' package.json)"
+      "Bash(sed -i 's|\"name\": \"swaparr\"|\"name\": \"baddel\"|g' package.json)",
+      "Bash(cp \"E:/Swapit/Baddel logo/Favicon.png\" \"E:/Swapit/Swapit/app/icon.png\")",
+      "Bash(rm \"E:/Swapit/Swapit/app/icon.svg\")",
+      "Bash(python -c \"from PIL import Image; img = Image.open\\('public/logo-nav.png'\\); print\\(img.size\\)\")",
+      "Bash(identify public/logo-nav.png)",
+      "PowerShell(Copy-Item *)",
+      "Bash(identify public/logo.png)"
     ]
   }
 }

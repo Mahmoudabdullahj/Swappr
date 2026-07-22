@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { createServiceClient } from '@/utils/supabase/service';
+import { sendPushToUser } from '@/lib/push';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -119,6 +120,12 @@ export async function POST(request: NextRequest) {
     title:     `${senderName} wants to trade`,
     body:      `Offering their ${storedTitle} (${offeredItems.length} ${itemWord}) for your ${targetItemTitle}`,
     link_view: 'trades',
+  });
+
+  await sendPushToUser(db, targetItemOwnerId, {
+    title: `${senderName} wants to trade`,
+    body:  `Offering ${storedTitle} for your ${targetItemTitle}`,
+    url:   '/trades',
   });
 
   return NextResponse.json({
