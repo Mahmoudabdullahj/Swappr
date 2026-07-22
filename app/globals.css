@@ -522,7 +522,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .card-dist-pill svg { width: 11px; height: 11px; }
 
 .btn-offer {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 7px 14px;
@@ -536,8 +536,6 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
   white-space: nowrap;
-  width: 100%;
-  justify-content: center;
 }
 .btn-offer:hover { background: rgba(34,88,246,0.14); transform: translateY(-1px); }
 .btn-offer svg { width: 15px; height: 15px; }
