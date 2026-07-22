@@ -29,10 +29,11 @@ export default function FeedbackPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, name: name.trim() || null, email: email.trim() || null, message: message.trim() }),
       });
-      if (!res.ok) throw new Error('Failed to submit');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       setDone(true);
-    } catch {
-      setError('Something went wrong. Please try again.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
       setSubmitting(false);
     }
