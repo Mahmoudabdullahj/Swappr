@@ -174,7 +174,6 @@ export default function MatchesView({
 
                 {/* Actions */}
                 <div className={styles['match-actions']}>
-                  <p className="trade-time">{timeAgo(match.matchedAt)}</p>
                   <button
                     className="list-submit-btn"
                     style={{ padding: '8px 18px', fontSize: 13 }}
