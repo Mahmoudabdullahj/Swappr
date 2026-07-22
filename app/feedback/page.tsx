@@ -67,7 +67,7 @@ export default function FeedbackPage() {
           <>
             <h1 style={{ marginBottom: 6 }}>Share feedback</h1>
             <p className="legal-date" style={{ marginBottom: 32 }}>
-              Tell us what's working, what's broken, or what you'd love to see next.
+              Tell us what&apos;s working, what&apos;s broken, or what you&apos;d love to see next.
             </p>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
