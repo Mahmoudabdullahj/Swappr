@@ -1,12 +1,10 @@
 'use client';
 
 import { Suspense, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/app-context';
 import type { Conversation } from '@/lib/types';
-
-const MessagesView = dynamic(() => import('@/components/views/MessagesView'));
+import MessagesView from '@/components/views/MessagesView';
 
 function MessagesPageInner() {
   const router = useRouter();

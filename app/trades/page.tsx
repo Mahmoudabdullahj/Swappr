@@ -1,11 +1,9 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/app-context';
 import type { ChatTarget } from '@/lib/types';
-
-const TradesView = dynamic(() => import('@/components/views/TradesView'));
+import TradesView from '@/components/views/TradesView';
 
 export default function TradesPage() {
   const router = useRouter();

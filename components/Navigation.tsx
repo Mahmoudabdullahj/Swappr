@@ -65,6 +65,15 @@ export default function Navigation({
   const [navAvatarError, setNavAvatarError] = useState(false);
 
   useEffect(() => {
+    router.prefetch('/');
+    router.prefetch('/items');
+    router.prefetch('/trades');
+    router.prefetch('/matches');
+    router.prefetch('/messages');
+    router.prefetch('/profile');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     if (!notifOpen) return;
     function handleClickOutside(e: MouseEvent) {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {

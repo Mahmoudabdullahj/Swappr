@@ -1,10 +1,8 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/app-context';
-
-const ProfileView = dynamic(() => import('@/components/views/ProfileView'));
+import ProfileView from '@/components/views/ProfileView';
 
 export default function ProfilePage() {
   const router = useRouter();

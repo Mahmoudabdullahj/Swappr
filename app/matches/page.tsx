@@ -1,11 +1,9 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/app-context';
 import type { ChatTarget } from '@/lib/types';
-
-const MatchesView = dynamic(() => import('@/components/views/MatchesView'));
+import MatchesView from '@/components/views/MatchesView';
 
 export default function MatchesPage() {
   const router = useRouter();

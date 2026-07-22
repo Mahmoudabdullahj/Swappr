@@ -1,9 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useApp } from '@/lib/app-context';
-
-const ItemsView = dynamic(() => import('@/components/views/ItemsView'));
+import ItemsView from '@/components/views/ItemsView';
 
 export default function ItemsPage() {
   const { session, myItems, openListItem, handleDeleteItem, handleMarkItemStatus } = useApp();
