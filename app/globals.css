@@ -980,6 +980,8 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
   text-align: left;
 }
 .footer-link:hover { color: #fff; }
+.footer-link-feedback { color: rgba(255,255,255,0.75); }
+.footer-link-feedback:hover { color: #fff; }
 .footer-socials { display: flex; gap: 10px; margin-top: 2px; }
 .footer-social-btn {
   width: 40px;

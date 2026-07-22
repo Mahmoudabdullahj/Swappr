@@ -49,6 +49,7 @@ export default function Footer({ onCategorySelect }: FooterProps) {
             <li><a className="footer-link" href="/terms">Terms of Service</a></li>
             <li><a className="footer-link" href="/privacy">Privacy Policy</a></li>
             <li><a className="footer-link" href="mailto:hello@baddel.shop">Contact Us</a></li>
+            <li><a className="footer-link footer-link-feedback" href="/feedback">Share Feedback</a></li>
           </ul>
         </div>
 
