@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque } from 'next/font/google';
 import { AppProvider } from '@/lib/app-context';
 import AppShell from '@/components/AppShell';
+import PwaRegister from '@/components/PwaRegister';
 import './globals.css';
 
 const bricolage = Bricolage_Grotesque({
@@ -13,6 +14,7 @@ const bricolage = Bricolage_Grotesque({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#2258f6',
 };
 
 export const metadata: Metadata = {
@@ -50,11 +52,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://infird.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/hero-poster.webp" fetchPriority="high" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Baddel" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body>
         <AppProvider>
           <AppShell>{children}</AppShell>
         </AppProvider>
+        <PwaRegister />
       </body>
     </html>
   );
