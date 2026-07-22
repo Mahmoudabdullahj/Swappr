@@ -175,13 +175,6 @@ export default function MatchesView({
                 {/* Actions */}
                 <div className={styles['match-actions']}>
                   <button
-                    className="list-submit-btn"
-                    style={{ padding: '8px 18px', fontSize: 13 }}
-                    onClick={() => onOfferTrade({ id: match.theirItem.id, title: match.theirItem.title, img: match.theirItem.img, category: match.theirItem.category, seller: match.theirItem.seller, user_id: match.theirItem.ownerId })}
-                  >
-                    Offer Trade
-                  </button>
-                  <button
                     className={styles['match-msg-btn']}
                     onClick={() => onOpenChat({ userId: match.theirItem.ownerId, userName: match.theirItem.seller, itemId: match.theirItem.id, itemTitle: match.theirItem.title, itemImg: match.theirItem.img })}
                   >
