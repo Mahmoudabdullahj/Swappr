@@ -125,10 +125,14 @@
 }
 
 /* ── Profile settings button ── */
-.profile-settings-btn {
+.profile-actions {
   position: absolute;
   top: 0;
   right: 0;
+  display: flex;
+  gap: 8px;
+}
+.profile-settings-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
