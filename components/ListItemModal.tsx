@@ -72,7 +72,13 @@ function CategoryIcon({ slug }: { slug: string }) {
     case 'headphones':
       return <svg {...p}><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>;
     case 'electronics':
-      return <svg {...p}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="4" x2="9" y2="2"/><line x1="15" y1="4" x2="15" y2="2"/><line x1="9" y1="20" x2="9" y2="22"/><line x1="15" y1="20" x2="15" y2="22"/><line x1="4" y1="9" x2="2" y2="9"/><line x1="4" y1="14" x2="2" y2="14"/><line x1="20" y1="9" x2="22" y2="9"/><line x1="20" y1="14" x2="22" y2="14"/></svg>;
+      return <svg {...p}>
+        <rect x="1" y="5" width="13" height="9" rx="1"/>
+        <path d="M6 14v2"/><path d="M3 16h7"/>
+        <rect x="16" y="2" width="7" height="20" rx="1"/>
+        <line x1="16" y1="9" x2="23" y2="9"/>
+        <path d="M20 5v2"/><path d="M20 13v4"/>
+      </svg>;
     case 'furniture':
       return <svg {...p}><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>;
     case 'fashion':
