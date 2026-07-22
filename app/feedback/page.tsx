@@ -40,12 +40,6 @@ export default function FeedbackPage() {
 
   return (
     <div className="legal-page">
-      <header className="legal-header">
-        <Link href="/" className="legal-logo">
-          <img src="/logo.png" alt="Baddel" style={{ height: 44 }} />
-        </Link>
-      </header>
-
       <main className="legal-content" style={{ maxWidth: 560 }}>
         {done ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
