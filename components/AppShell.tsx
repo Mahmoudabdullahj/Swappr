@@ -37,6 +37,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   function handleViewChange(view: string) {
     if (view !== 'messages') setActiveConvo(null);
+    handleSearch('');
     router.push(view === 'discover' ? '/' : `/${view}`);
   }
 
