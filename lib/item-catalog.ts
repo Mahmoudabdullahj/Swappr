@@ -103,7 +103,7 @@ export const CATALOG: CategoryConfig[] = [
       { name: 'Branded Gaming PCs', models: ['ASUS ROG', 'Alienware', 'Lenovo Legion', 'MSI Gaming', 'HP OMEN', 'Acer Predator', 'Razer Blade', 'Other Branded Gaming PC'] },
       { name: 'Custom PC', models: ['Custom Desktop PC', 'Custom Mini-ITX Build', 'Custom Mid-Tower Build', 'Custom Full-Tower Build', 'Other Custom Build'] },
       { name: 'Controllers', models: ['DualSense (PS5)', 'DualShock 4 (PS4)', 'Xbox Wireless Controller', 'Xbox Elite Controller Series 2', 'Nintendo Pro Controller', 'Nintendo Joy-Con Pair', 'Razer Wolverine', 'Other Controller'] },
-      { name: 'Gaming Accessories', models: ['Gaming Headset', 'Gaming Mouse', 'Gaming Keyboard', 'Gaming Monitor', 'Gaming Chair', 'Racing Wheel', 'VR Headset', 'Other'] },
+      { name: 'Gaming Accessories', models: ['Gaming Headset', 'Gaming Mouse', 'Gaming Keyboard', 'Gaming Monitor', 'Gaming Chair', 'Racing Wheel', 'VR Headset', 'Mouse', 'Keyboard', 'Other'] },
     ],
     specs: [
       { key: 'game_name', label: 'Game Name', type: 'text', placeholder: 'e.g. FIFA 25, God of War, Elden Ring', required: true, brands: ['Video Games'] },
@@ -234,7 +234,7 @@ export const CATALOG: CategoryConfig[] = [
     slug: 'electronics',
     name: 'Electronics',
     emoji: '🔌',
-    types: ['TV', 'Monitor', 'Speaker / Soundbar', 'Router / Networking', 'Projector', 'Printer / Scanner', 'Smart Home Device', 'Keyboard', 'Mouse', 'External Storage / SSD', 'Power Bank', 'Charger / Adapter', 'Cables & Accessories', 'Other Electronics'],
+    types: ['TV', 'Monitor', 'Speaker / Soundbar', 'Router / Networking', 'Projector', 'Printer / Scanner', 'Smart Home Device', 'External Storage / SSD', 'Power Bank', 'Charger / Adapter', 'Cables & Accessories', 'Other Electronics'],
     specs: [
       { key: 'brand', label: 'Brand', type: 'text', placeholder: 'e.g. Samsung, LG, Xiaomi' },
       { key: 'model_name', label: 'Model', type: 'text', placeholder: 'e.g. 55" QLED Q80C' },
