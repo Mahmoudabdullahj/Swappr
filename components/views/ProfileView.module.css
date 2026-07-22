@@ -127,8 +127,9 @@
 /* ── Profile settings button ── */
 .profile-actions {
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 0;
+  transform: translateY(-50%);
   display: flex;
   gap: 8px;
 }

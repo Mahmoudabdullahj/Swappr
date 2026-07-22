@@ -133,6 +133,7 @@ export default function ProfileView({
           <button
             className={styles['profile-settings-btn']}
             aria-label="Settings"
+            title="Settings"
             onClick={() => { setSettingsName(session?.displayName || ''); setSettingsMsg(''); setShowSettings(s => !s); }}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
@@ -143,6 +144,7 @@ export default function ProfileView({
           <button
             className={styles['profile-settings-btn']}
             aria-label="Sign out"
+            title="Sign out"
             onClick={onLogout}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
