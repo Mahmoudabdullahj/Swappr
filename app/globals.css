@@ -1788,8 +1788,20 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 @media (max-width: 640px) {
   .my-items-title { font-size: 22px; }
   .my-item-delete { opacity: 1; }
-  .my-item-card { padding: 12px; gap: 10px; }
-  .my-item-avatar { width: 40px; height: 40px; font-size: 17px; }
+  .my-item-card {
+    padding: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .my-item-avatar { width: 40px; height: 40px; font-size: 17px; flex-shrink: 0; }
+  .my-item-info {
+    flex: 0 0 calc(100% - 50px);
+    max-width: calc(100% - 50px);
+  }
+  .my-item-status { margin-left: 50px; }
+  .my-item-traded-btn { flex: 1; }
+  .my-item-delete { margin-left: auto; }
 }
 
 /* ── Bento home ── */
