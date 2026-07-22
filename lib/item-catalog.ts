@@ -130,6 +130,7 @@ export const CATALOG: CategoryConfig[] = [
         'Alpha A1 II', 'Alpha A1', 'Alpha A9 III', 'Alpha A7R V', 'Alpha A7 IV', 'Alpha A7C II', 'Alpha A7CR', 'Alpha A7C',
         'Alpha A6700', 'Alpha A6400', 'Alpha A6100',
         'ZV-E1', 'ZV-E10 II', 'ZV-E10', 'ZV-1 II', 'ZV-1',
+        'FX3', 'FX30', 'FX6', 'FX9',
         'Cyber-shot RX100 VII', 'Cyber-shot RX100 VI',
       ] },
       { name: 'Fujifilm', models: [
