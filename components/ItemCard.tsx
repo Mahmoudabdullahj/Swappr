@@ -96,7 +96,7 @@ export default function ItemCard({
 
       {/* ── Info below image ── */}
       <div className="card-info">
-        <div style={{ marginLeft: 14 }}>
+        <div style={{ marginLeft: 16 }}>
           <h3 className="card-title">{title}</h3>
           <p className="card-category">{category}</p>
           {(wantAnything || wantTitle || wantCategory) && (
