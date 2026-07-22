@@ -217,7 +217,6 @@ export default function Navigation({
                     : session.displayName.charAt(0).toUpperCase()
                   }
                 </span>
-                <span className="session-name">{session.displayName}</span>
               </button>
             </div>
           )}
