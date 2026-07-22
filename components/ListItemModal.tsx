@@ -54,6 +54,44 @@ function CheckIcon() {
   );
 }
 
+function CategoryIcon({ slug }: { slug: string }) {
+  const p = { viewBox: '0 0 24 24', width: 26, height: 26, fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true as const };
+  switch (slug) {
+    case 'phones':
+      return <svg {...p}><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>;
+    case 'laptops':
+      return <svg {...p}><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="19" x2="22" y2="19"/><line x1="8" y1="22" x2="16" y2="22"/></svg>;
+    case 'tablets':
+      return <svg {...p}><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 17.5h.01"/></svg>;
+    case 'gaming':
+      return <svg {...p}><path d="M17 5H7a5 5 0 0 0-5 5v5a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5v-5a5 5 0 0 0-5-5Z"/><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><circle cx="15" cy="11" r="1" fill="currentColor" strokeWidth="0"/><circle cx="17" cy="13" r="1" fill="currentColor" strokeWidth="0"/></svg>;
+    case 'cameras':
+      return <svg {...p}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3L14.5 4z"/><circle cx="12" cy="13" r="3"/></svg>;
+    case 'smartwatches':
+      return <svg {...p}><circle cx="12" cy="12" r="6"/><path d="M12 10v2l1.5 1.5"/><path d="M9 5V3h6v2"/><path d="M9 19v2h6v-2"/></svg>;
+    case 'headphones':
+      return <svg {...p}><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>;
+    case 'electronics':
+      return <svg {...p}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="4" x2="9" y2="2"/><line x1="15" y1="4" x2="15" y2="2"/><line x1="9" y1="20" x2="9" y2="22"/><line x1="15" y1="20" x2="15" y2="22"/><line x1="4" y1="9" x2="2" y2="9"/><line x1="4" y1="14" x2="2" y2="14"/><line x1="20" y1="9" x2="22" y2="9"/><line x1="20" y1="14" x2="22" y2="14"/></svg>;
+    case 'furniture':
+      return <svg {...p}><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>;
+    case 'fashion':
+      return <svg {...p}><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>;
+    case 'sports':
+      return <svg {...p}><path d="M6 8v8"/><path d="M4 9.5v5"/><path d="M18 8v8"/><path d="M20 9.5v5"/><line x1="6" y1="12" x2="18" y2="12"/></svg>;
+    case 'instruments':
+      return <svg {...p}><circle cx="8" cy="18" r="4"/><path d="M12 18V2l7 4"/></svg>;
+    case 'books':
+      return <svg {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+    case 'toys':
+      return <svg {...p}><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>;
+    case 'cars':
+      return <svg {...p}><path d="M5 17H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h1l2-4h12l2 4h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>;
+    default:
+      return <svg {...p}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
+  }
+}
+
 export default function ListItemModal({ open, onClose, onListed, skipWantStep }: ListItemModalProps) {
   /* ── item state ── */
   const [currentStep, setCurrentStep]         = useState('category');
@@ -323,7 +361,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 <button key={c.slug}
                   className={`${styles['list-cat-item']}${selectedCatSlug === c.slug ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleCategorySelect(c.slug)}>
-                  <span className={styles['list-cat-emoji']}>{c.emoji}</span>
+                  <CategoryIcon slug={c.slug} />
                   <span className={styles['list-cat-name']}>{c.name}</span>
                 </button>
               ))}
@@ -547,7 +585,7 @@ export default function ListItemModal({ open, onClose, onListed, skipWantStep }:
                 <button key={c.slug}
                   className={`${styles['list-cat-item']}${wantCatSlug === c.slug ? ` ${styles.selected}` : ''}`}
                   onClick={() => handleWantCatSelect(c.slug)}>
-                  <span className={styles['list-cat-emoji']}>{c.emoji}</span>
+                  <CategoryIcon slug={c.slug} />
                   <span className={styles['list-cat-name']}>{c.name}</span>
                 </button>
               ))}
