@@ -96,20 +96,22 @@ export default function ItemCard({
 
       {/* ── Info below image ── */}
       <div className="card-info">
-        <h3 className="card-title">{title}</h3>
-        <p className="card-category">{category}</p>
-        {(wantAnything || wantTitle || wantCategory) && (
-          <p className="card-wants">
-            <span className="card-wants-label">Wants</span>
-            {wantAnything ? 'anything' : (wantTitle || wantCategory)}
-          </p>
-        )}
+        <div style={{ marginLeft: 14 }}>
+          <h3 className="card-title">{title}</h3>
+          <p className="card-category">{category}</p>
+          {(wantAnything || wantTitle || wantCategory) && (
+            <p className="card-wants">
+              <span className="card-wants-label">Wants</span>
+              {wantAnything ? 'anything' : (wantTitle || wantCategory)}
+            </p>
+          )}
 
-        {/* Distance pill */}
-        <div className="card-meta">
-          <span className="card-dist-pill">
-            {dist > 0 ? `~${dist} km · ` : ''}{seller}
-          </span>
+          {/* Distance pill */}
+          <div className="card-meta">
+            <span className="card-dist-pill">
+              {dist > 0 ? `~${dist} km · ` : ''}{seller}
+            </span>
+          </div>
         </div>
 
         {/* Offer trade */}

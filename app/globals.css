@@ -457,7 +457,7 @@ article.item-card:hover .card-image-wrap img { transform: scale(1.04); }
 .condition-fair    { color: #dc2626; }
 
 /* Card info — below image */
-.card-info { padding: 0 2px 0 12px; }
+.card-info { padding: 0 2px; }
 
 .card-title {
   font-family: var(--font-display);
